@@ -1,0 +1,57 @@
+# Calibration lane (PRD US-004 line 760).
+#
+# Runs `pytest -m calibration`, which replays each curated corpus slot via
+# `ReplayExecution`, compares predicted metrics against cached mainnet
+# outcomes, and asserts each metric error stays within the per-metric
+# threshold configured in `solana-plans/calibration/thresholds.yaml`.
+# A breach fails the build.
+#
+# Lives in its own workflow file (separate from `ci.yml`) so the lane has
+# an independent 30-minute budget per PRD line 766 and so calibration
+# drift does not block the unit/forked-state lanes.
+#
+# Triggers (PRD line 761): pull request + nightly schedule + manual
+# dispatch. The PR trigger is label-gated (`calibration`) to keep the
+# default PR pipeline fast while still letting reviewers opt a PR in.
+
+name: calibration
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+  schedule:
+    # Nightly calibration lane (06:00 UTC daily).
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  calibration:
+    name: calibration (≤30 min)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: >-
+      github.event_name == 'schedule'
+      || github.event_name == 'workflow_dispatch'
+      || (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'calibration'))
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Install backend dependencies
+        run: pip install -e '.[api,dev]'
+      - name: Run calibration lane
+        # Exit code 5 = "no tests collected"; tolerated until the
+        # US-004 corpus + per-slot tests (PRD lines 750, 758, 804-810)
+        # land. Once they do, exit 5 is unreachable and any failure
+        # below (threshold breach, ImportError, etc.) fails the build.
+        run: |
+          set +e
+          pytest -m calibration
+          status=$?
+          if [ $status -eq 5 ]; then
+            echo "::warning::No calibration tests collected yet (corpus gated). Lane is wired but inert until US-004 corpus tests land."
+            exit 0
+          fi
+          exit $status

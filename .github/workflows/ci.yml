@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # Nightly forked-state lane (06:00 UTC daily).
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      run_forked_state:
+        description: 'Run forked-state lane'
+        type: boolean
+        default: false
+
+jobs:
+  unit-integration:
+    name: unit+integration (≤10 min)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Install backend dependencies
+        run: pip install -e '.[api,dev]'
+      - name: Run unit + integration lane
+        run: pytest -m "not forked_state and not calibration"
+
+  forked-state:
+    name: forked-state (≤20 min)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: >-
+      github.event_name == 'schedule' && github.event.schedule == '0 6 * * *'
+      || github.event_name == 'workflow_dispatch' && inputs.run_forked_state
+      || github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'forked-state')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Install backend dependencies
+        run: pip install -e '.[api,dev]'
+      - name: Run forked-state lane
+        run: pytest -m forked_state
