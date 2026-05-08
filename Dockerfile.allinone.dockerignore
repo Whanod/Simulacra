@@ -1,0 +1,49 @@
+# Per-Dockerfile ignore file used by `docker build -f Dockerfile.allinone .`.
+# Needs to allow both backend (pyproject.toml + src/) and frontend/.
+
+# Version control / IDE noise
+.git
+.github
+.gitignore
+.vscode
+.idea
+**/.DS_Store
+
+# Python caches & virtualenv
+.venv
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/.pytest_cache
+**/.ruff_cache
+**/.mypy_cache
+
+# Node / Next build artefacts — rebuilt inside the image
+**/node_modules
+**/.next
+**/.turbo
+**/dist
+**/build
+**/coverage
+**/test-results
+**/playwright-report
+**/*.tsbuildinfo
+
+# Local env files (secrets belong in Coolify env vars, not the image)
+**/.env
+**/.env.*
+
+# Project-local artefacts & docs we don't need in the image
+.defi_sim_artifacts
+docs
+tutorial-site
+tests
+frontend/e2e
+frontend/test
+frontend/scripts
+**/*.md
+!README.md
+
+# Existing docker config for the local dev compose stack
+Dockerfile
+docker-compose.yml

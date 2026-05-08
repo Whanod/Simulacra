@@ -1,0 +1,38 @@
+# Coolify-ready compose file for the combined image.
+#
+# Point Coolify at this compose file (Build Pack: "Docker Compose") and it
+# will:
+#   - build the all-in-one image from Dockerfile.allinone
+#   - mount the `defi_sim_data` named volume at /data (SQLite + artifacts)
+#   - publish port 3000 (frontend + /api proxy to backend)
+#
+# For local spot-checks:
+#   docker compose -f docker-compose.coolify.yml up --build
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.allinone
+    image: defi-sim:allinone
+    container_name: defi-sim-allinone
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      # Override CORS if you expose the backend directly; by default the
+      # browser talks to the Next.js server at / and /api so CORS is not
+      # needed.
+      CORS_ALLOWED_ORIGINS: "*"
+      DEFI_SIM_ARTIFACT_ROOT: /data/artifacts
+    volumes:
+      - defi_sim_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:3000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 45s
+
+volumes:
+  defi_sim_data:

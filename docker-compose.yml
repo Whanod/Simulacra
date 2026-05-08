@@ -1,0 +1,67 @@
+# defi-sim local stack for agent-driven testing.
+#
+#   docker compose up -d --build      # boot (first run will build images)
+#   docker compose ps                 # wait until both services are "healthy"
+#   docker compose logs -f backend    # tail backend
+#   docker compose logs -f frontend   # tail frontend
+#   docker compose down               # stop and remove containers (keeps artifacts volume)
+#   docker compose down -v            # stop and wipe the artifacts volume too
+#
+# Host ports:
+#   backend  -> http://localhost:8000
+#   frontend -> http://localhost:3001   (3000 is held by an unrelated project on this box)
+#
+# The frontend is a client-side studio, so NEXT_PUBLIC_API_URL is read by the
+# browser and must point at the host-visible backend port (8000), not the
+# docker-internal service name.
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: defi-sim-backend:dev
+    container_name: defi-sim-backend
+    ports:
+      - "8000:8000"
+    environment:
+      CORS_ALLOWED_ORIGINS: "http://localhost:3000,http://127.0.0.1:3000,http://localhost:3001,http://127.0.0.1:3001"
+      DEFI_SIM_ARTIFACT_ROOT: /data/artifacts
+      PYTHONUNBUFFERED: "1"
+    volumes:
+      - backend-artifacts:/data/artifacts
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 15s
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: defi-sim-frontend:dev
+    container_name: defi-sim-frontend
+    ports:
+      - "3001:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: "http://localhost:8000"
+      NEXT_TELEMETRY_DISABLED: "1"
+      NODE_ENV: development
+      PORT: "3000"
+      HOSTNAME: 0.0.0.0
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:3000/"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 45s
+    restart: unless-stopped
+
+volumes:
+  backend-artifacts:

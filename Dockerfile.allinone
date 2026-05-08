@@ -1,0 +1,105 @@
+# syntax=docker/dockerfile:1.10
+#
+# All-in-one image: FastAPI backend (Python) + Next.js frontend (Node) + SQLite.
+# Designed to drop straight into Coolify:
+#   - Single exposed port: 3000
+#   - Persistent data path:  /data   (SQLite + artifact blobs)
+#   - Health endpoint:       /api/health  (Next.js proxies to backend /health)
+#
+# Build:
+#   docker build -f Dockerfile.allinone -t defi-sim:allinone .
+# Run:
+#   docker run --rm -p 3000:3000 -v defi_sim_data:/data defi-sim:allinone
+#
+# In Coolify: select "Dockerfile" build, set the Dockerfile path to
+# Dockerfile.allinone, bind a persistent volume at /data, and publish port
+# 3000.
+
+ARG PYTHON_VERSION=3.11
+ARG NODE_VERSION=20
+
+########################################
+# Stage 0 — node binary provider       #
+########################################
+FROM node:${NODE_VERSION}-slim AS node-src
+
+########################################
+# Stage 1 — build frontend (Next.js)   #
+########################################
+FROM oven/bun:1.2 AS frontend-build
+
+WORKDIR /build
+
+COPY frontend/package.json frontend/bun.lock ./
+RUN --mount=type=cache,target=/root/.bun/install/cache \
+    bun install --frozen-lockfile
+
+COPY frontend/ ./
+
+# NEXT_PUBLIC_* is baked into the client bundle at build time. We point the
+# browser at "/api" so requests are same-origin. BACKEND_INTERNAL_URL is also
+# read at build time: Next.js bakes the rewrite destination into the routes
+# manifest, so it has to be set here, not just at container runtime.
+ENV NEXT_TELEMETRY_DISABLED=1 \
+    NEXT_PUBLIC_API_URL=/api \
+    BACKEND_INTERNAL_URL=http://127.0.0.1:8000 \
+    NODE_ENV=production
+
+# Ensure public/ exists so the runtime-stage COPY is unconditional.
+RUN mkdir -p ./public && bun run next build
+
+########################################
+# Stage 2 — runtime                    #
+########################################
+FROM python:${PYTHON_VERSION}-slim
+
+WORKDIR /app
+
+# curl: healthcheck + entrypoint readiness probe
+# tini: PID 1, reaps zombies, forwards signals cleanly
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends curl tini \
+ && rm -rf /var/lib/apt/lists/*
+
+# Node binary from the official image — Next standalone server only needs
+# `node`, not npm/yarn/bun. Keeps the image lean.
+COPY --from=node-src /usr/local/bin/node /usr/local/bin/node
+
+# Backend: install the defi-sim package with API extras into system site-packages
+COPY pyproject.toml ./
+COPY src ./src
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --no-compile ".[api]"
+
+# Frontend: copy Next.js standalone output. The `server.js` + `.next/static` +
+# `public` trio is the minimal set of files the standalone server needs.
+COPY --from=frontend-build /build/.next/standalone/ ./frontend/
+COPY --from=frontend-build /build/.next/static/     ./frontend/.next/static/
+COPY --from=frontend-build /build/public/           ./frontend/public/
+
+# Entrypoint supervises both processes
+COPY docker/entrypoint.sh /usr/local/bin/defi-sim-entrypoint
+RUN chmod +x /usr/local/bin/defi-sim-entrypoint
+
+# Persistent data (SQLite + JSON blobs). Coolify will mount a volume here.
+RUN mkdir -p /data/artifacts
+VOLUME ["/data"]
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    DEFI_SIM_ARTIFACT_ROOT=/data/artifacts \
+    BACKEND_HOST=127.0.0.1 \
+    BACKEND_PORT=8000 \
+    BACKEND_INTERNAL_URL=http://127.0.0.1:8000 \
+    PORT=3000 \
+    HOSTNAME=0.0.0.0 \
+    NEXT_TELEMETRY_DISABLED=1 \
+    NODE_ENV=production
+
+EXPOSE 3000
+
+HEALTHCHECK --interval=10s --timeout=5s --retries=12 --start-period=45s \
+  CMD curl -fsS http://127.0.0.1:3000/api/health || exit 1
+
+ENTRYPOINT ["tini", "-g", "--"]
+CMD ["/usr/local/bin/defi-sim-entrypoint"]
