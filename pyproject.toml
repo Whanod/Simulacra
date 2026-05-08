@@ -1,0 +1,48 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "defi-sim"
+version = "0.1.0"
+description = "General-purpose Python library for simulating DeFi protocols and economic systems"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "plotly>=5.18",
+    "scipy>=1.11",
+    "msgpack>=1.0",
+    "pyarrow>=14.0",
+]
+
+[project.optional-dependencies]
+api = [
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.27",
+    "solders>=0.21",
+]
+solana-rpc = [
+    "helius-sdk>=0.0.10",
+    "solders>=0.21",
+    "solana>=0.34",
+    "grpcio>=1.60",
+]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "httpx>=0.27",
+    "pytest-asyncio>=0.23",
+    "hypothesis>=6.100",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/defi_sim", "src/defi_sim_api", "src/defi_sim_solana"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "forked_state: tests that replay against snapshotted mainnet state (Phase 2.3 lane, ≤20 min)",
+    "calibration: tests that compare engine output against mainnet ground truth (Phase 2.4 lane)",
+    "integration: tests that hit live external dependencies (e.g. paid Helius RPC); skipped unless creds set",
+]

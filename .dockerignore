@@ -1,0 +1,15 @@
+*
+
+# Allowlist only what the backend build needs
+!pyproject.toml
+!src
+!README.md
+
+# And prune noise inside the allowed directories
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/.pytest_cache
+**/.ruff_cache
+**/.mypy_cache
+**/.DS_Store
