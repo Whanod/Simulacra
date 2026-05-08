@@ -1,0 +1,1929 @@
+{
+  "contractVersion": "v2",
+  "categories": [
+    {
+      "key": "reg-markets",
+      "label": "Markets",
+      "description": "",
+      "order": 0,
+      "entities": [
+        {
+          "category": "markets",
+          "type": "cfamm",
+          "label": "Constant Function AMM",
+          "description": "L\u00b2-norm constant-function AMM with LP position tracking and multi-asset support.",
+          "badges": [
+            {
+              "label": "PricedMarket",
+              "variant": "blue"
+            },
+            {
+              "label": "LiquidityPool",
+              "variant": "purple"
+            }
+          ],
+          "builderSupported": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "initial_liquidity": {
+                "type": "number",
+                "minimum": 0,
+                "default": 1000000,
+                "title": "Initial Liquidity"
+              },
+              "collateral_token": {
+                "type": "string",
+                "default": "COLLATERAL",
+                "title": "Collateral Token"
+              }
+            },
+            "required": [
+              "initial_liquidity"
+            ]
+          },
+          "uiSchema": {
+            "fields": {
+              "initial_liquidity": {
+                "label": "Initial Liquidity",
+                "widget": "number",
+                "min": 0,
+                "order": 1
+              },
+              "collateral_token": {
+                "label": "Collateral Token",
+                "widget": "text",
+                "order": 2,
+                "level": "advanced"
+              }
+            }
+          },
+          "defaults": {
+            "initial_liquidity": 1000000,
+            "collateral_token": "COLLATERAL"
+          }
+        },
+        {
+          "category": "markets",
+          "type": "clob",
+          "label": "Central Limit Order Book",
+          "description": "Central limit order book with price-time priority matching and per-pair books.",
+          "badges": [
+            {
+              "label": "PricedMarket",
+              "variant": "blue"
+            },
+            {
+              "label": "OrderBook",
+              "variant": "green"
+            }
+          ],
+          "builderSupported": true,
+          "schema": {
+            "type": "object",
+            "properties": {}
+          },
+          "uiSchema": {},
+          "defaults": {}
+        },
+        {
+          "category": "markets",
+          "type": "world",
+          "label": "Composite World Market",
+          "description": "Composite world market \u2014 run multiple markets in one simulation with cross-market agents.",
+          "badges": [
+            {
+              "label": "Composite",
+              "variant": "yellow"
+            }
+          ],
+          "builderSupported": true,
+          "schema": {
+            "type": "object",
+            "properties": {}
+          },
+          "uiSchema": {
+            "specialEditor": "world-markets-graph"
+          },
+          "defaults": {}
+        }
+      ]
+    },
+    {
+      "key": "reg-agents",
+      "label": "Agents",
+      "description": "",
+      "order": 1,
+      "entities": [
+        {
+          "category": "agents",
+          "type": "arbitrageur",
+          "label": "Arbitrageur",
+          "description": "Exploits price differences between market and feed. Corrective positions.",
+          "builderSupported": true,
+          "schema": {
+            "properties": {
+              "collateral": {
+                "default": "COLLATERAL",
+                "title": "Collateral",
+                "type": "string"
+              },
+              "min_edge_bps": {
+                "default": 50,
+                "title": "Min Edge Bps",
+                "type": "integer"
+              },
+              "trade_fraction": {
+                "default": 0.2,
+                "title": "Trade Fraction",
+                "type": "number"
+              },
+              "max_trade": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "default": 1000000000000,
+                "title": "Max Trade"
+              }
+            },
+            "title": "ArbitrageParams",
+            "type": "object"
+          },
+          "uiSchema": {
+            "fields": {
+              "collateral": {
+                "label": "Collateral Token",
+                "widget": "text",
+                "level": "advanced",
+                "order": 99
+              },
+              "min_edge_bps": {
+                "label": "Min Edge",
+                "widget": "slider",
+                "min": 0,
+                "max": 1000,
+                "step": 1,
+                "unit": "bps",
+                "order": 1
+              },
+              "trade_fraction": {
+                "label": "Trade Fraction",
+                "widget": "slider",
+                "min": 0,
+                "max": 1,
+                "step": 0.01,
+                "order": 2
+              },
+              "max_trade": {
+                "label": "Max Trade",
+                "widget": "number",
+                "min": 0,
+                "order": 3
+              }
+            }
+          },
+          "defaults": {
+            "collateral": "COLLATERAL",
+            "min_edge_bps": 50,
+            "trade_fraction": 0.2,
+            "max_trade": 1000000000000
+          }
+        },
+        {
+          "category": "agents",
+          "type": "informed",
+          "label": "Informed Trader",
+          "description": "Trades toward belief distribution weighted by conviction. Bundle-based execution.",
+          "builderSupported": true,
+          "schema": {
+            "properties": {
+              "collateral": {
+                "default": "COLLATERAL",
+                "title": "Collateral",
+                "type": "string"
+              },
+              "conviction": {
+                "default": 0.5,
+                "title": "Conviction",
+                "type": "number"
+              },
+              "trade_fraction": {
+                "default": 0.1,
+                "title": "Trade Fraction",
+                "type": "number"
+              },
+              "capital_limit": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "default": 1000000000000,
+                "title": "Capital Limit"
+              }
+            },
+            "title": "InformedParams",
+            "type": "object"
+          },
+          "uiSchema": {
+            "fields": {
+              "collateral": {
+                "label": "Collateral Token",
+                "widget": "text",
+                "level": "advanced",
+                "order": 99
+              },
+              "conviction": {
+                "label": "Conviction",
+                "widget": "slider",
+                "min": 0,
+                "max": 1,
+                "step": 0.01,
+                "order": 1
+              },
+              "trade_fraction": {
+                "label": "Trade Fraction",
+                "widget": "slider",
+                "min": 0,
+                "max": 1,
+                "step": 0.01,
+                "order": 2
+              },
+              "capital_limit": {
+                "label": "Capital Limit",
+                "widget": "number",
+                "min": 0,
+                "order": 3
+              }
+            }
+          },
+          "defaults": {
+            "collateral": "COLLATERAL",
+            "conviction": 0.5,
+            "trade_fraction": 0.1,
+            "capital_limit": 1000000000000
+          }
+        },
+        {
+          "category": "agents",
+          "type": "lp",
+          "label": "Liquidity Provider",
+          "description": "Generic liquidity provider role shared across AMM/CLOB markets.",
+          "builderSupported": true,
+          "schema": {
+            "properties": {
+              "collateral": {
+                "default": "COLLATERAL",
+                "title": "Collateral",
+                "type": "string"
+              },
+              "min_yield_per_round": {
+                "default": 0.001,
+                "title": "Min Yield Per Round",
+                "type": "number"
+              },
+              "max_loss_threshold": {
+                "default": 0.05,
+                "title": "Max Loss Threshold",
+                "type": "number"
+              },
+              "deposit_fraction": {
+                "default": 0.5,
+                "title": "Deposit Fraction",
+                "type": "number"
+              },
+              "rebalance_interval": {
+                "default": 10,
+                "title": "Rebalance Interval",
+                "type": "integer"
+              }
+            },
+            "title": "LPParams",
+            "type": "object"
+          },
+          "uiSchema": {
+            "fields": {
+              "collateral": {
+                "label": "Collateral Token",
+                "widget": "text",
+                "level": "advanced",
+                "order": 99
+              },
+              "min_yield_per_round": {
+                "label": "Min Yield / Round",
+                "widget": "slider",
+                "min": 0,
+                "max": 1,
+                "step": 0.0001,
+                "order": 1
+              },
+              "max_loss_threshold": {
+                "label": "Max Loss Threshold",
+                "widget": "slider",
+                "min": 0,
+                "max": 1,
+                "step": 0.01,
+                "order": 2
+              },
+              "deposit_fraction": {
+                "label": "Deposit Fraction",
+                "widget": "slider",
+                "min": 0,
+                "max": 1,
+                "step": 0.01,
+                "order": 3
+              },
+              "rebalance_interval": {
+                "label": "Rebalance Interval",
+                "widget": "number",
+                "min": 1,
+                "unit": "rounds",
+                "order": 4
+              }
+            }
+          },
+          "defaults": {
+            "collateral": "COLLATERAL",
+            "min_yield_per_round": 0.001,
+            "max_loss_threshold": 0.05,
+            "deposit_fraction": 0.5,
+            "rebalance_interval": 10
+          }
+        },
+        {
+          "category": "agents",
+          "type": "manipulator",
+          "label": "Manipulator",
+          "description": "Strategic price manipulation with attack budgets. Measures attack success.",
+          "builderSupported": true,
+          "schema": {
+            "properties": {
+              "collateral": {
+                "default": "COLLATERAL",
+                "title": "Collateral",
+                "type": "string"
+              },
+              "strategy": {
+                "default": "price_distortion",
+                "title": "Strategy",
+                "type": "string"
+              },
+              "target_token": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Target Token"
+              },
+              "budget": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "default": 5000000000000,
+                "title": "Budget"
+              },
+              "num_tranches": {
+                "default": 10,
+                "title": "Num Tranches",
+                "type": "integer"
+              },
+              "spend_fraction": {
+                "default": 0.1,
+                "title": "Spend Fraction",
+                "type": "number"
+              }
+            },
+            "title": "ManipulatorParams",
+            "type": "object"
+          },
+          "uiSchema": {
+            "fields": {
+              "collateral": {
+                "label": "Collateral Token",
+                "widget": "text",
+                "level": "advanced",
+                "order": 99
+              },
+              "strategy": {
+                "label": "Strategy",
+                "widget": "select",
+                "enumLabels": {
+                  "price_distortion": "Price Distortion",
+                  "volume_wash": "Volume Wash"
+                },
+                "order": 1
+              },
+              "target_token": {
+                "label": "Target Token",
+                "widget": "text",
+                "order": 2
+              },
+              "budget": {
+                "label": "Budget",
+                "widget": "number",
+                "min": 0,
+                "order": 3
+              },
+              "num_tranches": {
+                "label": "Tranches",
+                "widget": "number",
+                "min": 1,
+                "order": 4
+              },
+              "spend_fraction": {
+                "label": "Spend Fraction",
+                "widget": "slider",
+                "min": 0,
+                "max": 1,
+                "step": 0.01,
+                "order": 5
+              }
+            }
+          },
+          "defaults": {
+            "collateral": "COLLATERAL",
+            "strategy": "price_distortion",
+            "target_token": null,
+            "budget": 5000000000000,
+            "num_tranches": 10,
+            "spend_fraction": 0.1
+          }
+        },
+        {
+          "category": "agents",
+          "type": "noise",
+          "label": "Noise Trader",
+          "description": "Random trades within configurable size/frequency bounds. Provides background liquidity.",
+          "builderSupported": true,
+          "schema": {
+            "properties": {
+              "collateral": {
+                "default": "COLLATERAL",
+                "title": "Collateral",
+                "type": "string"
+              },
+              "trade_min": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "default": 100,
+                "title": "Trade Min"
+              },
+              "trade_max": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "default": 1000,
+                "title": "Trade Max"
+              },
+              "frequency": {
+                "default": 0.5,
+                "title": "Frequency",
+                "type": "number"
+              },
+              "bundle_probability": {
+                "default": 0.3,
+                "title": "Bundle Probability",
+                "type": "number"
+              }
+            },
+            "title": "NoiseParams",
+            "type": "object"
+          },
+          "uiSchema": {
+            "sections": [
+              {
+                "key": "trade",
+                "label": "Trade Sizing",
+                "fields": [
+                  "trade_min",
+                  "trade_max"
+                ]
+              },
+              {
+                "key": "behavior",
+                "label": "Behavior",
+                "fields": [
+                  "frequency",
+                  "bundle_probability"
+                ]
+              },
+              {
+                "key": "advanced",
+                "label": "Advanced",
+                "level": "advanced",
+                "fields": [
+                  "collateral"
+                ]
+              }
+            ],
+            "fields": {
+              "collateral": {
+                "label": "Collateral Token",
+                "widget": "text",
+                "level": "advanced",
+                "section": "advanced"
+              },
+              "trade_min": {
+                "label": "Min Trade",
+                "widget": "number",
+                "min": 0,
+                "section": "trade",
+                "order": 1
+              },
+              "trade_max": {
+                "label": "Max Trade",
+                "widget": "number",
+                "min": 0,
+                "section": "trade",
+                "order": 2
+              },
+              "frequency": {
+                "label": "Frequency",
+                "widget": "slider",
+                "min": 0,
+                "max": 1,
+                "step": 0.01,
+                "section": "behavior",
+                "order": 1
+              },
+              "bundle_probability": {
+                "label": "Bundle Probability",
+                "widget": "slider",
+                "min": 0,
+                "max": 1,
+                "step": 0.01,
+                "section": "behavior",
+                "order": 2
+              }
+            }
+          },
+          "defaults": {
+            "collateral": "COLLATERAL",
+            "trade_min": 100,
+            "trade_max": 1000,
+            "frequency": 0.5,
+            "bundle_probability": 0.3
+          }
+        },
+        {
+          "category": "agents",
+          "type": "passive_lp",
+          "label": "Passive LP",
+          "description": "Deposits if yield attractive, withdraws if loss exceeds threshold.",
+          "builderSupported": true,
+          "schema": {
+            "properties": {
+              "collateral": {
+                "default": "COLLATERAL",
+                "title": "Collateral",
+                "type": "string"
+              },
+              "min_yield_per_round": {
+                "default": 0.001,
+                "title": "Min Yield Per Round",
+                "type": "number"
+              },
+              "max_loss_threshold": {
+                "default": 0.05,
+                "title": "Max Loss Threshold",
+                "type": "number"
+              },
+              "deposit_fraction": {
+                "default": 0.5,
+                "title": "Deposit Fraction",
+                "type": "number"
+              },
+              "rebalance_interval": {
+                "default": 10,
+                "title": "Rebalance Interval",
+                "type": "integer"
+              }
+            },
+            "title": "LPParams",
+            "type": "object"
+          },
+          "uiSchema": {
+            "fields": {
+              "collateral": {
+                "label": "Collateral Token",
+                "widget": "text",
+                "level": "advanced",
+                "order": 99
+              },
+              "min_yield_per_round": {
+                "label": "Min Yield / Round",
+                "widget": "slider",
+                "min": 0,
+                "max": 1,
+                "step": 0.0001,
+                "order": 1
+              },
+              "max_loss_threshold": {
+                "label": "Max Loss Threshold",
+                "widget": "slider",
+                "min": 0,
+                "max": 1,
+                "step": 0.01,
+                "order": 2
+              },
+              "deposit_fraction": {
+                "label": "Deposit Fraction",
+                "widget": "slider",
+                "min": 0,
+                "max": 1,
+                "step": 0.01,
+                "order": 3
+              },
+              "rebalance_interval": {
+                "label": "Rebalance Interval",
+                "widget": "number",
+                "min": 1,
+                "unit": "rounds",
+                "order": 4
+              }
+            }
+          },
+          "defaults": {
+            "collateral": "COLLATERAL",
+            "min_yield_per_round": 0.001,
+            "max_loss_threshold": 0.05,
+            "deposit_fraction": 0.5,
+            "rebalance_interval": 10
+          }
+        },
+        {
+          "category": "agents",
+          "type": "rebalancing_lp",
+          "label": "Rebalancing LP",
+          "description": "Maintains uniform portfolio weights across assets with periodic rebalancing.",
+          "builderSupported": true,
+          "schema": {
+            "properties": {
+              "collateral": {
+                "default": "COLLATERAL",
+                "title": "Collateral",
+                "type": "string"
+              },
+              "min_yield_per_round": {
+                "default": 0.001,
+                "title": "Min Yield Per Round",
+                "type": "number"
+              },
+              "max_loss_threshold": {
+                "default": 0.05,
+                "title": "Max Loss Threshold",
+                "type": "number"
+              },
+              "deposit_fraction": {
+                "default": 0.5,
+                "title": "Deposit Fraction",
+                "type": "number"
+              },
+              "rebalance_interval": {
+                "default": 10,
+                "title": "Rebalance Interval",
+                "type": "integer"
+              }
+            },
+            "title": "LPParams",
+            "type": "object"
+          },
+          "uiSchema": {
+            "fields": {
+              "collateral": {
+                "label": "Collateral Token",
+                "widget": "text",
+                "level": "advanced",
+                "order": 99
+              },
+              "min_yield_per_round": {
+                "label": "Min Yield / Round",
+                "widget": "slider",
+                "min": 0,
+                "max": 1,
+                "step": 0.0001,
+                "order": 1
+              },
+              "max_loss_threshold": {
+                "label": "Max Loss Threshold",
+                "widget": "slider",
+                "min": 0,
+                "max": 1,
+                "step": 0.01,
+                "order": 2
+              },
+              "deposit_fraction": {
+                "label": "Deposit Fraction",
+                "widget": "slider",
+                "min": 0,
+                "max": 1,
+                "step": 0.01,
+                "order": 3
+              },
+              "rebalance_interval": {
+                "label": "Rebalance Interval",
+                "widget": "number",
+                "min": 1,
+                "unit": "rounds",
+                "order": 4
+              }
+            }
+          },
+          "defaults": {
+            "collateral": "COLLATERAL",
+            "min_yield_per_round": 0.001,
+            "max_loss_threshold": 0.05,
+            "deposit_fraction": 0.5,
+            "rebalance_interval": 10
+          }
+        }
+      ]
+    },
+    {
+      "key": "reg-clocks",
+      "label": "Clocks",
+      "description": "",
+      "order": 2,
+      "entities": [
+        {
+          "category": "clocks",
+          "type": "block",
+          "label": "Block Clock",
+          "description": "Fixed block time with deterministic round progression.",
+          "badges": [
+            {
+              "label": "Default",
+              "variant": "green"
+            }
+          ],
+          "builderSupported": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "genesis": {
+                "type": "integer",
+                "default": 0,
+                "title": "Genesis"
+              },
+              "block_time": {
+                "type": "number",
+                "default": 1,
+                "title": "Block Time"
+              },
+              "epoch_length": {
+                "type": "integer",
+                "default": 1,
+                "title": "Epoch Length"
+              }
+            }
+          },
+          "uiSchema": {
+            "fields": {
+              "genesis": {
+                "label": "Genesis",
+                "widget": "number",
+                "order": 1
+              },
+              "block_time": {
+                "label": "Block Time",
+                "widget": "number",
+                "unit": "s",
+                "order": 2
+              },
+              "epoch_length": {
+                "label": "Epoch Length",
+                "widget": "number",
+                "unit": "blocks",
+                "order": 3
+              }
+            }
+          },
+          "defaults": {
+            "genesis": 0,
+            "block_time": 1,
+            "epoch_length": 1
+          }
+        },
+        {
+          "category": "clocks",
+          "type": "variable_block",
+          "label": "Variable Block Clock",
+          "description": "Variable block interval sampled per round from a distribution.",
+          "builderSupported": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "timestamps": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "title": "Timestamps"
+              },
+              "epoch_length": {
+                "type": "integer",
+                "default": 1,
+                "title": "Epoch Length"
+              }
+            },
+            "required": [
+              "timestamps"
+            ]
+          },
+          "uiSchema": {
+            "fields": {
+              "timestamps": {
+                "label": "Timestamps",
+                "widget": "json",
+                "order": 1
+              },
+              "epoch_length": {
+                "label": "Epoch Length",
+                "widget": "number",
+                "unit": "blocks",
+                "order": 2
+              }
+            }
+          },
+          "defaults": {
+            "timestamps": [
+              0,
+              1,
+              2
+            ],
+            "epoch_length": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "reg-ordering",
+      "label": "Ordering",
+      "description": "",
+      "order": 3,
+      "entities": [
+        {
+          "category": "orderings",
+          "type": "fifo",
+          "label": "FIFO",
+          "description": "First-in, first-out arrival order. Default for direct execution.",
+          "builderSupported": true,
+          "schema": {
+            "type": "object",
+            "properties": {}
+          },
+          "uiSchema": {},
+          "defaults": {}
+        },
+        {
+          "category": "orderings",
+          "type": "priority",
+          "label": "Priority",
+          "description": "Sorted by compute-unit priority lamports (price × CU limit) descending. Models the Solana priority fee market.",
+          "builderSupported": true,
+          "schema": {
+            "type": "object",
+            "properties": {}
+          },
+          "uiSchema": {},
+          "defaults": {}
+        },
+        {
+          "category": "orderings",
+          "type": "random",
+          "label": "Random",
+          "description": "RNG-based shuffle. Eliminates ordering bias.",
+          "builderSupported": true,
+          "schema": {
+            "type": "object",
+            "properties": {}
+          },
+          "uiSchema": {},
+          "defaults": {}
+        },
+        {
+          "category": "orderings",
+          "type": "sandwich",
+          "label": "Sandwich",
+          "description": "Front-run / back-run sandwich attack patterns. MEV simulation.",
+          "builderSupported": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "adversarial_agent_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "title": "Adversarial Agent IDs"
+              },
+              "target_agent_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "title": "Target Agent IDs"
+              }
+            }
+          },
+          "uiSchema": {
+            "fields": {
+              "adversarial_agent_ids": {
+                "label": "Adversarial Agents",
+                "widget": "token-list",
+                "order": 1
+              },
+              "target_agent_ids": {
+                "label": "Target Agents",
+                "widget": "token-list",
+                "order": 2
+              }
+            }
+          },
+          "defaults": {
+            "adversarial_agent_ids": [],
+            "target_agent_ids": []
+          }
+        }
+      ]
+    },
+    {
+      "key": "reg-gas",
+      "label": "Cost Models",
+      "description": "",
+      "order": 4,
+      "entities": [
+        {
+          "category": "gas_models",
+          "type": "compute_unit",
+          "label": "Compute Unit",
+          "description": "Solana mainnet fee formula: 5,000 lamports per signer plus ceil(compute-unit price × CU limit / 1,000,000).",
+          "builderSupported": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "unit_costs": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "number"
+                },
+                "title": "Unit Costs"
+              },
+              "default_units": {
+                "type": "integer",
+                "default": 1,
+                "title": "Default Units"
+              },
+              "base_cost": {
+                "type": "number",
+                "default": 0,
+                "title": "Base Cost"
+              }
+            }
+          },
+          "uiSchema": {
+            "fields": {
+              "unit_costs": {
+                "label": "Unit Costs",
+                "widget": "json",
+                "order": 1
+              },
+              "default_units": {
+                "label": "Default Units",
+                "widget": "number",
+                "min": 1,
+                "order": 2
+              },
+              "base_cost": {
+                "label": "Base Cost",
+                "widget": "number",
+                "min": 0,
+                "order": 3
+              }
+            }
+          },
+          "defaults": {
+            "unit_costs": {},
+            "default_units": 1,
+            "base_cost": 0
+          }
+        },
+        {
+          "category": "gas_models",
+          "type": "eip1559",
+          "label": "EIP-1559",
+          "description": "Ethereum-like base fee + priority fee with dynamic adjustment.",
+          "builderSupported": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "base_fee": {
+                "type": "number",
+                "minimum": 0,
+                "default": 0,
+                "title": "Base Fee"
+              },
+              "target_actions_per_round": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 50,
+                "title": "Target Actions Per Round"
+              },
+              "adjustment_factor": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 8,
+                "title": "Adjustment Factor"
+              }
+            },
+            "required": [
+              "base_fee"
+            ]
+          },
+          "uiSchema": {
+            "sections": [
+              {
+                "key": "basic",
+                "label": "Basic",
+                "level": "basic",
+                "fields": [
+                  "base_fee"
+                ]
+              },
+              {
+                "key": "advanced",
+                "label": "Advanced",
+                "level": "advanced",
+                "fields": [
+                  "target_actions_per_round",
+                  "adjustment_factor"
+                ]
+              }
+            ],
+            "fields": {
+              "base_fee": {
+                "label": "Base Fee",
+                "widget": "number",
+                "min": 0,
+                "unit": "gwei",
+                "section": "basic",
+                "order": 1
+              },
+              "target_actions_per_round": {
+                "label": "Target Actions / Round",
+                "widget": "number",
+                "min": 1,
+                "section": "advanced",
+                "order": 1
+              },
+              "adjustment_factor": {
+                "label": "Adjustment Factor",
+                "widget": "number",
+                "min": 1,
+                "section": "advanced",
+                "order": 2
+              }
+            }
+          },
+          "defaults": {
+            "base_fee": 0,
+            "target_actions_per_round": 50,
+            "adjustment_factor": 8
+          }
+        },
+        {
+          "category": "gas_models",
+          "type": "fixed",
+          "label": "Fixed Cost",
+          "description": "Constant cost per action regardless of type.",
+          "builderSupported": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "cost_per_action": {
+                "type": "number",
+                "minimum": 0,
+                "default": 0,
+                "title": "Cost Per Action"
+              }
+            },
+            "required": [
+              "cost_per_action"
+            ]
+          },
+          "uiSchema": {
+            "fields": {
+              "cost_per_action": {
+                "label": "Cost Per Action",
+                "widget": "number",
+                "min": 0
+              }
+            }
+          },
+          "defaults": {
+            "cost_per_action": 0
+          }
+        },
+        {
+          "category": "gas_models",
+          "type": "typed",
+          "label": "Typed Cost",
+          "description": "Per-action-type cost schedule. Different costs for swaps vs. LP vs. orders.",
+          "builderSupported": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "costs": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "number"
+                },
+                "title": "Costs"
+              },
+              "default_cost": {
+                "type": "number",
+                "default": 0,
+                "title": "Default Cost"
+              }
+            }
+          },
+          "uiSchema": {
+            "fields": {
+              "costs": {
+                "label": "Costs",
+                "widget": "json",
+                "order": 1
+              },
+              "default_cost": {
+                "label": "Default Cost",
+                "widget": "number",
+                "min": 0,
+                "order": 2
+              }
+            }
+          },
+          "defaults": {
+            "costs": {},
+            "default_cost": 0
+          }
+        },
+        {
+          "category": "gas_models",
+          "type": "zero",
+          "label": "Zero Cost",
+          "description": "No transaction costs. Default.",
+          "builderSupported": true,
+          "schema": {
+            "type": "object",
+            "properties": {}
+          },
+          "uiSchema": {},
+          "defaults": {}
+        }
+      ]
+    },
+    {
+      "key": "reg-fees",
+      "label": "Fee Models",
+      "description": "",
+      "order": 5,
+      "entities": [
+        {
+          "category": "fee_models",
+          "type": "dynamic",
+          "label": "Dynamic Fee",
+          "description": "Fee rate adjusts based on market conditions.",
+          "builderSupported": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "base_bps": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 30,
+                "title": "Base (bps)"
+              },
+              "max_bps": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 100,
+                "title": "Max (bps)"
+              },
+              "volatility_multiplier": {
+                "type": "number",
+                "minimum": 0,
+                "default": 2.0,
+                "title": "Volatility Multiplier"
+              },
+              "split_config": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "title": "Split Config"
+              }
+            }
+          },
+          "uiSchema": {
+            "fields": {
+              "base_bps": {
+                "label": "Base Fee",
+                "widget": "slider",
+                "min": 0,
+                "max": 1000,
+                "step": 1,
+                "unit": "bps",
+                "order": 1
+              },
+              "max_bps": {
+                "label": "Max Fee",
+                "widget": "slider",
+                "min": 0,
+                "max": 10000,
+                "step": 1,
+                "unit": "bps",
+                "order": 2
+              },
+              "volatility_multiplier": {
+                "label": "Volatility Multiplier",
+                "widget": "slider",
+                "min": 0,
+                "max": 10,
+                "step": 0.1,
+                "order": 3
+              },
+              "split_config": {
+                "label": "Fee Split",
+                "widget": "json",
+                "level": "advanced",
+                "order": 4
+              }
+            }
+          },
+          "defaults": {
+            "base_bps": 30,
+            "max_bps": 100,
+            "volatility_multiplier": 2.0
+          }
+        },
+        {
+          "category": "fee_models",
+          "type": "flat",
+          "label": "Flat Fee",
+          "description": "Fixed percentage fee on trade volume.",
+          "builderSupported": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "trade_fee_bps": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 10000,
+                "default": 30,
+                "title": "Trade Fee (bps)"
+              },
+              "split_config": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "title": "Split Config"
+              }
+            }
+          },
+          "uiSchema": {
+            "fields": {
+              "trade_fee_bps": {
+                "label": "Trade Fee",
+                "widget": "slider",
+                "min": 0,
+                "max": 10000,
+                "step": 1,
+                "unit": "bps",
+                "order": 1
+              },
+              "split_config": {
+                "label": "Fee Split",
+                "widget": "json",
+                "level": "advanced",
+                "order": 2
+              }
+            }
+          },
+          "defaults": {
+            "trade_fee_bps": 30
+          }
+        },
+        {
+          "category": "fee_models",
+          "type": "spread",
+          "label": "Spread Fee",
+          "description": "Fee proportional to bid-ask spread.",
+          "builderSupported": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "base_bps": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 30,
+                "title": "Base (bps)"
+              },
+              "spread_multiplier": {
+                "type": "number",
+                "minimum": 0,
+                "default": 1.5,
+                "title": "Spread Multiplier"
+              },
+              "split_config": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "title": "Split Config"
+              }
+            }
+          },
+          "uiSchema": {
+            "fields": {
+              "base_bps": {
+                "label": "Base Fee",
+                "widget": "slider",
+                "min": 0,
+                "max": 1000,
+                "step": 1,
+                "unit": "bps",
+                "order": 1
+              },
+              "spread_multiplier": {
+                "label": "Spread Multiplier",
+                "widget": "slider",
+                "min": 0,
+                "max": 10,
+                "step": 0.1,
+                "order": 2
+              },
+              "split_config": {
+                "label": "Fee Split",
+                "widget": "json",
+                "level": "advanced",
+                "order": 3
+              }
+            }
+          },
+          "defaults": {
+            "base_bps": 30,
+            "spread_multiplier": 1.5
+          }
+        },
+        {
+          "category": "fee_models",
+          "type": "tiered",
+          "label": "Tiered Fee",
+          "description": "Volume-based fee tiers with breakpoints.",
+          "builderSupported": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "base_bps": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 30,
+                "title": "Base (bps)"
+              },
+              "tiers": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "prefixItems": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "integer"
+                    }
+                  ]
+                },
+                "title": "Tiers"
+              },
+              "split_config": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "title": "Split Config"
+              }
+            }
+          },
+          "uiSchema": {
+            "fields": {
+              "base_bps": {
+                "label": "Base Fee",
+                "widget": "slider",
+                "min": 0,
+                "max": 1000,
+                "step": 1,
+                "unit": "bps",
+                "order": 1
+              },
+              "tiers": {
+                "label": "Tiers",
+                "widget": "json",
+                "order": 2
+              },
+              "split_config": {
+                "label": "Fee Split",
+                "widget": "json",
+                "level": "advanced",
+                "order": 3
+              }
+            }
+          },
+          "defaults": {
+            "base_bps": 30
+          }
+        },
+        {
+          "category": "fee_models",
+          "type": "time_weighted",
+          "label": "Time-Weighted Fee",
+          "description": "Fee varies based on time since last trade.",
+          "builderSupported": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "base_bps": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 10,
+                "title": "Base (bps)"
+              },
+              "max_bps": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 50,
+                "title": "Max (bps)"
+              },
+              "split_config": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "title": "Split Config"
+              }
+            }
+          },
+          "uiSchema": {
+            "fields": {
+              "base_bps": {
+                "label": "Base Fee",
+                "widget": "slider",
+                "min": 0,
+                "max": 1000,
+                "step": 1,
+                "unit": "bps",
+                "order": 1
+              },
+              "max_bps": {
+                "label": "Max Fee",
+                "widget": "slider",
+                "min": 0,
+                "max": 10000,
+                "step": 1,
+                "unit": "bps",
+                "order": 2
+              },
+              "split_config": {
+                "label": "Fee Split",
+                "widget": "json",
+                "level": "advanced",
+                "order": 3
+              }
+            }
+          },
+          "defaults": {
+            "base_bps": 10,
+            "max_bps": 50
+          }
+        }
+      ]
+    },
+    {
+      "key": "reg-feeds",
+      "label": "Feeds",
+      "description": "",
+      "order": 6,
+      "entities": [
+        {
+          "category": "feeds",
+          "type": "composite",
+          "label": "Composite Feed",
+          "description": "Combine multiple feed types per token. Weighted or fallback.",
+          "builderSupported": false,
+          "schema": {
+            "type": "object",
+            "properties": {}
+          },
+          "uiSchema": {
+            "specialEditor": "code-editor"
+          },
+          "defaults": {}
+        },
+        {
+          "category": "feeds",
+          "type": "historical",
+          "label": "Historical Feed",
+          "description": "Replay from arrays, CSV, or Parquet files. Deterministic.",
+          "builderSupported": false,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "prices": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  }
+                },
+                "title": "Prices"
+              }
+            },
+            "required": [
+              "prices"
+            ]
+          },
+          "uiSchema": {
+            "specialEditor": "code-editor",
+            "fields": {
+              "prices": {
+                "label": "Prices",
+                "widget": "code-editor"
+              }
+            }
+          },
+          "defaults": {
+            "prices": {
+              "COLLATERAL": [
+                1.0
+              ]
+            }
+          }
+        },
+        {
+          "category": "feeds",
+          "type": "stochastic",
+          "label": "Stochastic Feed",
+          "description": "Stochastic process feeds \u2014 GBM, mean-reversion, jump diffusion, configurable per token.",
+          "builderSupported": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "process": {
+                "type": "string",
+                "enum": [
+                  "gbm",
+                  "ou",
+                  "jump_diffusion"
+                ],
+                "default": "gbm",
+                "title": "Process"
+              },
+              "process_params": {
+                "type": "object",
+                "additionalProperties": true,
+                "title": "Process Params"
+              },
+              "seed": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "default": null,
+                "title": "Seed"
+              }
+            },
+            "required": [
+              "process"
+            ]
+          },
+          "uiSchema": {
+            "fields": {
+              "process": {
+                "label": "Process",
+                "widget": "select",
+                "enumLabels": {
+                  "gbm": "Geometric Brownian Motion",
+                  "ou": "Ornstein\u2013Uhlenbeck",
+                  "jump_diffusion": "Jump Diffusion"
+                },
+                "order": 1
+              },
+              "process_params": {
+                "label": "Process Parameters",
+                "widget": "json",
+                "order": 2
+              },
+              "seed": {
+                "label": "Seed",
+                "widget": "number",
+                "level": "advanced",
+                "order": 3
+              }
+            }
+          },
+          "defaults": {
+            "process": "gbm",
+            "process_params": {}
+          }
+        }
+      ]
+    },
+    {
+      "key": "reg-exec",
+      "label": "Execution",
+      "description": "",
+      "order": 7,
+      "entities": [
+        {
+          "category": "execution_models",
+          "type": "batch",
+          "label": "Batch",
+          "description": "Composable with queue visibility and admission policies. Supports custom ordering and cost models.",
+          "builderSupported": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "cost_token": {
+                "type": "string",
+                "default": "COLLATERAL",
+                "title": "Cost Token"
+              },
+              "refund_failed_costs": {
+                "type": "boolean",
+                "default": false,
+                "title": "Refund Failed Costs"
+              }
+            }
+          },
+          "uiSchema": {
+            "fields": {
+              "cost_token": {
+                "label": "Cost Token",
+                "widget": "text",
+                "order": 1
+              },
+              "refund_failed_costs": {
+                "label": "Refund Failed Costs",
+                "widget": "switch",
+                "order": 2
+              }
+            }
+          },
+          "defaults": {
+            "cost_token": "COLLATERAL",
+            "refund_failed_costs": false
+          }
+        },
+        {
+          "category": "execution_models",
+          "type": "direct",
+          "label": "Direct",
+          "description": "Network-neutral default. FIFO ordering, zero cost, no queue visibility. Suitable for protocol-level analysis without network effects.",
+          "badges": [
+            {
+              "label": "Default",
+              "variant": "green"
+            }
+          ],
+          "builderSupported": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "cost_token": {
+                "type": "string",
+                "default": "COLLATERAL",
+                "title": "Cost Token"
+              },
+              "expose_pending_actions": {
+                "type": "boolean",
+                "default": false,
+                "title": "Expose Pending Actions"
+              },
+              "refund_failed_costs": {
+                "type": "boolean",
+                "default": false,
+                "title": "Refund Failed Costs"
+              }
+            }
+          },
+          "uiSchema": {
+            "fields": {
+              "cost_token": {
+                "label": "Cost Token",
+                "widget": "text",
+                "order": 1
+              },
+              "expose_pending_actions": {
+                "label": "Expose Pending Actions",
+                "widget": "switch",
+                "order": 2
+              },
+              "refund_failed_costs": {
+                "label": "Refund Failed Costs",
+                "widget": "switch",
+                "order": 3
+              }
+            }
+          },
+          "defaults": {
+            "cost_token": "COLLATERAL",
+            "expose_pending_actions": false,
+            "refund_failed_costs": false
+          }
+        },
+        {
+          "category": "execution_models",
+          "type": "ethereum_like",
+          "label": "Ethereum-like",
+          "description": "Public mempool, priority ordering by gas tip, EIP-1559 costs. Full MEV simulation support.",
+          "badges": [
+            {
+              "label": "Priority + EIP-1559",
+              "variant": "blue"
+            }
+          ],
+          "builderSupported": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "cost_token": {
+                "type": "string",
+                "default": "COLLATERAL",
+                "title": "Cost Token"
+              },
+              "public_mempool": {
+                "type": "boolean",
+                "default": true,
+                "title": "Public Mempool"
+              }
+            }
+          },
+          "uiSchema": {
+            "fields": {
+              "cost_token": {
+                "label": "Cost Token",
+                "widget": "text",
+                "order": 1
+              },
+              "public_mempool": {
+                "label": "Public Mempool",
+                "widget": "switch",
+                "order": 2
+              }
+            }
+          },
+          "defaults": {
+            "cost_token": "COLLATERAL",
+            "public_mempool": true
+          }
+        },
+        {
+          "category": "execution_models",
+          "type": "solana_like",
+          "label": "Solana-like",
+          "description": "Compute-unit pricing with priority fees and fast finality. Solana mainnet fee model.",
+          "badges": [
+            {
+              "label": "Compute Unit",
+              "variant": "purple"
+            }
+          ],
+          "builderSupported": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "cost_token": {
+                "type": "string",
+                "default": "COLLATERAL",
+                "title": "Cost Token"
+              },
+              "visible_roles": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "title": "Visible Roles"
+              }
+            }
+          },
+          "uiSchema": {
+            "fields": {
+              "cost_token": {
+                "label": "Cost Token",
+                "widget": "text",
+                "order": 1
+              },
+              "visible_roles": {
+                "label": "Visible Roles",
+                "widget": "token-list",
+                "order": 2
+              }
+            }
+          },
+          "defaults": {
+            "cost_token": "COLLATERAL",
+            "visible_roles": []
+          }
+        }
+      ]
+    },
+    {
+      "key": "reg-information",
+      "label": "Information",
+      "description": "",
+      "order": 8,
+      "entities": [
+        {
+          "category": "information_filters",
+          "type": "delayed_information",
+          "label": "Delayed Information",
+          "description": "Agents receive state with configurable round delay. Models stale book feeds.",
+          "builderSupported": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "delays": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "title": "Delays"
+              }
+            }
+          },
+          "uiSchema": {
+            "fields": {
+              "delays": {
+                "label": "Delays (per token)",
+                "widget": "json"
+              }
+            }
+          },
+          "defaults": {
+            "delays": {}
+          }
+        },
+        {
+          "category": "information_filters",
+          "type": "full_transparency",
+          "label": "Full Transparency",
+          "description": "Agents see complete market state. Default for simulations without information asymmetry.",
+          "badges": [
+            {
+              "label": "Default",
+              "variant": "green"
+            }
+          ],
+          "builderSupported": true,
+          "schema": {
+            "type": "object",
+            "properties": {}
+          },
+          "uiSchema": {},
+          "defaults": {}
+        }
+      ]
+    }
+  ]
+}

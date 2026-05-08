@@ -1,0 +1,47 @@
+{
+  "run_id": "1d7cb9f60f07",
+  "spec": {
+    "market": {
+      "type": "cfamm",
+      "tokens": [
+        {
+          "id": "YES",
+          "symbol": "YES",
+          "decimals": 9
+        },
+        {
+          "id": "NO",
+          "symbol": "NO",
+          "decimals": 9
+        }
+      ],
+      "params": {
+        "initial_liquidity": 1000000,
+        "collateral_token": "COLLATERAL"
+      }
+    },
+    "agents": [
+      {
+        "type": "noise",
+        "agent_id": "noise-1",
+        "params": {
+          "collateral": "COLLATERAL",
+          "frequency": 0
+        },
+        "initial_balances": {
+          "COLLATERAL": 1000000000
+        },
+        "initial_cumulative_volume": 0,
+        "initial_realized_pnl": 0
+      }
+    ],
+    "num_rounds": 5,
+    "snapshot_interval": 1,
+    "seed": 42,
+    "retain_snapshots": true,
+    "numeric_mode": "fixed",
+    "feeds": [],
+    "parameters": {},
+    "metadata": {}
+  }
+}

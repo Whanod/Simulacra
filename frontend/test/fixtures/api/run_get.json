@@ -1,0 +1,100 @@
+{
+  "run_id": "1d7cb9f60f07",
+  "simulation_id": "1d7cb9f60f07",
+  "source": "sync",
+  "source_run_id": null,
+  "source_snapshot_id": null,
+  "status": "completed",
+  "seed": 42,
+  "market_type": "cfamm",
+  "current_round": 5,
+  "created_at": "2026-04-12T10:11:05.983633+00:00",
+  "updated_at": "2026-04-12T10:11:05.984394+00:00",
+  "summary": {
+    "market_type": "cfamm",
+    "seed": 42,
+    "status": "completed",
+    "current_round": 5,
+    "event_count": 17,
+    "available_rounds": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "agent_count": 1,
+    "num_rounds": 5,
+    "num_rounds_executed": 5,
+    "stopped_early": false,
+    "cancelled": false,
+    "stop_reason": null,
+    "price_points": 5,
+    "final_agent_ids": [
+      "noise-1"
+    ],
+    "price_summary": {
+      "YES": {
+        "start": 499998895,
+        "end": 499998895,
+        "delta": 0
+      },
+      "NO": {
+        "start": 499998895,
+        "end": 499998895,
+        "delta": 0
+      }
+    },
+    "agent_summary": {
+      "noise-1": {
+        "cumulative_volume": 0,
+        "realized_pnl": 0,
+        "balance_total": 1000000000
+      }
+    }
+  },
+  "spec": {
+    "market": {
+      "type": "cfamm",
+      "tokens": [
+        {
+          "id": "YES",
+          "symbol": "YES",
+          "decimals": 9
+        },
+        {
+          "id": "NO",
+          "symbol": "NO",
+          "decimals": 9
+        }
+      ],
+      "params": {
+        "initial_liquidity": 1000000,
+        "collateral_token": "COLLATERAL"
+      }
+    },
+    "agents": [
+      {
+        "type": "noise",
+        "agent_id": "noise-1",
+        "params": {
+          "collateral": "COLLATERAL",
+          "frequency": 0
+        },
+        "initial_balances": {
+          "COLLATERAL": 1000000000
+        },
+        "initial_cumulative_volume": 0,
+        "initial_realized_pnl": 0
+      }
+    ],
+    "num_rounds": 5,
+    "snapshot_interval": 1,
+    "seed": 42,
+    "retain_snapshots": true,
+    "numeric_mode": "fixed",
+    "feeds": [],
+    "parameters": {},
+    "metadata": {}
+  }
+}

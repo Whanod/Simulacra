@@ -1,0 +1,541 @@
+{
+  "run_id": "1d7cb9f60f07",
+  "events": [
+    {
+      "event_id": 1,
+      "run_id": "1d7cb9f60f07",
+      "type": "SIMULATION_START",
+      "round": 0,
+      "timestamp": 0,
+      "data": {
+        "market": {
+          "num_assets": 2,
+          "tokens": [
+            "YES",
+            "NO"
+          ],
+          "reserves": {
+            "YES": 292894,
+            "NO": 292894
+          },
+          "prices": {
+            "YES": 499998895,
+            "NO": 499998895
+          },
+          "total_liquidity": 1000000,
+          "invariant": 999997790472
+        },
+        "all_markets": null,
+        "num_rounds": 5,
+        "agents": [
+          "noise-1"
+        ],
+        "run_id": "1d7cb9f60f07"
+      }
+    },
+    {
+      "event_id": 2,
+      "run_id": "1d7cb9f60f07",
+      "type": "EPOCH_BOUNDARY",
+      "round": 1,
+      "timestamp": 1,
+      "data": {
+        "epoch": 1,
+        "prev_epoch": 0,
+        "run_id": "1d7cb9f60f07"
+      }
+    },
+    {
+      "event_id": 3,
+      "run_id": "1d7cb9f60f07",
+      "type": "ROUND_START",
+      "round": 1,
+      "timestamp": 1,
+      "data": {
+        "epoch": 1,
+        "run_id": "1d7cb9f60f07"
+      }
+    },
+    {
+      "event_id": 4,
+      "run_id": "1d7cb9f60f07",
+      "type": "ROUND_END",
+      "round": 1,
+      "timestamp": 1,
+      "data": {
+        "market_state": {
+          "num_assets": 2,
+          "tokens": [
+            "YES",
+            "NO"
+          ],
+          "reserves": {
+            "YES": 292894,
+            "NO": 292894
+          },
+          "prices": {
+            "YES": 499998895,
+            "NO": 499998895
+          },
+          "total_liquidity": 1000000,
+          "invariant": 999997790472
+        },
+        "all_market_states": null,
+        "run_id": "1d7cb9f60f07"
+      }
+    },
+    {
+      "event_id": 5,
+      "run_id": "1d7cb9f60f07",
+      "type": "EPOCH_BOUNDARY",
+      "round": 2,
+      "timestamp": 2,
+      "data": {
+        "epoch": 2,
+        "prev_epoch": 1,
+        "run_id": "1d7cb9f60f07"
+      }
+    },
+    {
+      "event_id": 6,
+      "run_id": "1d7cb9f60f07",
+      "type": "ROUND_START",
+      "round": 2,
+      "timestamp": 2,
+      "data": {
+        "epoch": 2,
+        "run_id": "1d7cb9f60f07"
+      }
+    },
+    {
+      "event_id": 7,
+      "run_id": "1d7cb9f60f07",
+      "type": "ROUND_END",
+      "round": 2,
+      "timestamp": 2,
+      "data": {
+        "market_state": {
+          "num_assets": 2,
+          "tokens": [
+            "YES",
+            "NO"
+          ],
+          "reserves": {
+            "YES": 292894,
+            "NO": 292894
+          },
+          "prices": {
+            "YES": 499998895,
+            "NO": 499998895
+          },
+          "total_liquidity": 1000000,
+          "invariant": 999997790472
+        },
+        "all_market_states": null,
+        "run_id": "1d7cb9f60f07"
+      }
+    },
+    {
+      "event_id": 8,
+      "run_id": "1d7cb9f60f07",
+      "type": "EPOCH_BOUNDARY",
+      "round": 3,
+      "timestamp": 3,
+      "data": {
+        "epoch": 3,
+        "prev_epoch": 2,
+        "run_id": "1d7cb9f60f07"
+      }
+    },
+    {
+      "event_id": 9,
+      "run_id": "1d7cb9f60f07",
+      "type": "ROUND_START",
+      "round": 3,
+      "timestamp": 3,
+      "data": {
+        "epoch": 3,
+        "run_id": "1d7cb9f60f07"
+      }
+    },
+    {
+      "event_id": 10,
+      "run_id": "1d7cb9f60f07",
+      "type": "ROUND_END",
+      "round": 3,
+      "timestamp": 3,
+      "data": {
+        "market_state": {
+          "num_assets": 2,
+          "tokens": [
+            "YES",
+            "NO"
+          ],
+          "reserves": {
+            "YES": 292894,
+            "NO": 292894
+          },
+          "prices": {
+            "YES": 499998895,
+            "NO": 499998895
+          },
+          "total_liquidity": 1000000,
+          "invariant": 999997790472
+        },
+        "all_market_states": null,
+        "run_id": "1d7cb9f60f07"
+      }
+    },
+    {
+      "event_id": 11,
+      "run_id": "1d7cb9f60f07",
+      "type": "EPOCH_BOUNDARY",
+      "round": 4,
+      "timestamp": 4,
+      "data": {
+        "epoch": 4,
+        "prev_epoch": 3,
+        "run_id": "1d7cb9f60f07"
+      }
+    },
+    {
+      "event_id": 12,
+      "run_id": "1d7cb9f60f07",
+      "type": "ROUND_START",
+      "round": 4,
+      "timestamp": 4,
+      "data": {
+        "epoch": 4,
+        "run_id": "1d7cb9f60f07"
+      }
+    },
+    {
+      "event_id": 13,
+      "run_id": "1d7cb9f60f07",
+      "type": "ROUND_END",
+      "round": 4,
+      "timestamp": 4,
+      "data": {
+        "market_state": {
+          "num_assets": 2,
+          "tokens": [
+            "YES",
+            "NO"
+          ],
+          "reserves": {
+            "YES": 292894,
+            "NO": 292894
+          },
+          "prices": {
+            "YES": 499998895,
+            "NO": 499998895
+          },
+          "total_liquidity": 1000000,
+          "invariant": 999997790472
+        },
+        "all_market_states": null,
+        "run_id": "1d7cb9f60f07"
+      }
+    },
+    {
+      "event_id": 14,
+      "run_id": "1d7cb9f60f07",
+      "type": "EPOCH_BOUNDARY",
+      "round": 5,
+      "timestamp": 5,
+      "data": {
+        "epoch": 5,
+        "prev_epoch": 4,
+        "run_id": "1d7cb9f60f07"
+      }
+    },
+    {
+      "event_id": 15,
+      "run_id": "1d7cb9f60f07",
+      "type": "ROUND_START",
+      "round": 5,
+      "timestamp": 5,
+      "data": {
+        "epoch": 5,
+        "run_id": "1d7cb9f60f07"
+      }
+    },
+    {
+      "event_id": 16,
+      "run_id": "1d7cb9f60f07",
+      "type": "ROUND_END",
+      "round": 5,
+      "timestamp": 5,
+      "data": {
+        "market_state": {
+          "num_assets": 2,
+          "tokens": [
+            "YES",
+            "NO"
+          ],
+          "reserves": {
+            "YES": 292894,
+            "NO": 292894
+          },
+          "prices": {
+            "YES": 499998895,
+            "NO": 499998895
+          },
+          "total_liquidity": 1000000,
+          "invariant": 999997790472
+        },
+        "all_market_states": null,
+        "run_id": "1d7cb9f60f07"
+      }
+    },
+    {
+      "event_id": 17,
+      "run_id": "1d7cb9f60f07",
+      "type": "SIMULATION_END",
+      "round": 5,
+      "timestamp": 5,
+      "data": {
+        "result": {
+          "price_history": [
+            {
+              "YES": 499998895,
+              "NO": 499998895
+            },
+            {
+              "YES": 499998895,
+              "NO": 499998895
+            },
+            {
+              "YES": 499998895,
+              "NO": 499998895
+            },
+            {
+              "YES": 499998895,
+              "NO": 499998895
+            },
+            {
+              "YES": 499998895,
+              "NO": 499998895
+            }
+          ],
+          "agent_final_states": {
+            "noise-1": {
+              "agent_id": "noise-1",
+              "role": {
+                "name": "noise",
+                "tags": []
+              },
+              "balances": {
+                "COLLATERAL": 1000000000
+              },
+              "cumulative_volume": 0,
+              "realized_pnl": 0
+            }
+          },
+          "round_snapshots": [
+            {
+              "round": 1,
+              "timestamp": 1,
+              "epoch": 1,
+              "agent_states": {
+                "noise-1": {
+                  "agent_id": "noise-1",
+                  "role": {
+                    "name": "noise",
+                    "tags": []
+                  },
+                  "balances": {
+                    "COLLATERAL": 1000000000
+                  },
+                  "cumulative_volume": 0,
+                  "realized_pnl": 0
+                }
+              },
+              "market_state": {
+                "num_assets": 2,
+                "tokens": [
+                  "YES",
+                  "NO"
+                ],
+                "reserves": {
+                  "YES": 292894,
+                  "NO": 292894
+                },
+                "prices": {
+                  "YES": 499998895,
+                  "NO": 499998895
+                },
+                "total_liquidity": 1000000,
+                "invariant": 999997790472
+              },
+              "all_market_states": null
+            },
+            {
+              "round": 2,
+              "timestamp": 2,
+              "epoch": 2,
+              "agent_states": {
+                "noise-1": {
+                  "agent_id": "noise-1",
+                  "role": {
+                    "name": "noise",
+                    "tags": []
+                  },
+                  "balances": {
+                    "COLLATERAL": 1000000000
+                  },
+                  "cumulative_volume": 0,
+                  "realized_pnl": 0
+                }
+              },
+              "market_state": {
+                "num_assets": 2,
+                "tokens": [
+                  "YES",
+                  "NO"
+                ],
+                "reserves": {
+                  "YES": 292894,
+                  "NO": 292894
+                },
+                "prices": {
+                  "YES": 499998895,
+                  "NO": 499998895
+                },
+                "total_liquidity": 1000000,
+                "invariant": 999997790472
+              },
+              "all_market_states": null
+            },
+            {
+              "round": 3,
+              "timestamp": 3,
+              "epoch": 3,
+              "agent_states": {
+                "noise-1": {
+                  "agent_id": "noise-1",
+                  "role": {
+                    "name": "noise",
+                    "tags": []
+                  },
+                  "balances": {
+                    "COLLATERAL": 1000000000
+                  },
+                  "cumulative_volume": 0,
+                  "realized_pnl": 0
+                }
+              },
+              "market_state": {
+                "num_assets": 2,
+                "tokens": [
+                  "YES",
+                  "NO"
+                ],
+                "reserves": {
+                  "YES": 292894,
+                  "NO": 292894
+                },
+                "prices": {
+                  "YES": 499998895,
+                  "NO": 499998895
+                },
+                "total_liquidity": 1000000,
+                "invariant": 999997790472
+              },
+              "all_market_states": null
+            },
+            {
+              "round": 4,
+              "timestamp": 4,
+              "epoch": 4,
+              "agent_states": {
+                "noise-1": {
+                  "agent_id": "noise-1",
+                  "role": {
+                    "name": "noise",
+                    "tags": []
+                  },
+                  "balances": {
+                    "COLLATERAL": 1000000000
+                  },
+                  "cumulative_volume": 0,
+                  "realized_pnl": 0
+                }
+              },
+              "market_state": {
+                "num_assets": 2,
+                "tokens": [
+                  "YES",
+                  "NO"
+                ],
+                "reserves": {
+                  "YES": 292894,
+                  "NO": 292894
+                },
+                "prices": {
+                  "YES": 499998895,
+                  "NO": 499998895
+                },
+                "total_liquidity": 1000000,
+                "invariant": 999997790472
+              },
+              "all_market_states": null
+            },
+            {
+              "round": 5,
+              "timestamp": 5,
+              "epoch": 5,
+              "agent_states": {
+                "noise-1": {
+                  "agent_id": "noise-1",
+                  "role": {
+                    "name": "noise",
+                    "tags": []
+                  },
+                  "balances": {
+                    "COLLATERAL": 1000000000
+                  },
+                  "cumulative_volume": 0,
+                  "realized_pnl": 0
+                }
+              },
+              "market_state": {
+                "num_assets": 2,
+                "tokens": [
+                  "YES",
+                  "NO"
+                ],
+                "reserves": {
+                  "YES": 292894,
+                  "NO": 292894
+                },
+                "prices": {
+                  "YES": 499998895,
+                  "NO": 499998895
+                },
+                "total_liquidity": 1000000,
+                "invariant": 999997790472
+              },
+              "all_market_states": null
+            }
+          ],
+          "num_rounds": 5,
+          "num_rounds_executed": 5,
+          "seed": 42,
+          "stopped_early": false,
+          "cancelled": false,
+          "stop_reason": null,
+          "metadata": {
+            "fee_destination_balances": {},
+            "parameter_state": {
+              "params": {},
+              "pending": [],
+              "history": []
+            }
+          }
+        },
+        "run_id": "1d7cb9f60f07"
+      }
+    }
+  ]
+}

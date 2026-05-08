@@ -1,0 +1,33 @@
+{
+  "top_configurations": [
+    {
+      "num_rounds": 4,
+      "snapshot_interval": 1,
+      "doubled": 4,
+      "rounds": 4,
+      "rounds_norm": 1,
+      "composite_score": 1
+    },
+    {
+      "num_rounds": 4,
+      "snapshot_interval": 2,
+      "doubled": 4,
+      "rounds": 4,
+      "rounds_norm": 1,
+      "composite_score": 1
+    },
+    {
+      "num_rounds": 3,
+      "snapshot_interval": 1,
+      "doubled": 3,
+      "rounds": 3,
+      "rounds_norm": 0.5,
+      "composite_score": 0.5
+    }
+  ],
+  "rejected_configurations": [],
+  "next_experiment": {
+    "focus_parameter": "snapshot_interval",
+    "rationale": "highest observed sensitivity gap across objective metrics"
+  }
+}

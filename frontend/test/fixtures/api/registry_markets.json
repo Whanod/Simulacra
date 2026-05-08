@@ -1,0 +1,108 @@
+{
+  "key": "reg-markets",
+  "label": "Markets",
+  "description": "",
+  "order": 0,
+  "entities": [
+    {
+      "category": "markets",
+      "type": "cfamm",
+      "label": "Constant Function AMM",
+      "description": "L\u00b2-norm constant-function AMM with LP position tracking and multi-asset support.",
+      "badges": [
+        {
+          "label": "PricedMarket",
+          "variant": "blue"
+        },
+        {
+          "label": "LiquidityPool",
+          "variant": "purple"
+        }
+      ],
+      "builderSupported": true,
+      "schema": {
+        "type": "object",
+        "properties": {
+          "initial_liquidity": {
+            "type": "number",
+            "minimum": 0,
+            "default": 1000000,
+            "title": "Initial Liquidity"
+          },
+          "collateral_token": {
+            "type": "string",
+            "default": "COLLATERAL",
+            "title": "Collateral Token"
+          }
+        },
+        "required": [
+          "initial_liquidity"
+        ]
+      },
+      "uiSchema": {
+        "fields": {
+          "initial_liquidity": {
+            "label": "Initial Liquidity",
+            "widget": "number",
+            "min": 0,
+            "order": 1
+          },
+          "collateral_token": {
+            "label": "Collateral Token",
+            "widget": "text",
+            "order": 2,
+            "level": "advanced"
+          }
+        }
+      },
+      "defaults": {
+        "initial_liquidity": 1000000,
+        "collateral_token": "COLLATERAL"
+      }
+    },
+    {
+      "category": "markets",
+      "type": "clob",
+      "label": "Central Limit Order Book",
+      "description": "Central limit order book with price-time priority matching and per-pair books.",
+      "badges": [
+        {
+          "label": "PricedMarket",
+          "variant": "blue"
+        },
+        {
+          "label": "OrderBook",
+          "variant": "green"
+        }
+      ],
+      "builderSupported": true,
+      "schema": {
+        "type": "object",
+        "properties": {}
+      },
+      "uiSchema": {},
+      "defaults": {}
+    },
+    {
+      "category": "markets",
+      "type": "world",
+      "label": "Composite World Market",
+      "description": "Composite world market \u2014 run multiple markets in one simulation with cross-market agents.",
+      "badges": [
+        {
+          "label": "Composite",
+          "variant": "yellow"
+        }
+      ],
+      "builderSupported": true,
+      "schema": {
+        "type": "object",
+        "properties": {}
+      },
+      "uiSchema": {
+        "specialEditor": "world-markets-graph"
+      },
+      "defaults": {}
+    }
+  ]
+}

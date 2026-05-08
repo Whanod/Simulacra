@@ -1,0 +1,152 @@
+{
+  "sweep_id": "b8268238354d",
+  "data": [
+    {
+      "num_rounds": 2,
+      "snapshot_interval": 1,
+      "seed": 1,
+      "status": "completed",
+      "num_rounds_executed": 2,
+      "stopped_early": false,
+      "cancelled": false,
+      "rounds": 2,
+      "doubled": 2
+    },
+    {
+      "num_rounds": 2,
+      "snapshot_interval": 1,
+      "seed": 2,
+      "status": "completed",
+      "num_rounds_executed": 2,
+      "stopped_early": false,
+      "cancelled": false,
+      "rounds": 2,
+      "doubled": 2
+    },
+    {
+      "num_rounds": 2,
+      "snapshot_interval": 2,
+      "seed": 1,
+      "status": "completed",
+      "num_rounds_executed": 2,
+      "stopped_early": false,
+      "cancelled": false,
+      "rounds": 2,
+      "doubled": 2
+    },
+    {
+      "num_rounds": 2,
+      "snapshot_interval": 2,
+      "seed": 2,
+      "status": "completed",
+      "num_rounds_executed": 2,
+      "stopped_early": false,
+      "cancelled": false,
+      "rounds": 2,
+      "doubled": 2
+    },
+    {
+      "num_rounds": 3,
+      "snapshot_interval": 1,
+      "seed": 1,
+      "status": "completed",
+      "num_rounds_executed": 3,
+      "stopped_early": false,
+      "cancelled": false,
+      "rounds": 3,
+      "doubled": 3
+    },
+    {
+      "num_rounds": 3,
+      "snapshot_interval": 1,
+      "seed": 2,
+      "status": "completed",
+      "num_rounds_executed": 3,
+      "stopped_early": false,
+      "cancelled": false,
+      "rounds": 3,
+      "doubled": 3
+    },
+    {
+      "num_rounds": 3,
+      "snapshot_interval": 2,
+      "seed": 1,
+      "status": "completed",
+      "num_rounds_executed": 3,
+      "stopped_early": false,
+      "cancelled": false,
+      "rounds": 3,
+      "doubled": 3
+    },
+    {
+      "num_rounds": 3,
+      "snapshot_interval": 2,
+      "seed": 2,
+      "status": "completed",
+      "num_rounds_executed": 3,
+      "stopped_early": false,
+      "cancelled": false,
+      "rounds": 3,
+      "doubled": 3
+    },
+    {
+      "num_rounds": 4,
+      "snapshot_interval": 1,
+      "seed": 1,
+      "status": "completed",
+      "num_rounds_executed": 4,
+      "stopped_early": false,
+      "cancelled": false,
+      "rounds": 4,
+      "doubled": 4
+    },
+    {
+      "num_rounds": 4,
+      "snapshot_interval": 1,
+      "seed": 2,
+      "status": "completed",
+      "num_rounds_executed": 4,
+      "stopped_early": false,
+      "cancelled": false,
+      "rounds": 4,
+      "doubled": 4
+    },
+    {
+      "num_rounds": 4,
+      "snapshot_interval": 2,
+      "seed": 1,
+      "status": "completed",
+      "num_rounds_executed": 4,
+      "stopped_early": false,
+      "cancelled": false,
+      "rounds": 4,
+      "doubled": 4
+    },
+    {
+      "num_rounds": 4,
+      "snapshot_interval": 2,
+      "seed": 2,
+      "status": "completed",
+      "num_rounds_executed": 4,
+      "stopped_early": false,
+      "cancelled": false,
+      "rounds": 4,
+      "doubled": 4
+    }
+  ],
+  "summary": {
+    "row_count": 12,
+    "metric_names": [
+      "doubled",
+      "rounds"
+    ],
+    "param_names": [
+      "num_rounds",
+      "snapshot_interval"
+    ],
+    "seeds": [
+      1,
+      2
+    ]
+  }
+}
