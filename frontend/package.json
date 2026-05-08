@@ -1,0 +1,36 @@
+{
+  "name": "defi-sim-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "dev:api": "cd .. && ./.venv/bin/uvicorn defi_sim_api.main:app --host 127.0.0.1 --port 8000 --reload",
+    "dev:stack": "sh -c 'trap \"kill 0\" EXIT INT TERM; pnpm dev:api & pnpm dev'",
+    "build": "next build",
+    "start": "next start",
+    "test": "vitest run src",
+    "test:watch": "vitest",
+    "test:int": "vitest run test/integration",
+    "test:e2e": "playwright test",
+    "test:all": "vitest run && playwright test",
+    "capture:fixtures": "bun run scripts/capture-fixtures.ts"
+  },
+  "dependencies": {
+    "@solana/wallet-adapter-react": "^0.15.39",
+    "@solana/web3.js": "^1.98.4",
+    "next": "^15.3.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@noble/curves": "^1.9.7",
+    "@playwright/test": "^1.59.1",
+    "@types/node": "^22.15.2",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitest/ui": "^4.1.4",
+    "jsdom": "^29.0.2",
+    "typescript": "^5.8.3",
+    "vitest": "^4.1.4"
+  }
+}
