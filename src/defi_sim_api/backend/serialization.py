@@ -156,7 +156,9 @@ def agent_summary(result: dict[str, Any] | None) -> dict[str, Any]:
                 balance_total += float(value)
         summary[str(agent_id)] = {
             "cumulative_volume": state.get("cumulative_volume"),
+            "cumulative_volume_quote": state.get("cumulative_volume_quote"),
             "realized_pnl": state.get("realized_pnl"),
+            "unrealized_pnl": state.get("unrealized_pnl"),
             "balance_total": balance_total,
         }
     return summary

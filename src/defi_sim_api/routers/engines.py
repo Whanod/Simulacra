@@ -166,6 +166,7 @@ def get_all_agent_states(simulation_id: str) -> schemas.AllAgentStatesResponse:
             agent_id=s.agent_id,
             balances=to_jsonable(s.balances, include_type_tags=False),
             cumulative_volume=s.cumulative_volume,
+            cumulative_volume_quote=s.cumulative_volume_quote,
             realized_pnl=s.realized_pnl,
         )
     return schemas.AllAgentStatesResponse(simulation_id=simulation_id, agents=agents)
@@ -185,6 +186,7 @@ def get_agent_state(simulation_id: str, agent_id: str) -> schemas.AgentStateResp
                 agent_id=s.agent_id,
                 balances=to_jsonable(s.balances, include_type_tags=False),
                 cumulative_volume=s.cumulative_volume,
+                cumulative_volume_quote=s.cumulative_volume_quote,
                 realized_pnl=s.realized_pnl,
             )
     raise HTTPException(

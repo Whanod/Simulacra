@@ -173,6 +173,12 @@ class _WhirlpoolPosition:
     sqrt_price_x64_at_mint: int = 0
     in_range_rounds: int = 0
     total_rounds: int = 0
+    # Cumulative quote-leg (token_b) value of every deposit into this
+    # position, marked at the spot at deposit time. Realized PnL on
+    # withdraw is ``withdraw_value_in_b - cost_basis_b``; while open,
+    # ``position_value_in_b - cost_basis_b`` is the agent's unrealized
+    # PnL contribution.
+    cost_basis_b: int = 0
 
 
 @dataclass
@@ -410,6 +416,7 @@ class WhirlpoolMarket(Market, PricedMarket, LiquidityPool):
                         "sqrt_price_x64_at_mint": pos.sqrt_price_x64_at_mint,
                         "in_range_rounds": pos.in_range_rounds,
                         "total_rounds": pos.total_rounds,
+                        "cost_basis_b": pos.cost_basis_b,
                     }
                     for pos in self._positions.values()
                 ],
@@ -440,6 +447,22 @@ class WhirlpoolMarket(Market, PricedMarket, LiquidityPool):
         )
         market._accumulated_fees = d.get("accumulated_fees", 0)
         for raw in d.get("positions", []) or []:
+            sqrt_at_mint = int(raw["sqrt_price_x64_at_mint"])
+            deposited_a_raw = int(raw["deposited_a"])
+            deposited_b_raw = int(raw["deposited_b"])
+            cost_basis_raw = raw.get("cost_basis_b")
+            if cost_basis_raw is None:
+                # Legacy snapshot predating cost-basis tracking. Estimate
+                # from the at-mint spot stored alongside the position so
+                # a future withdraw books PnL = withdraw_value - deposit
+                # _value rather than the full notional. Exact for single
+                # -deposit positions; an approximation for multi-deposit
+                # ones (since per-tranche spots aren't preserved).
+                cost_basis_b = deposited_b_raw + (
+                    deposited_a_raw * sqrt_at_mint * sqrt_at_mint
+                ) // (1 << 128)
+            else:
+                cost_basis_b = int(cost_basis_raw)
             pos = _WhirlpoolPosition(
                 agent_id=raw["agent_id"],
                 position_id=raw["position_id"],
@@ -452,11 +475,12 @@ class WhirlpoolMarket(Market, PricedMarket, LiquidityPool):
                 fee_growth_inside_b_last_x64=int(raw["fee_growth_inside_b_last_x64"]),
                 accumulated_fees_a=int(raw["accumulated_fees_a"]),
                 accumulated_fees_b=int(raw["accumulated_fees_b"]),
-                deposited_a=int(raw["deposited_a"]),
-                deposited_b=int(raw["deposited_b"]),
-                sqrt_price_x64_at_mint=int(raw["sqrt_price_x64_at_mint"]),
+                deposited_a=deposited_a_raw,
+                deposited_b=deposited_b_raw,
+                sqrt_price_x64_at_mint=sqrt_at_mint,
                 in_range_rounds=int(raw.get("in_range_rounds", 0)),
                 total_rounds=int(raw.get("total_rounds", 0)),
+                cost_basis_b=cost_basis_b,
             )
             market._positions[(pos.agent_id, pos.position_id)] = pos
         return market
@@ -583,6 +607,12 @@ class WhirlpoolMarket(Market, PricedMarket, LiquidityPool):
 
         pid = position_id or str(agent_id)
         key = (agent_id, pid)
+        # Mark the deposit at current spot so we can attribute realized
+        # PnL on withdraw as ``withdraw_value - cost_basis``. ``a_in_b``
+        # uses the same Q64.64 conversion as ``quote_pnl``.
+        deposit_value_b = int(delta_b) + (
+            int(delta_a) * int(sqrt_current) * int(sqrt_current)
+        ) // (1 << 128)
         existing = self._positions.get(key)
         if existing is not None:
             # Add to existing position. Collect any pending fees first,
@@ -591,6 +621,7 @@ class WhirlpoolMarket(Market, PricedMarket, LiquidityPool):
             existing.liquidity += liquidity
             existing.deposited_a += delta_a
             existing.deposited_b += delta_b
+            existing.cost_basis_b += deposit_value_b
             existing.fee_growth_inside_a_last_x64 = fg_inside_a
             existing.fee_growth_inside_b_last_x64 = fg_inside_b
         else:
@@ -607,6 +638,7 @@ class WhirlpoolMarket(Market, PricedMarket, LiquidityPool):
                 deposited_a=delta_a,
                 deposited_b=delta_b,
                 sqrt_price_x64_at_mint=sqrt_current,
+                cost_basis_b=deposit_value_b,
             )
 
         # Vault accounting: pool gains the deposited tokens; agent loses
@@ -620,6 +652,9 @@ class WhirlpoolMarket(Market, PricedMarket, LiquidityPool):
                 self._token_a.id: -delta_a,
                 self._token_b.id: -delta_b,
             },
+            volume=0,
+            is_lp_action=True,
+            lp_realized_pnl=0,
         )
 
     def withdraw_liquidity(
@@ -679,6 +714,15 @@ class WhirlpoolMarket(Market, PricedMarket, LiquidityPool):
         self._pool.token_vault_a_amount -= return_a
         self._pool.token_vault_b_amount -= return_b
 
+        # Realized PnL on withdraw: value of returned tokens at current
+        # spot minus the cost basis recorded at deposit time. Captures
+        # fees earned + impermanent loss in a single number, in raw
+        # token_b units.
+        withdraw_value_b = int(return_b) + (
+            int(return_a) * int(sqrt_current) * int(sqrt_current)
+        ) // (1 << 128)
+        lp_realized_pnl = withdraw_value_b - int(position.cost_basis_b)
+
         # Drain the position.
         del self._positions[key]
 
@@ -689,6 +733,9 @@ class WhirlpoolMarket(Market, PricedMarket, LiquidityPool):
                 self._token_b.id: return_b,
             },
             fee_splits={"lp_fees_a": int(fees_a), "lp_fees_b": int(fees_b)},
+            volume=0,
+            is_lp_action=True,
+            lp_realized_pnl=lp_realized_pnl,
         )
 
     def get_lp_state(self) -> LPState:
@@ -1079,6 +1126,42 @@ class WhirlpoolMarket(Market, PricedMarket, LiquidityPool):
         a_in_b = (position.deposited_a * sqrt_curr * sqrt_curr) // (1 << 128)
         return int(position.deposited_b + a_in_b)
 
+    def _pending_fees_in_b(self, position: _WhirlpoolPosition) -> int:
+        """Quote-leg value of fees not yet collected into the position.
+
+        Read-only equivalent of ``_collect_fees_into_position`` — does
+        not mutate ``fee_growth_inside_*_last_x64``. Used by the
+        unrealized-PnL surface so a passive LP shows fees as they
+        accrue, not only at withdraw.
+        """
+        if position.liquidity <= 0:
+            return 0
+        fg_inside_a, fg_inside_b = self._fee_growth_inside(
+            position.tick_lower, position.tick_upper
+        )
+        delta_a = (fg_inside_a - position.fee_growth_inside_a_last_x64) & U128_MASK
+        delta_b = (fg_inside_b - position.fee_growth_inside_b_last_x64) & U128_MASK
+        pending_a = int(position.accumulated_fees_a) + ((delta_a * int(position.liquidity)) >> 64)
+        pending_b = int(position.accumulated_fees_b) + ((delta_b * int(position.liquidity)) >> 64)
+        sqrt_curr = int(self._pool.sqrt_price_x64)
+        return pending_b + (pending_a * sqrt_curr * sqrt_curr) // (1 << 128)
+
+    def agent_unrealized_pnl_in_b(self, agent_id: AgentId) -> int:
+        """Sum unrealized PnL across the agent's open positions, in raw token_b.
+
+        For each position: ``position_value_in_b + pending_fees_in_b -
+        cost_basis_b``. Returned in raw quote units (matches the
+        ``realized_pnl`` convention).
+        """
+        total = 0
+        for (pos_agent_id, _pid), position in self._positions.items():
+            if pos_agent_id != agent_id:
+                continue
+            current = self.position_value_in_b(position)
+            fees = self._pending_fees_in_b(position)
+            total += current + fees - int(position.cost_basis_b)
+        return total
+
     # --- Swap pipeline -------------------------------------------------
 
     def simulate_swap(
@@ -1468,6 +1551,10 @@ class WhirlpoolMarket(Market, PricedMarket, LiquidityPool):
             },
             fee_token=token_in,
             volume=amount_in_raw,
+            # Quote-side amount is always token B regardless of direction
+            # (A→B: ``amount_out``, B→A: ``amount_in``). Lets the engine
+            # accumulate per-agent volume in a single, scalable token.
+            volume_quote=int(outcome["amount_b"]),
         )
 
     # --- Forkable-market construction ---------------------------------

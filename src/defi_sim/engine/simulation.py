@@ -890,6 +890,7 @@ class SimulationEngine:
                 ))
 
         # Phase 7: OBSERVE & RECORD
+        self._refresh_lp_unrealized_pnl()
         snap = self._build_snapshot(round_num, ts, epoch)
         for agent in self._agents:
             agent.on_round_end(round_num, snap)
@@ -2583,11 +2584,24 @@ class SimulationEngine:
         market: Market | None = None,
     ) -> None:
         self._apply_balance_deltas(primary_agent, result.token_deltas)
-        volume = result.volume
-        if volume is None:
-            volume = sum(abs(delta) for delta in result.token_deltas.values())
+        # Markets must report ``volume`` explicitly in a single token's
+        # raw units (input-side for swaps, 0 for LP / non-trade ops).
+        # The previous ``sum(abs(delta))`` fallback summed mixed-decimal
+        # raw amounts (e.g. lamports + USDC raw) into one number, which
+        # both inflated cumulative_volume and double-counted both legs
+        # of every trade.
+        volume = result.volume if result.volume is not None else 0
         primary_agent.state.cumulative_volume += volume
-        primary_agent.state.realized_pnl += self._mark_pnl(market, result.token_deltas)
+        if result.volume_quote is not None:
+            primary_agent.state.cumulative_volume_quote += result.volume_quote
+        # LP deposits/withdrawals must not be marked-to-spot — that
+        # would book the deposit notional as a realized loss. The
+        # market reports ``lp_realized_pnl`` (0 on deposit, ``withdraw
+        # value − cost basis`` on withdraw) instead.
+        if result.is_lp_action:
+            primary_agent.state.realized_pnl += result.lp_realized_pnl
+        else:
+            primary_agent.state.realized_pnl += self._mark_pnl(market, result.token_deltas)
 
         for other_agent_id, deltas in result.other_agent_deltas.items():
             other_agent = self._find_agent(other_agent_id)
@@ -2596,6 +2610,11 @@ class SimulationEngine:
             self._apply_balance_deltas(other_agent, deltas)
             if other_agent_id in result.other_agent_volumes:
                 other_agent.state.cumulative_volume += result.other_agent_volumes[other_agent_id]
+            if other_agent_id in result.other_agent_volume_quotes:
+                other_agent.state.cumulative_volume_quote += result.other_agent_volume_quotes[other_agent_id]
+            # ``other_agent_deltas`` carry counterparty cashflows from
+            # swaps, not LP movements, so the standard mark-to-spot is
+            # the right attribution here.
             other_agent.state.realized_pnl += self._mark_pnl(market, deltas)
 
     @staticmethod
@@ -2621,6 +2640,31 @@ class SimulationEngine:
             return quote_pnl(deltas)
         except Exception:
             return 0
+
+    def _refresh_lp_unrealized_pnl(self) -> None:
+        """Refresh ``agent.state.unrealized_pnl`` from open LP positions.
+
+        Walks every market that exposes ``agent_unrealized_pnl_in_b``,
+        sums the per-agent contribution, and writes the total to the
+        agent state in raw quote units (matches ``realized_pnl``).
+        Markets without the method are skipped — float-mode markets
+        and non-LP markets stay at 0.
+        """
+        if self._is_world:
+            markets = list(self._market.markets.values())
+        else:
+            markets = [self._market]
+        for agent in self._agents:
+            total = 0
+            for market in markets:
+                fn = getattr(market, "agent_unrealized_pnl_in_b", None)
+                if not callable(fn):
+                    continue
+                try:
+                    total += int(fn(agent.agent_id))
+                except Exception:
+                    continue
+            agent.state.unrealized_pnl = total
 
     def _snapshot_agent_states(self) -> dict[AgentId, AgentState]:
         return {agent.agent_id: copy.deepcopy(agent.state) for agent in self._agents}
@@ -3080,7 +3124,9 @@ class SimulationEngine:
                     for token_id, balance in agent.state.balances.items()
                 }
                 agent.state.cumulative_volume = float(agent.state.cumulative_volume)
+                agent.state.cumulative_volume_quote = float(agent.state.cumulative_volume_quote)
                 agent.state.realized_pnl = float(agent.state.realized_pnl)
+                agent.state.unrealized_pnl = float(agent.state.unrealized_pnl)
         else:
             for agent in self._agents:
                 agent.state.balances = {
@@ -3088,7 +3134,9 @@ class SimulationEngine:
                     for token_id, balance in agent.state.balances.items()
                 }
                 agent.state.cumulative_volume = int(agent.state.cumulative_volume)
+                agent.state.cumulative_volume_quote = int(agent.state.cumulative_volume_quote)
                 agent.state.realized_pnl = int(agent.state.realized_pnl)
+                agent.state.unrealized_pnl = int(agent.state.unrealized_pnl)
 
     @staticmethod
     def _resolve_market_token(market: Market, attr_names: tuple[str, ...]) -> TokenId | None:

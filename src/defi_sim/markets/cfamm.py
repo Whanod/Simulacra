@@ -339,6 +339,7 @@ class CfammMarket(Market, PricedMarket, LiquidityPool):
         return ExecutionResult(
             success=True,
             token_deltas={collateral_token: -amt},
+            volume=0,
         )
 
     def withdraw_liquidity(
@@ -379,6 +380,7 @@ class CfammMarket(Market, PricedMarket, LiquidityPool):
         return ExecutionResult(
             success=True,
             token_deltas={collateral_token: amt},
+            volume=0,
         )
 
     def get_lp_state(self) -> LPState:
@@ -633,6 +635,7 @@ class CfammMarket(Market, PricedMarket, LiquidityPool):
                 fees_paid=fee_paid,
                 fee_splits=fee_splits,
                 fee_token=action.collateral,
+                volume=amt,
             )
         else:  # SELL
             # Check agent has tokens to sell
@@ -665,6 +668,7 @@ class CfammMarket(Market, PricedMarket, LiquidityPool):
                 fees_paid=fee_paid,
                 fee_splits=fee_splits,
                 fee_token=action.collateral,
+                volume=amt,
             )
 
     def _execute_swap(self, action: SwapAction, ctx: ExecutionContext) -> ExecutionResult:
@@ -788,6 +792,7 @@ class CfammMarket(Market, PricedMarket, LiquidityPool):
             fees_paid=sell_result.fees_paid + buy_result.fees_paid,
             fee_splits=merged_fee_splits,
             fee_token=collateral_token,
+            volume=action.amount_in,
         )
 
     def _execute_bundle(self, action: BundleAction, ctx: ExecutionContext) -> ExecutionResult:
@@ -826,6 +831,7 @@ class CfammMarket(Market, PricedMarket, LiquidityPool):
                 fees_paid=fee_paid,
                 fee_splits=fee_splits,
                 fee_token=action.collateral,
+                volume=amt,
             )
 
         scale = 1.0 if self._use_float else (self._tokens[0].scale if self._tokens else 10**9)
@@ -867,6 +873,7 @@ class CfammMarket(Market, PricedMarket, LiquidityPool):
             fees_paid=fee_paid,
             fee_splits=fee_splits,
             fee_token=action.collateral,
+            volume=amt,
         )
 
     def _execute_lp(self, action: LPAction, ctx: ExecutionContext) -> ExecutionResult:

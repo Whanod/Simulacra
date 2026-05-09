@@ -378,6 +378,7 @@ class AgentStateResponse(BaseModel):
     agent_id: str | int
     balances: dict[str, Any]
     cumulative_volume: int | float
+    cumulative_volume_quote: int | float = 0
     realized_pnl: int | float
 
 

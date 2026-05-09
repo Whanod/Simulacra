@@ -572,8 +572,21 @@ class ExecutionResult:
     fee_splits: dict[str, Numeric] = field(default_factory=dict)
     fee_token: TokenId | None = None
     volume: Numeric | None = None
+    # Volume in quote-token raw units. Set by markets that can attribute
+    # each swap to a single quote side (e.g. whirlpool: token B). Mirrors
+    # ``volume`` but always denominated in the same token, so it is safe to
+    # sum and scale by the quote token's decimals for display.
+    volume_quote: Numeric | None = None
     other_agent_volumes: dict[AgentId, Numeric] = field(default_factory=dict)
+    other_agent_volume_quotes: dict[AgentId, Numeric] = field(default_factory=dict)
     error: str | None = None
+    # LP-action PnL accounting. When ``is_lp_action`` is true, the
+    # engine skips the generic mark-to-spot ``_mark_pnl`` (which would
+    # mistakenly book the deposit notional as a realized loss) and uses
+    # ``lp_realized_pnl`` instead — 0 on deposits, ``withdraw_value -
+    # cost_basis`` on withdrawals (in raw quote units).
+    is_lp_action: bool = False
+    lp_realized_pnl: Numeric = 0
 
 
 @dataclass
@@ -582,7 +595,15 @@ class AgentState:
     role: AgentRole = field(default_factory=lambda: AgentRole("unknown"))
     balances: dict[TokenId, Numeric] = field(default_factory=dict)
     cumulative_volume: Numeric = 0
+    # Run-cumulative swap volume in raw quote-token units. Only markets that
+    # can attribute volume to a single quote side populate this (e.g.
+    # whirlpool: token B). Stays at 0 for markets that don't, which the
+    # frontend treats as "fall back to ``cumulative_volume`` (raw)".
+    cumulative_volume_quote: Numeric = 0
     realized_pnl: Numeric = 0
+    # Mark-to-market value of open LP positions vs. cost basis. Refreshed
+    # at snapshot time by the engine; not summed into ``realized_pnl``.
+    unrealized_pnl: Numeric = 0
 
     def balance(self, token: TokenId) -> Numeric:
         return self.balances.get(token, 0)
@@ -594,7 +615,9 @@ class AgentState:
             "role_tags": list(self.role.tags),
             "balances": self.balances,
             "cumulative_volume": self.cumulative_volume,
+            "cumulative_volume_quote": self.cumulative_volume_quote,
             "realized_pnl": self.realized_pnl,
+            "unrealized_pnl": self.unrealized_pnl,
         }), use_bin_type=True)
 
     @classmethod
@@ -605,7 +628,9 @@ class AgentState:
             role=AgentRole(name=d["role_name"], tags=frozenset(d["role_tags"])),
             balances=d["balances"],
             cumulative_volume=d["cumulative_volume"],
+            cumulative_volume_quote=d.get("cumulative_volume_quote", 0),
             realized_pnl=d["realized_pnl"],
+            unrealized_pnl=d.get("unrealized_pnl", 0),
         )
 
 
