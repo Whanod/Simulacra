@@ -5,6 +5,7 @@ import { useToast } from "@/components/feedback/ToastProvider";
 import { useStudioStore } from "@/lib/state/useStudioStore";
 import Modal from "@/components/feedback/Modal";
 import Card from "@/components/ui/Card";
+import InfoTooltip from "@/components/ui/InfoTooltip";
 import Skeleton from "@/components/feedback/Skeleton";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -1736,7 +1737,7 @@ export default function BuilderPage() {
         <h3>Identity & schedule</h3>
         <div className="form-row">
           <div className="form-group">
-            <label>Simulation name</label>
+            <label>Simulation name<InfoTooltip text="Display name only — used in the run list. Doesn't affect engine output." /></label>
             <input
               type="text"
               placeholder="my-cfamm-sim"
@@ -1745,7 +1746,7 @@ export default function BuilderPage() {
             />
           </div>
           <div className="form-group" data-editable-field="seed">
-            <label>Seed</label>
+            <label>Seed<InfoTooltip text="Master RNG seed. Same seed + same spec = bit-identical run." /></label>
             <input
               type="number"
               value={seed}
@@ -1755,7 +1756,7 @@ export default function BuilderPage() {
         </div>
         <div className="form-row">
           <div className="form-group" data-editable-field="num_rounds">
-            <label>{idiom.rounds_label}</label>
+            <label>{idiom.rounds_label}<InfoTooltip text="Total simulation rounds (slots/blocks) to step. Higher = longer run, more output." /></label>
             <input
               type="number"
               aria-label={idiom.rounds_label}
@@ -1764,7 +1765,7 @@ export default function BuilderPage() {
             />
           </div>
           <div className="form-group" data-editable-field="snapshot_interval">
-            <label>Snapshot interval</label>
+            <label>Snapshot interval<InfoTooltip text="Rounds between full state snapshots written to results. Lower = finer time resolution, larger output." /></label>
             <input
               type="number"
               aria-label="Snapshot Interval"
@@ -1773,7 +1774,7 @@ export default function BuilderPage() {
             />
           </div>
           <div className="form-group">
-            <label>Numeric mode</label>
+            <label>Numeric mode<InfoTooltip text="FIXED_POINT mirrors on-chain integer math (recommended for fidelity). FLOAT_MODE is faster but drifts vs. mainnet." /></label>
             <select
               value={numericMode}
               onChange={(e) =>
@@ -1805,7 +1806,7 @@ export default function BuilderPage() {
         <h3>Slot model</h3>
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="clock-type">Type</label>
+            <label htmlFor="clock-type">Type<InfoTooltip text="Pacing model. solana_slot uses Solana's 400ms slot. constant uses fixed wall-clock; variable samples gaps from a distribution." /></label>
             <RegistrySelect
               id="clock-type"
               category="clocks"
@@ -1825,6 +1826,7 @@ export default function BuilderPage() {
           <div className="form-group">
             <label>
               {bClock === "solana_slot" ? "Slot duration (s)" : idiom.time_label}
+              <InfoTooltip text="Real seconds each round represents. Solana mainnet ≈ 0.4s/slot. Affects oracle drift, EWMA windows, time-based fees." />
             </label>
             <input
               type="number"
@@ -1834,7 +1836,7 @@ export default function BuilderPage() {
             />
           </div>
           <div className="form-group">
-            <label>{bClock === "solana_slot" ? "Epoch (slots)" : idiom.epoch_label}</label>
+            <label>{bClock === "solana_slot" ? "Epoch (slots)" : idiom.epoch_label}<InfoTooltip text="Slots per epoch. Solana mainnet uses 432,000. Drives stake/leader rotations and per-epoch token drift." /></label>
             <input
               type="number"
               value={epochLength}
@@ -1843,7 +1845,7 @@ export default function BuilderPage() {
           </div>
           {bClock === "solana_slot" && (
             <div className="form-group">
-              <label htmlFor="clock-skip-rate">Skip rate</label>
+              <label htmlFor="clock-skip-rate">Skip rate<InfoTooltip text="Fraction of slots where no leader produces a block. 0 = perfect uptime; ~0.05 ≈ historical mainnet." /></label>
               <input
                 id="clock-skip-rate"
                 type="number"
@@ -1874,7 +1876,7 @@ export default function BuilderPage() {
         <h3>Pool</h3>
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="market-type">Market type</label>
+            <label htmlFor="market-type">Market type<InfoTooltip text="AMM family under test. Whirlpool uses real captured pool state; world is the chain-neutral CFAMM." /></label>
             <RegistrySelect
               id="market-type"
               aria-label="Market Type"
@@ -1884,7 +1886,7 @@ export default function BuilderPage() {
             />
           </div>
           <div className="form-group">
-            <label># of assets</label>
+            <label># of assets<InfoTooltip text="Number of distinct tokens in the market. Whirlpool is fixed at 2." /></label>
             <input
               type="number"
               value={numAssets}
@@ -1896,7 +1898,7 @@ export default function BuilderPage() {
         </div>
         <div className="form-row">
           <div className="form-group">
-            <label>Initial liquidity</label>
+            <label>Initial liquidity<InfoTooltip text="Starting liquidity (in token-A units). Ignored when a corpus snapshot already pins real liquidity." /></label>
             <input
               type="number"
               value={initialLiquidity}
@@ -1904,7 +1906,7 @@ export default function BuilderPage() {
             />
           </div>
           <div className="form-group">
-            <label>Token decimals</label>
+            <label>Token decimals<InfoTooltip text="Decimals for each token. Affects amount scaling and fixed-point precision." /></label>
             <input
               type="number"
               value={tokenDecimals}
@@ -2042,7 +2044,7 @@ export default function BuilderPage() {
           <h3>Whirlpool corpus</h3>
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="wp-corpus-slot">Corpus slot</label>
+              <label htmlFor="wp-corpus-slot">Corpus slot<InfoTooltip text="Captured mainnet slot under solana-plans/calibration/corpus/. The pool, ticks, and vaults at that slot become the run's starting state." /></label>
               <select
                 id="wp-corpus-slot"
                 value={wpCorpusSlot ?? ""}
@@ -2057,7 +2059,7 @@ export default function BuilderPage() {
               </select>
             </div>
             <div className="form-group">
-              <label htmlFor="wp-pool-pubkey">Pool pubkey</label>
+              <label htmlFor="wp-pool-pubkey">Pool pubkey<InfoTooltip text="Whirlpool program account for this pair. Auto-fills from the chosen corpus slot." /></label>
               <select
                 id="wp-pool-pubkey"
                 value={wpPoolPubkey}
@@ -2074,7 +2076,7 @@ export default function BuilderPage() {
           </div>
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="wp-pool-account-id">Pool account ID</label>
+              <label htmlFor="wp-pool-account-id">Pool account ID<InfoTooltip text="Stable identifier (often = pool pubkey) used to thread accounts through ALTs and bundles." /></label>
               <select
                 id="wp-pool-account-id"
                 value={wpPoolAccountId}
@@ -2094,7 +2096,7 @@ export default function BuilderPage() {
           <h3>Token mapping</h3>
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="wp-token-a-id">Token A ID</label>
+              <label htmlFor="wp-token-a-id">Token A ID<InfoTooltip text="ID for token A used by the engine. Maps to a real SPL mint via the corpus manifest." /></label>
               <select
                 id="wp-token-a-id"
                 value={wpTokenAId}
@@ -2109,7 +2111,7 @@ export default function BuilderPage() {
               </select>
             </div>
             <div className="form-group">
-              <label htmlFor="wp-token-a-symbol">Token A symbol</label>
+              <label htmlFor="wp-token-a-symbol">Token A symbol<InfoTooltip text="Display symbol for token A. Cosmetic — doesn't affect engine math." /></label>
               <input
                 id="wp-token-a-symbol"
                 type="text"
@@ -2120,7 +2122,7 @@ export default function BuilderPage() {
           </div>
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="wp-token-b-id">Token B ID</label>
+              <label htmlFor="wp-token-b-id">Token B ID<InfoTooltip text="ID for token B used by the engine. Maps to a real SPL mint via the corpus manifest." /></label>
               <select
                 id="wp-token-b-id"
                 value={wpTokenBId}
@@ -2135,7 +2137,7 @@ export default function BuilderPage() {
               </select>
             </div>
             <div className="form-group">
-              <label htmlFor="wp-token-b-symbol">Token B symbol</label>
+              <label htmlFor="wp-token-b-symbol">Token B symbol<InfoTooltip text="Display symbol for token B. Cosmetic — doesn't affect engine math." /></label>
               <input
                 id="wp-token-b-symbol"
                 type="text"
@@ -2202,6 +2204,7 @@ export default function BuilderPage() {
                     <div className="form-group">
                       <label htmlFor="ba-max-bundles">
                         Max bundles per slot
+                        <InfoTooltip text="Hard cap on bundles the Jito auction can land per slot. Mainnet today ≈ 5." />
                       </label>
                       <input
                         id="ba-max-bundles"
@@ -2218,6 +2221,7 @@ export default function BuilderPage() {
                     <div className="form-group">
                       <label htmlFor="ba-stake-pool-share">
                         Jito stake-pool share
+                        <InfoTooltip text="Fraction of bundle tip routed to stake pools (vs. kept by the validator). 0.05 ≈ default." />
                       </label>
                       <input
                         id="ba-stake-pool-share"
@@ -2238,6 +2242,7 @@ export default function BuilderPage() {
                     <div className="form-group">
                       <label htmlFor="ba-tip-curve-path">
                         Tip-quote curve path
+                        <InfoTooltip text="YAML tip curve under solana-plans/calibration/. Maps tip amount → landing probability for the searcher." />
                       </label>
                       <input
                         id="ba-tip-curve-path"
@@ -2295,7 +2300,7 @@ export default function BuilderPage() {
                   <div style={{ marginTop: 10 }}>
                     <div className="form-row">
                       <div className="form-group">
-                        <label htmlFor="pre-slots">Slots</label>
+                        <label htmlFor="pre-slots">Slots<InfoTooltip text="How many slots to pre-warm the priority-fee distribution before round 1. Without this the searcher quotes a degenerate floor." /></label>
                         <input
                           id="pre-slots"
                           type="number"
@@ -2309,6 +2314,7 @@ export default function BuilderPage() {
                       <div className="form-group">
                         <label htmlFor="pre-obs">
                           Observations per slot
+                          <InfoTooltip text="Synthetic CU-price observations seeded per slot during pre-roll. More obs = sharper distribution at run start." />
                         </label>
                         <input
                           id="pre-obs"
@@ -2323,7 +2329,7 @@ export default function BuilderPage() {
                         />
                       </div>
                       <div className="form-group">
-                        <label htmlFor="pre-seed">Seed</label>
+                        <label htmlFor="pre-seed">Seed<InfoTooltip text="Seed for the pre-roll RNG. Independent of the main run seed so calibration is reproducible." /></label>
                         <input
                           id="pre-seed"
                           type="number"
@@ -2336,7 +2342,7 @@ export default function BuilderPage() {
                     </div>
                     <div className="form-row">
                       <div className="form-group">
-                        <label htmlFor="pre-cu-min">CU price min (µ-lam)</label>
+                        <label htmlFor="pre-cu-min">CU price min (µ-lam)<InfoTooltip text="Floor of the seeded CU-price range, in micro-lamports per CU." /></label>
                         <input
                           id="pre-cu-min"
                           type="number"
@@ -2350,7 +2356,7 @@ export default function BuilderPage() {
                         />
                       </div>
                       <div className="form-group">
-                        <label htmlFor="pre-cu-max">CU price max (µ-lam)</label>
+                        <label htmlFor="pre-cu-max">CU price max (µ-lam)<InfoTooltip text="Ceiling of the seeded CU-price range, in micro-lamports per CU." /></label>
                         <input
                           id="pre-cu-max"
                           type="number"
@@ -2365,7 +2371,7 @@ export default function BuilderPage() {
                       </div>
                     </div>
                     <div className="form-group">
-                      <label htmlFor="pre-accounts">Accounts</label>
+                      <label htmlFor="pre-accounts">Accounts<InfoTooltip text="Solana accounts whose per-account fee distributions get pre-warmed. Defaults to the pool pubkey when blank." /></label>
                       <textarea
                         id="pre-accounts"
                         rows={4}
@@ -2475,7 +2481,7 @@ export default function BuilderPage() {
                   className="form-group"
                   data-editable-field="execution.params.cost_token"
                 >
-                  <label htmlFor="cost-token">Cost token</label>
+                  <label htmlFor="cost-token">Cost token<InfoTooltip text="Token used to score bundle EV (so MEV is denominated consistently). USDC for lighthouse runs." /></label>
                   <input
                     id="cost-token"
                     type="text"
@@ -2492,7 +2498,7 @@ export default function BuilderPage() {
                   className="form-group"
                   data-editable-field="execution.params.visible_roles"
                 >
-                  <label htmlFor="visible-roles">Visible roles</label>
+                  <label htmlFor="visible-roles">Visible roles<InfoTooltip text="Agent roles allowed to see the bundle book. Empty = all roles. Restricting models information asymmetry." /></label>
                   <div
                     id="visible-roles"
                     role="group"
@@ -2572,7 +2578,7 @@ export default function BuilderPage() {
         <h3>Fee</h3>
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="fee-type">Fee type</label>
+            <label htmlFor="fee-type">Fee type<InfoTooltip text="Fee model registered in the engine. Whirlpool uses cfamm_fee with the pool's tier." /></label>
             <RegistrySelect
               id="fee-type"
               category="fee_models"
@@ -2581,7 +2587,7 @@ export default function BuilderPage() {
             />
           </div>
           <div className="form-group">
-            <label>Fee rate (bps)</label>
+            <label>Fee rate (bps)<InfoTooltip text="Pool fee in basis points (1 bp = 0.01%). Whirlpool SOL/USDC ≈ 5 bps." /></label>
             <input
               type="number"
               value={feeRate}
@@ -2605,7 +2611,7 @@ export default function BuilderPage() {
         <h3>Pipeline</h3>
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="exec-model">Execution model</label>
+            <label htmlFor="exec-model">Execution model<InfoTooltip text="Block/slot pipeline. solana models Solana's leader-driven slot loop; ethereum_like uses sealed blocks." /></label>
             <RegistrySelect
               id="exec-model"
               category="execution_models"
@@ -2616,7 +2622,7 @@ export default function BuilderPage() {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="ordering">Ordering</label>
+            <label htmlFor="ordering">Ordering<InfoTooltip text="How submitted txs get ordered within a slot. Priority sorts by fee bid; FIFO uses arrival order." /></label>
             <RegistrySelect
               id="ordering"
               category="orderings"
@@ -2625,7 +2631,7 @@ export default function BuilderPage() {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="info-filter">Information filter</label>
+            <label htmlFor="info-filter">Information filter<InfoTooltip text="Information visible to agents each round. delayed = agents see one round behind; full = perfect info." /></label>
             <RegistrySelect
               id="info-filter"
               category="information_filters"
@@ -2644,7 +2650,7 @@ export default function BuilderPage() {
         </div>
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="gas-model">{idiom.fee_label}</label>
+            <label htmlFor="gas-model">{idiom.fee_label}<InfoTooltip text="Cost model for transaction execution. Solana uses CU-based pricing with a per-tx base fee." /></label>
             <RegistrySelect
               id="gas-model"
               category="gas_models"
@@ -2653,7 +2659,7 @@ export default function BuilderPage() {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="scheduler">Scheduler</label>
+            <label htmlFor="scheduler">Scheduler<InfoTooltip text="Within a slot, run txs serially or in parallel under priority order. Priority models Solana's account-locking parallel scheduler." /></label>
             <select
               id="scheduler"
               data-testid="scheduler-select"
@@ -2676,7 +2682,7 @@ export default function BuilderPage() {
           <h3>Compute budget</h3>
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="cb-preset">Use historical preset</label>
+              <label htmlFor="cb-preset">Use historical preset<InfoTooltip text="current loads mainnet's compute-budget caps. custom unlocks the per-tx / per-slot / per-account fields below." /></label>
               <select
                 id="cb-preset"
                 value={cbPreset}
@@ -2697,7 +2703,7 @@ export default function BuilderPage() {
           </div>
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="cb-per-tx">Per-tx CU</label>
+              <label htmlFor="cb-per-tx">Per-tx CU<InfoTooltip text="Hard cap on compute units a single tx can consume. Mainnet = 1.4M." /></label>
               <input
                 id="cb-per-tx"
                 type="number"
@@ -2708,7 +2714,7 @@ export default function BuilderPage() {
               />
             </div>
             <div className="form-group">
-              <label htmlFor="cb-per-slot">Per-slot CU</label>
+              <label htmlFor="cb-per-slot">Per-slot CU<InfoTooltip text="Hard cap on compute units the entire slot can consume. Mainnet = 60M." /></label>
               <input
                 id="cb-per-slot"
                 type="number"
@@ -2719,7 +2725,7 @@ export default function BuilderPage() {
               />
             </div>
             <div className="form-group">
-              <label htmlFor="cb-per-account">Per-writable-account CU</label>
+              <label htmlFor="cb-per-account">Per-writable-account CU<InfoTooltip text="Hard cap on compute units that touch one writable account in a slot. Mainnet = 12M." /></label>
               <input
                 id="cb-per-account"
                 type="number"
@@ -2738,7 +2744,7 @@ export default function BuilderPage() {
           <h3>Oracle</h3>
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="oracle-preset">Source preset</label>
+              <label htmlFor="oracle-preset">Source preset<InfoTooltip text="Pre-wired SOL/USDC oracle. none disables oracle reads in agents." /></label>
               <select
                 id="oracle-preset"
                 value={bOraclePreset}
@@ -2766,7 +2772,7 @@ export default function BuilderPage() {
             </summary>
             <div className="form-row" style={{ marginTop: ".5rem" }}>
               <div className="form-group">
-                <label htmlFor="pfm-window-slots">Window (slots)</label>
+                <label htmlFor="pfm-window-slots">Window (slots)<InfoTooltip text="Sliding window over which the priority-fee distribution is computed." /></label>
                 <input
                   id="pfm-window-slots"
                   type="number"
@@ -2776,7 +2782,7 @@ export default function BuilderPage() {
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="pfm-half-life">EWMA half-life (slots)</label>
+                <label htmlFor="pfm-half-life">EWMA half-life (slots)<InfoTooltip text="EWMA half-life inside the window. Lower = reacts faster to spikes; higher = smoother quotes." /></label>
                 <input
                   id="pfm-half-life"
                   type="number"
@@ -2788,7 +2794,7 @@ export default function BuilderPage() {
             </div>
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="pfm-floor">Floor (µ-lamports)</label>
+                <label htmlFor="pfm-floor">Floor (µ-lamports)<InfoTooltip text="Minimum CU price the distribution will ever quote, in micro-lamports." /></label>
                 <input
                   id="pfm-floor"
                   type="number"
@@ -2798,7 +2804,7 @@ export default function BuilderPage() {
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="pfm-threshold">Event threshold (relative)</label>
+                <label htmlFor="pfm-threshold">Event threshold (relative)<InfoTooltip text="Relative jump (vs. EWMA) that counts as a 'fee event' in analytics. Doesn't affect engine math." /></label>
                 <input
                   id="pfm-threshold"
                   type="number"
@@ -2822,7 +2828,7 @@ export default function BuilderPage() {
           </p>
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="fork-probability">Fork probability / slot</label>
+              <label htmlFor="fork-probability">Fork probability / slot<InfoTooltip text="Per-slot probability the leader produces a fork. Stress-tests bundle revert accounting. 0 = canonical chain only." /></label>
               <input
                 id="fork-probability"
                 data-testid="fork-probability-input"
@@ -2835,7 +2841,7 @@ export default function BuilderPage() {
               />
             </div>
             <div className="form-group">
-              <label htmlFor="fork-max-reorg-depth">Max reorg depth (slots)</label>
+              <label htmlFor="fork-max-reorg-depth">Max reorg depth (slots)<InfoTooltip text="Cap on how many slots back a reorg can rewind. High values grow the replay buffer." /></label>
               <input
                 id="fork-max-reorg-depth"
                 data-testid="fork-max-reorg-depth-input"
@@ -2878,7 +2884,7 @@ export default function BuilderPage() {
             <>
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="fork-mainnet-slot">Slot</label>
+                  <label htmlFor="fork-mainnet-slot">Slot<InfoTooltip text="Mainnet slot from which to hydrate protocol state. 'now' resolves at submit time." /></label>
                   <input
                     id="fork-mainnet-slot"
                     data-testid="fork-mainnet-slot-input"
@@ -2905,7 +2911,7 @@ export default function BuilderPage() {
                 </div>
               </div>
               <div className="form-group">
-                <label>Protocols to include</label>
+                <label>Protocols to include<InfoTooltip text="Which on-chain protocols to hydrate from the slot. Only protocols whose engine math has shipped can be forked." /></label>
                 <div
                   data-testid="fork-mainnet-protocols"
                   style={{ display: "flex", flexDirection: "column", gap: ".25rem" }}
@@ -2950,6 +2956,7 @@ export default function BuilderPage() {
               <div className="form-group">
                 <label htmlFor="fork-mainnet-wallet">
                   Include positions owned by wallet (optional)
+                  <InfoTooltip text="Wallet pubkey whose open positions also get hydrated alongside the selected protocols." />
                 </label>
                 <input
                   id="fork-mainnet-wallet"
@@ -3000,7 +3007,7 @@ export default function BuilderPage() {
               >
                 <div className="form-row">
                   <div className="form-group">
-                    <label htmlFor={`val-pubkey-${idx}`}>Pubkey</label>
+                    <label htmlFor={`val-pubkey-${idx}`}>Pubkey<InfoTooltip text="Validator identity pubkey (anything unique works for synthetic sets)." /></label>
                     <input
                       id={`val-pubkey-${idx}`}
                       data-testid={`val-pubkey-${idx}`}
@@ -3010,7 +3017,7 @@ export default function BuilderPage() {
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor={`val-client-${idx}`}>Client</label>
+                    <label htmlFor={`val-client-${idx}`}>Client<InfoTooltip text="Jito-Solana captures bundle tips minus stake-pool share; Vanilla validators forgo MEV revenue." /></label>
                     <select
                       id={`val-client-${idx}`}
                       data-testid={`val-client-${idx}`}
@@ -3028,7 +3035,7 @@ export default function BuilderPage() {
                 </div>
                 <div className="form-row">
                   <div className="form-group">
-                    <label htmlFor={`val-stake-${idx}`}>Stake (lamports)</label>
+                    <label htmlFor={`val-stake-${idx}`}>Stake (lamports)<InfoTooltip text="Validator stake in lamports. Determines slot-leader probability per epoch." /></label>
                     <input
                       id={`val-stake-${idx}`}
                       data-testid={`val-stake-${idx}`}
@@ -3041,7 +3048,7 @@ export default function BuilderPage() {
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor={`val-pool-share-${idx}`}>Stake-pool share</label>
+                    <label htmlFor={`val-pool-share-${idx}`}>Stake-pool share<InfoTooltip text="Fraction of bundle tip the validator forwards to its stake pool (Jito-Solana only)." /></label>
                     <input
                       id={`val-pool-share-${idx}`}
                       data-testid={`val-pool-share-${idx}`}
@@ -3061,6 +3068,7 @@ export default function BuilderPage() {
                   <div className="form-group">
                     <label htmlFor={`val-pool-addr-${idx}`}>
                       Stake-pool address (optional)
+                      <InfoTooltip text="Stake pool to receive forwarded tips. Leave empty to keep tips at the validator." />
                     </label>
                     <input
                       id={`val-pool-addr-${idx}`}
@@ -3074,7 +3082,7 @@ export default function BuilderPage() {
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor={`val-commission-${idx}`}>Commission %</label>
+                    <label htmlFor={`val-commission-${idx}`}>Commission %<InfoTooltip text="Validator commission on inflation rewards (0–1)." /></label>
                     <input
                       id={`val-commission-${idx}`}
                       data-testid={`val-commission-${idx}`}
@@ -3154,7 +3162,7 @@ export default function BuilderPage() {
                   </div>
                   <div className="form-row">
                     <div className="form-group">
-                      <label htmlFor={`token-${tok.id}-standard`}>Standard</label>
+                      <label htmlFor={`token-${tok.id}-standard`}>Standard<InfoTooltip text="spl = legacy Token Program; spl_2022 = Token-2022 with extensions; native = wrapped SOL." /></label>
                       <select
                         id={`token-${tok.id}-standard`}
                         value={tok.standard ?? "spl"}
@@ -3170,7 +3178,7 @@ export default function BuilderPage() {
                       </select>
                     </div>
                     <div className="form-group">
-                      <label htmlFor={`token-${tok.id}-rate`}>Exchange rate to SOL (LST)</label>
+                      <label htmlFor={`token-${tok.id}-rate`}>Exchange rate to SOL (LST)<InfoTooltip text="For LSTs only — exchange rate to SOL (e.g. mSOL ≈ 1.18). Engine uses this to convert balances." /></label>
                       <input
                         id={`token-${tok.id}-rate`}
                         type="number"
@@ -3195,7 +3203,7 @@ export default function BuilderPage() {
                   </div>
                   <div className="form-row">
                     <div className="form-group">
-                      <label htmlFor={`token-${tok.id}-drift`}>Drift per epoch</label>
+                      <label htmlFor={`token-${tok.id}-drift`}>Drift per epoch<InfoTooltip text="Mean drift per epoch in the LST exchange rate (e.g. 0.0001 ≈ 0.01% / epoch)." /></label>
                       <input
                         id={`token-${tok.id}-drift`}
                         type="number"
@@ -3221,7 +3229,7 @@ export default function BuilderPage() {
                       />
                     </div>
                     <div className="form-group">
-                      <label htmlFor={`token-${tok.id}-volatility`}>Volatility per epoch</label>
+                      <label htmlFor={`token-${tok.id}-volatility`}>Volatility per epoch<InfoTooltip text="Stdev per epoch on top of the drift. 0 = deterministic LST appreciation." /></label>
                       <input
                         id={`token-${tok.id}-volatility`}
                         type="number"
@@ -3248,6 +3256,7 @@ export default function BuilderPage() {
                         <div className="form-group">
                           <label htmlFor={`token-${tok.id}-hook-program`}>
                             Transfer hook program
+                            <InfoTooltip text="Token-2022 transfer-hook program id, if any. Adds CU and lamport overhead per transfer." />
                           </label>
                           <input
                             id={`token-${tok.id}-hook-program`}
@@ -3273,7 +3282,7 @@ export default function BuilderPage() {
                           />
                         </div>
                         <div className="form-group">
-                          <label htmlFor={`token-${tok.id}-hook-cu`}>Extra CU / transfer</label>
+                          <label htmlFor={`token-${tok.id}-hook-cu`}>Extra CU / transfer<InfoTooltip text="Extra compute units the transfer hook charges per transfer." /></label>
                           <input
                             id={`token-${tok.id}-hook-cu`}
                             type="number"
@@ -3294,6 +3303,7 @@ export default function BuilderPage() {
                         <div className="form-group">
                           <label htmlFor={`token-${tok.id}-hook-lamports`}>
                             Extra lamports / transfer
+                            <InfoTooltip text="Extra lamports the transfer hook charges per transfer." />
                           </label>
                           <input
                             id={`token-${tok.id}-hook-lamports`}
@@ -3343,7 +3353,7 @@ export default function BuilderPage() {
           <h3>Submission path priors</h3>
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="sp-rpc">RPC landing prob</label>
+              <label htmlFor="sp-rpc">RPC landing prob<InfoTooltip text="Probability a tx submitted via plain RPC lands in a slot, before congestion adjustments." /></label>
               <input
                 id="sp-rpc"
                 type="number"
@@ -3355,7 +3365,7 @@ export default function BuilderPage() {
               />
             </div>
             <div className="form-group">
-              <label htmlFor="sp-tpu-quic">TPU/QUIC landing prob</label>
+              <label htmlFor="sp-tpu-quic">TPU/QUIC landing prob<InfoTooltip text="Landing probability for direct TPU/QUIC submission to the leader." /></label>
               <input
                 id="sp-tpu-quic"
                 type="number"
@@ -3367,7 +3377,7 @@ export default function BuilderPage() {
               />
             </div>
             <div className="form-group">
-              <label htmlFor="sp-jito">Jito relayer landing prob</label>
+              <label htmlFor="sp-jito">Jito relayer landing prob<InfoTooltip text="Landing probability for the Jito relayer path (bundles)." /></label>
               <input
                 id="sp-jito"
                 type="number"
@@ -3381,7 +3391,7 @@ export default function BuilderPage() {
           </div>
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="sp-congestion">Congestion penalty / %full</label>
+              <label htmlFor="sp-congestion">Congestion penalty / %full<InfoTooltip text="Penalty subtracted from landing probability per percentage point of slot fullness." /></label>
               <input
                 id="sp-congestion"
                 type="number"
@@ -3392,7 +3402,7 @@ export default function BuilderPage() {
               />
             </div>
             <div className="form-group">
-              <label htmlFor="sp-calibrated-at">Calibrated at (ISO)</label>
+              <label htmlFor="sp-calibrated-at">Calibrated at (ISO)<InfoTooltip text="ISO timestamp when these priors were calibrated. Empty = synthetic / uncalibrated." /></label>
               <input
                 id="sp-calibrated-at"
                 type="text"
@@ -3445,7 +3455,7 @@ export default function BuilderPage() {
       <div className="bsec-card">
         <h3>Feed</h3>
         <div className="form-group">
-          <label htmlFor="feed-type">Feed type</label>
+          <label htmlFor="feed-type">Feed type<InfoTooltip text="Price source for noise/oracle agents. Brownian = synthetic GBM; replay = recorded series." /></label>
           <RegistrySelect
             id="feed-type"
             category="feeds"
@@ -3455,7 +3465,7 @@ export default function BuilderPage() {
         </div>
         <div className="form-row">
           <div className="form-group">
-            <label>Drift (μ)</label>
+            <label>Drift (μ)<InfoTooltip text="GBM mean drift parameter — average per-round price change in the synthetic feed." /></label>
             <input
               type="number"
               value={drift}
@@ -3464,7 +3474,7 @@ export default function BuilderPage() {
             />
           </div>
           <div className="form-group">
-            <label>Volatility (σ)</label>
+            <label>Volatility (σ)<InfoTooltip text="GBM volatility parameter — stdev of per-round price shocks." /></label>
             <input
               type="number"
               value={volatility}
@@ -3473,7 +3483,7 @@ export default function BuilderPage() {
             />
           </div>
           <div className="form-group">
-            <label>Initial price</label>
+            <label>Initial price<InfoTooltip text="Starting price quote at round 0." /></label>
             <input
               type="number"
               value={initialPrice}
@@ -3501,7 +3511,7 @@ export default function BuilderPage() {
         <h3>Slot window</h3>
         <div className="form-row">
           <div className="form-group">
-            <label>Slot start</label>
+            <label>Slot start<InfoTooltip text="First mainnet slot to replay, inclusive." /></label>
             <input
               data-testid="replay-slot-start"
               type="number"
@@ -3510,7 +3520,7 @@ export default function BuilderPage() {
             />
           </div>
           <div className="form-group">
-            <label>Slot end</label>
+            <label>Slot end<InfoTooltip text="Last mainnet slot to replay, inclusive." /></label>
             <input
               data-testid="replay-slot-end"
               type="number"
@@ -3521,7 +3531,7 @@ export default function BuilderPage() {
         </div>
         <div className="form-row">
           <div className="form-group">
-            <label>Tip-replace bundle id (optional)</label>
+            <label>Tip-replace bundle id (optional)<InfoTooltip text="Bundle to swap a different tip into when replaying. Leave blank to replay verbatim." /></label>
             <input
               data-testid="replay-tip-bundle-id"
               type="text"
@@ -3531,7 +3541,7 @@ export default function BuilderPage() {
             />
           </div>
           <div className="form-group">
-            <label>New tip (lamports)</label>
+            <label>New tip (lamports)<InfoTooltip text="Counterfactual tip in lamports applied to the bundle above." /></label>
             <input
               data-testid="replay-tip-new-lamports"
               type="number"
@@ -3606,7 +3616,7 @@ export default function BuilderPage() {
         <h3>Distribution</h3>
         <div className="form-row">
           <div className="form-group">
-            <label>Reward distributor</label>
+            <label>Reward distributor<InfoTooltip text="Algorithm that pays LP/staker rewards. None = no rewards distributed." /></label>
             <select
               value={rewardDist}
               onChange={(e) => setRewardDist(e.target.value)}
@@ -3618,7 +3628,7 @@ export default function BuilderPage() {
             </select>
           </div>
           <div className="form-group">
-            <label>Emission schedule</label>
+            <label>Emission schedule<InfoTooltip text="Curve for total reward emissions over time." /></label>
             <select
               value={emissionSched}
               onChange={(e) => setEmissionSched(e.target.value)}
