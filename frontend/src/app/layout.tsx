@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "DeFi Sim — Simulation Studio",
+  title: "Simulacra — Simulation Studio",
 };
 
 export default function RootLayout({

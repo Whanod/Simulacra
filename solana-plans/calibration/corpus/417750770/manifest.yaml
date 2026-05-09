@@ -1,0 +1,15 @@
+# Captured by snapshotter (FIX-019) for category steady_state.
+# Selection reason: tx_count=1261 (<= 2500), total_cu=38267628 (<= 120000000), tip_count=6 (<= 15), decoded_swaps=0 (<= 50)
+# captured_at: 2026-05-05T12:41:02+00:00
+slot: 417750770
+captured_at: 2026-05-05T12:41:02+00:00
+category: steady_state
+block_height: 395843127
+parent_slot: 417750769
+blockhash: "AP4xoVWiZVRGYHb8tui6qr3GAB2cYtNFMvxb65dnBFNm"
+programs:
+expected:
+  tx_count: 1261     # observed at fixture-write time; CALIBRATE-2.4
+  decoded_coverage: null  # fill after decoders ship (PRD line 194)
+  pool_reserves: {}       # CALIBRATE-2.3 -- per-pool address -> [reserve_a, reserve_b]
+thresholds: {}

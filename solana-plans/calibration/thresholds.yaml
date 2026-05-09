@@ -1,0 +1,46 @@
+# Per-metric calibration thresholds for Phase 2 US-004.
+#
+# Each entry pins one ReplayDiff metric (see
+# src/defi_sim/engine/replay_execution.py::ReplayDiff._METRICS) to either a
+# relative or absolute error band that the calibration CI lane (per
+# README.md "CI lanes" table) asserts against the curated corpus on a
+# 30-min budget. The forked-state lane (20 min) handles per-protocol
+# regression tests separately so calibration drift does NOT block
+# fork-mode bugfixes — keep this file scoped to model-vs-mainnet error
+# only.
+#
+# Threshold semantics:
+#   threshold_relative: float in [0, 1] — abs(predicted - actual) /
+#       max(abs(actual), epsilon) must be ≤ this value.
+#   threshold_absolute: float — abs(predicted - actual) must be ≤ this
+#       value. Use for count-shaped metrics (e.g. liquidations) where
+#       relative error is undefined at zero.
+#
+# Tighten thresholds over time; loose thresholds at first are fine if
+# they are visible in the studio overlay and in CI output.
+
+thresholds:
+  - metric: bundle_landing_rate
+    threshold_absolute: 0.05     # ±5pp — ratio chart keyed to replay artifacts
+  - metric: tip_efficiency
+    threshold_relative: 0.10     # 10% — same noisy tip economics family
+  - metric: slot_inclusion_latency
+    threshold_absolute: 1        # ±1 slot — distribution headline is median slots
+  - metric: cu_per_dollar_tip_breakeven
+    threshold_absolute: 0.05     # ±5pp — fraction clearing break-even
+  - metric: skip_rate_cost
+    threshold_relative: 0.10     # 10% — skipped-slot EV is lamport-denominated
+  - metric: write_lock_heatmap
+    threshold_absolute: 1        # ±1 lock — count-shaped contention headline
+  - metric: submission_path_comparison
+    threshold_absolute: 0.05     # ±5pp — landing-rate spread between paths
+  - metric: pool_price
+    threshold_relative: 0.005    # 0.5% — pool prices are deterministic AMM math
+  - metric: lp_balance
+    threshold_relative: 0.005    # 0.5% — LP shares track pool depth directly
+  - metric: total_volume
+    threshold_relative: 0.02     # 2% — aggregate volume tolerates routing noise
+  - metric: liquidations_triggered
+    threshold_absolute: 1        # ±1 liquidation — count metric
+  - metric: tips_paid
+    threshold_relative: 0.10     # 10% — tips are noisier (priority-fee variance)

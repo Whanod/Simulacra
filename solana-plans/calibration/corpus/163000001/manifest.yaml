@@ -1,0 +1,50 @@
+# Corpus manifest for slot 163000001.
+# Hand-filled for Phase 2 Pyth PriceUpdateV2 fixture parser validation.
+#
+# The Pyth Solana Receiver program-accounts fixture committed alongside this
+# manifest is SYNTHETIC (no live archival pull). It contains layout-faithful
+# PriceUpdateV2 account bytes that exercise valid, stale, confidence-heavy,
+# and insufficient-verification parser states without making a calibration
+# claim. Once exact account-state access lands, this fixture can be replaced
+# by real mainnet receiver accounts and independently checked expected prices.
+
+slot: 163000001
+category: synthetic
+block_height: 0
+parent_slot: 0
+blockhash: ""
+programs:
+  - "rec5EKMGg6MxZYaMdyBfgwp4d5rB9T1VQH5pJv5LtFJ"
+expected:
+  tx_count: 0
+  decoded_coverage: null
+  oracle_prices:
+    "PythSolUsdValid111111111111111111111111111111":
+      feed_id: "0xef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d"
+      price: 150250000000
+      confidence: 12000000
+      exponent: -8
+      publish_time: 1700000000
+      status: "valid"
+    "PythSolUsdStale111111111111111111111111111111":
+      feed_id: "0xef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d"
+      price: 149000000000
+      confidence: 10000000
+      exponent: -8
+      publish_time: 1699999000
+      status: "stale"
+    "PythBtcUsdWideConf111111111111111111111111111":
+      feed_id: "0xe62df6c8b4a85fe1a67f2e1418cf252e6f0f4f5a43a4b2f84a8b1b61312e5c5c"
+      price: 6500000000000
+      confidence: 100000000000
+      exponent: -8
+      publish_time: 1700000010
+      status: "confidence_heavy"
+    "PythSolUsdUnverified1111111111111111111111111":
+      feed_id: "0xef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d"
+      price: 150000000000
+      confidence: 12000000
+      exponent: -8
+      publish_time: 1700000020
+      status: "invalid"
+thresholds: {}

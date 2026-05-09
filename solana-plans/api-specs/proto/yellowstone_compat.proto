@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package defi_sim.solana.yellowstone.v1;
+
+// Optional US-008 compatibility surface for clients that prefer a
+// Yellowstone-style streaming contract over JSON-RPC polling. The runtime
+// adapter serves committed corpus fixtures; it is read-only and never forwards
+// transactions to mainnet.
+service YellowstoneCompat {
+  rpc SubscribeSlotUpdates(SubscribeSlotsRequest) returns (stream SlotUpdate);
+  rpc SubscribeAccountUpdates(SubscribeAccountsRequest) returns (stream AccountUpdate);
+  rpc SubscribeTransactionUpdates(SubscribeTransactionsRequest) returns (stream TransactionUpdate);
+}
+
+message SubscribeSlotsRequest {
+  uint64 from_slot = 1;
+  uint32 limit = 2;
+}
+
+message SlotUpdate {
+  uint64 slot = 1;
+  string blockhash = 2;
+  int64 block_time = 3;
+}
+
+message SubscribeAccountsRequest {
+  uint64 from_slot = 1;
+  repeated string program_ids = 2;
+  repeated string pubkeys = 3;
+  uint32 limit = 4;
+}
+
+message AccountUpdate {
+  uint64 slot = 1;
+  string pubkey = 2;
+  string owner = 3;
+  uint64 lamports = 4;
+  bytes data = 5;
+}
+
+message SubscribeTransactionsRequest {
+  uint64 from_slot = 1;
+  repeated string signatures = 2;
+  repeated string account_keys = 3;
+  uint32 limit = 4;
+}
+
+message TransactionUpdate {
+  uint64 slot = 1;
+  string signature = 2;
+  bytes transaction_json = 3;
+}

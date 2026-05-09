@@ -1,0 +1,546 @@
+openapi: 3.0.3
+info:
+  title: defi-sim Bundle Simulator API
+  description: |
+    HTTP API for the defi-sim bundle simulator (Phase 2 US-005).
+
+    `POST /v1/simulate-bundle` accepts a Solana bundle (transactions + Jito tip)
+    plus a context slot and returns expected tip-to-land, landing probability,
+    profit distribution, ALT compression, CU-budget headroom, write-lock
+    contention, an optional tip optimizer, and an optional calibration block.
+
+    The UI at `/bundle-simulator` is a thin client over this
+    spec; programmatic integrators (bots, dashboards, paper-trading) consume
+    this endpoint directly. The OpenAPI document is the contract - both the
+    backend (`src/defi_sim_api/routers/simulate_bundle.py`) and the frontend
+    client are validated against it
+    (`tests/api/test_openapi_conformance.py::test_simulate_bundle_response_matches_spec`).
+  version: 0.1.0
+  contact:
+    name: defi-sim
+    url: https://github.com/whanod/defi-sim
+servers:
+  - url: http://localhost:8000
+    description: Local development
+  - url: https://api.example.invalid
+    description: Hosted instance (set per deployment)
+security:
+  - apiKeyBearer: []
+  - sessionCookie: []
+paths:
+  /v1/simulate-bundle:
+    post:
+      operationId: simulateBundle
+      summary: Simulate a Solana bundle and return tip / landing / profit metrics.
+      description: |
+        Simulates a bundle of Solana transactions with a Jito tip against the
+        priority-fee market (Phase 1.6) and bundle auction (Phase 1.7),
+        optionally against a forked protocol state (Phase 2 US-003 / 2.3). Returns landing
+        probability, profit distribution, ALT compression, CU usage,
+        write-lock contention, and (when requested) a tip-optimizer
+        recommendation. When the `context_slot` is covered by the calibration
+        corpus (Phase 2 US-004 / 2.4), a `calibration` block is included.
+      tags: [bundle-simulator]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SimulateBundleRequest'
+            examples:
+              minimal:
+                summary: Minimal request, no fork, no tip optimizer
+                value:
+                  bundle:
+                    txs: ["base58encodedtx1", "base58encodedtx2"]
+                    tip_lamports: 100000
+                    tip_recipient: "T1pestRecipientPubkey11111111111111111111111"
+                  context_slot: "latest"
+              with_tip_optimizer:
+                summary: Request a tip-optimizer recommendation at p90
+                value:
+                  bundle:
+                    txs: ["base58encodedtx1"]
+                    tip_lamports: 50000
+                    tip_recipient: "T1pestRecipientPubkey11111111111111111111111"
+                  context_slot: 250000000
+                  search_tip_optimizer:
+                    target_percentile: 90
+              with_fork:
+                summary: Evaluate against a forked Whirlpool state
+                value:
+                  bundle:
+                    txs: ["base58encodedtx1"]
+                    tip_lamports: 80000
+                    tip_recipient: "T1pestRecipientPubkey11111111111111111111111"
+                  context_slot: 250000000
+                  fork_spec:
+                    slot: 250000000
+                    protocols:
+                      - protocol_model: "Whirlpool"
+                        account_pubkey_allowlist:
+                          - "PoolPubkey1111111111111111111111111111111111"
+                    include_wallet_accounts: null
+      responses:
+        '200':
+          description: Simulation completed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimulateBundleResponse'
+        '400':
+          description: Malformed request body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Missing or invalid API key / session.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request payload exceeds the configured size limit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Fork hydration is unavailable for the requested fork_spec.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal simulator error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  securitySchemes:
+    apiKeyBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: API key
+      description: |
+        `Authorization: Bearer <API_KEY>`. Keys are hashed at rest; the
+        matched key id is returned in the `X-API-Key-Id` response header for
+        support reference.
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: session
+      description: |
+        Studio session cookie (existing). Used by the `/bundle-simulator`
+        page client; programmatic integrators should use `apiKeyBearer`
+        instead.
+  schemas:
+    SimulateBundleRequest:
+      type: object
+      required: [bundle, context_slot]
+      additionalProperties: false
+      properties:
+        bundle:
+          $ref: '#/components/schemas/Bundle'
+        context_slot:
+          oneOf:
+            - type: string
+              enum: ["latest"]
+            - type: integer
+              format: int64
+              minimum: 0
+          description: |
+            Slot to evaluate the bundle against. `"latest"` resolves to the
+            most recent slot known to the simulator at request time;
+            integer values reference an exact slot (which must be inside the
+            simulator's archival window or in the calibration corpus).
+        fork_spec:
+          oneOf:
+            - $ref: '#/components/schemas/ForkSpec'
+            - type: 'null'
+          description: |
+            Optional protocol-state fork (Phase 2 US-003 / 2.3). When supplied,
+            the simulator hydrates the requested protocols at `fork_spec.slot`
+            and runs the bundle against that hydrated state.
+        search_tip_optimizer:
+          oneOf:
+            - $ref: '#/components/schemas/TipOptimizerRequest'
+            - type: 'null'
+          description: |
+            When present, instructs the server to compute the minimum Jito
+            tip needed to land the bundle at the requested percentile of the
+            current bundle-auction tip distribution.
+    Bundle:
+      type: object
+      required: [txs, tip_lamports, tip_recipient]
+      additionalProperties: false
+      properties:
+        txs:
+          type: array
+          minItems: 1
+          maxItems: 5
+          items:
+            type: string
+            description: Base58 or base64-encoded serialized Solana transaction.
+          description: |
+            Ordered list of transactions in the bundle. Bundle ordering is
+            preserved by the auction (Phase 1.7).
+        tip_lamports:
+          type: integer
+          format: int64
+          minimum: 0
+          description: Total Jito tip for the bundle, in lamports.
+        tip_recipient:
+          type: string
+          description: Base58-encoded pubkey of the tip-recipient account.
+    ForkSpec:
+      type: object
+      required: [slot]
+      additionalProperties: false
+      description: |
+        Mirrors `defi_sim.engine.fork.ForkSpec`. The
+        backend constructs a `ForkSpec` from this payload and passes it to
+        `ForkLoader` to hydrate protocol state before running the bundle.
+      properties:
+        slot:
+          type: integer
+          format: int64
+          minimum: 0
+        protocols:
+          type: array
+          default: []
+          items:
+            $ref: '#/components/schemas/ProtocolForkRequest'
+        include_wallet_accounts:
+          oneOf:
+            - type: array
+              items:
+                type: string
+                description: Base58-encoded wallet pubkey to overlay.
+            - type: 'null'
+          default: null
+    ProtocolForkRequest:
+      type: object
+      required: [protocol_model]
+      additionalProperties: false
+      properties:
+        protocol_model:
+          type: string
+          description: |
+            Registry key for the protocol's `StateHydrator` (e.g. `"Whirlpool"`,
+            `"DLMM"`, `"MarginFi"`). Resolved via `ProtocolModelRegistry` at
+            `ForkLoader` build time.
+        account_pubkey_allowlist:
+          oneOf:
+            - type: array
+              items:
+                type: string
+            - type: 'null'
+          default: null
+          description: |
+            When set, restricts hydration to the listed accounts under the
+            program (e.g. fork only the SOL/USDC pool out of all Whirlpool
+            accounts).
+    TipOptimizerRequest:
+      type: object
+      required: [target_percentile]
+      additionalProperties: false
+      properties:
+        target_percentile:
+          type: integer
+          minimum: 1
+          maximum: 99
+          description: |
+            Percentile of the bundle-auction tip distribution that the
+            recommended tip should beat (e.g. `90` = "land in top 10%").
+    SimulateBundleResponse:
+      type: object
+      required:
+        - expected_tip_to_land_lamports
+        - landing_probability
+        - profit_distribution
+        - alt_compression
+        - cu_budget
+        - write_lock_contention
+        - metrics
+      additionalProperties: false
+      properties:
+        expected_tip_to_land_lamports:
+          type: integer
+          format: int64
+          minimum: 0
+          description: |
+            Expected tip the bundle would have to pay to land at the
+            current slot's auction equilibrium. This is the simulator's
+            point estimate, distinct from the optimizer recommendation.
+        landing_probability:
+          type: number
+          format: double
+          minimum: 0.0
+          maximum: 1.0
+          description: Probability the bundle lands at the requested context slot.
+        profit_distribution:
+          $ref: '#/components/schemas/ProfitDistribution'
+        alt_compression:
+          $ref: '#/components/schemas/AltCompression'
+        cu_budget:
+          $ref: '#/components/schemas/CuBudget'
+        write_lock_contention:
+          $ref: '#/components/schemas/WriteLockContention'
+        tip_optimizer:
+          oneOf:
+            - $ref: '#/components/schemas/TipOptimizerResult'
+            - type: 'null'
+          description: |
+            Present iff `search_tip_optimizer` was set on the request.
+        calibration:
+          oneOf:
+            - $ref: '#/components/schemas/CalibrationBlock'
+            - type: 'null'
+          description: |
+            Present iff `context_slot` is covered by the calibration corpus
+            (Phase 2 US-004 / 2.4). Absence means "the simulator cannot make a
+            mainnet-calibrated claim about this response."
+        metrics:
+          $ref: '#/components/schemas/SimulateBundleMetrics'
+    SimulateBundleMetrics:
+      type: object
+      additionalProperties: false
+      required: [replay]
+      description: |
+        Bundle simulator metrics block (Phase 2 US-006). Exposes the
+        replay metric calculator outputs that are meaningful for a single
+        simulated bundle: landing rate, tip efficiency, slot inclusion
+        latency. Charts consume this same shape from both
+        run snapshots and bundle simulator responses.
+      properties:
+        replay:
+          $ref: '#/components/schemas/SimulateBundleReplayMetrics'
+    SimulateBundleReplayMetrics:
+      type: object
+      additionalProperties: false
+      required: [bundle_landing_rate, tip_efficiency, slot_inclusion_latency]
+      description: |
+        Replay metric subset surfaced on bundle simulator responses (Phase 2
+        US-006).
+      properties:
+        bundle_landing_rate:
+          $ref: '#/components/schemas/MetricResult'
+        tip_efficiency:
+          $ref: '#/components/schemas/MetricResult'
+        slot_inclusion_latency:
+          $ref: '#/components/schemas/LatencyDistribution'
+    MetricResult:
+      type: object
+      additionalProperties: false
+      required: [value, unit, sample_size]
+      description: |
+        Headline scalar from a replay metric calculator (Phase 2 US-006).
+      properties:
+        value:
+          type: number
+        unit:
+          type: string
+        sample_size:
+          type: integer
+          minimum: 0
+    LatencyDistribution:
+      type: object
+      additionalProperties: false
+      required: [value, unit, sample_size, mean, median, p95, p99, samples]
+      description: |
+        Distribution-shaped output of compute_slot_inclusion_latency (Phase 2
+        US-006). `value` is the median exposed for uniform headline
+        consumption alongside the other six metrics.
+      properties:
+        value:
+          type: number
+        unit:
+          type: string
+        sample_size:
+          type: integer
+          minimum: 0
+        mean:
+          type: number
+        median:
+          type: number
+        p95:
+          type: number
+        p99:
+          type: number
+        samples:
+          type: array
+          items:
+            type: integer
+    ProfitDistribution:
+      type: object
+      additionalProperties: false
+      description: |
+        Distribution of expected MEV profit (in lamports) for the bundle.
+        Percentiles are reported, not raw samples.
+      required: [p50, p90]
+      properties:
+        p10:
+          type: integer
+          format: int64
+        p50:
+          type: integer
+          format: int64
+        p75:
+          type: integer
+          format: int64
+        p90:
+          type: integer
+          format: int64
+        p99:
+          type: integer
+          format: int64
+    AltCompression:
+      type: object
+      additionalProperties: false
+      required: [uncompressed_bytes, compressed_bytes]
+      description: |
+        Address Lookup Table compression assessment for the bundle (Phase 1.4
+        reference).
+      properties:
+        uncompressed_bytes:
+          type: integer
+          minimum: 0
+        compressed_bytes:
+          type: integer
+          minimum: 0
+        used_alts:
+          type: array
+          items:
+            type: string
+          description: Base58 pubkeys of the ALTs the bundle's transactions reference.
+    CuBudget:
+      type: object
+      additionalProperties: false
+      required: [tx_cu_used, slot_cu_headroom]
+      properties:
+        tx_cu_used:
+          type: array
+          items:
+            type: integer
+            minimum: 0
+          description: Compute units used by each transaction in the bundle (in order).
+        slot_cu_headroom:
+          type: integer
+          minimum: 0
+          description: |
+            Compute-unit headroom remaining in the slot at the bundle's
+            position. Negative values are clamped to 0 with `slot_full=true`.
+        slot_full:
+          type: boolean
+          default: false
+    WriteLockContention:
+      type: object
+      additionalProperties: false
+      required: [blocking_pubkeys]
+      properties:
+        blocking_pubkeys:
+          type: array
+          items:
+            type: string
+          description: |
+            Pubkeys of accounts whose write-locks would conflict with
+            higher-priority bundles in the same slot, reducing landing
+            probability.
+        contended_lock_count:
+          type: integer
+          minimum: 0
+        relaxed_lock_count:
+          type: integer
+          minimum: 0
+    TipOptimizerResult:
+      type: object
+      additionalProperties: false
+      required: [target_percentile, minimum_tip_lamports]
+      description: |
+        Recommended Jito tip to beat the target percentile:
+        `tip_optimizer.minimum_tip = bundle_auction.tip_quote(lock_set, target_percentile) + safety_margin_lamports`.
+        The `priority_fee_quote_lamports` field surfaces the regular
+        priority-fee headroom (Phase 1.6) separately — it is *not* a
+        substitute for Jito tip bidding.
+      properties:
+        target_percentile:
+          type: integer
+          minimum: 1
+          maximum: 99
+        minimum_tip_lamports:
+          type: integer
+          format: int64
+          minimum: 0
+        safety_margin_lamports:
+          type: integer
+          format: int64
+          minimum: 0
+        priority_fee_quote_lamports:
+          type: integer
+          format: int64
+          minimum: 0
+    CalibrationBlock:
+      type: object
+      additionalProperties: false
+      required: [calibrated_at, metric_thresholds]
+      description: |
+        Calibration metadata for the simulated slot. Present iff the Phase 2
+        US-004 corpus covers `context_slot`. Absence means the simulator cannot
+        make a mainnet-calibrated claim about this response.
+      properties:
+        calibrated_at:
+          type: string
+          format: date-time
+          description: ISO-8601 timestamp of the corpus entry's calibration run.
+        corpus_slot:
+          type: integer
+          format: int64
+          description: Slot from `solana-plans/calibration/corpus/<slot>/`.
+        metric_thresholds:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/MetricThreshold'
+          description: |
+            Map of metric name (matching `ReplayDiff._METRICS`) to threshold
+            band as loaded from `solana-plans/calibration/thresholds.yaml`.
+    MetricThreshold:
+      type: object
+      additionalProperties: false
+      description: |
+        One band from `solana-plans/calibration/thresholds.yaml`. Exactly
+        one of `relative` or `absolute` is set per row (loader-enforced;
+        see `src/defi_sim/calibration/thresholds.py`).
+      properties:
+        relative:
+          type: number
+          format: double
+          minimum: 0.0
+          description: Maximum allowed relative error (e.g. 0.005 = 0.5%).
+        absolute:
+          type: number
+          format: double
+          minimum: 0.0
+          description: Maximum allowed absolute error in the metric's units.
+        supported:
+          type: boolean
+          default: true
+          description: |
+            False when the metric is gated on a not-yet-shipped decoder; the
+            band is informational and does not flag breaches.
+    Error:
+      type: object
+      additionalProperties: false
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          description: Stable machine-readable error code (e.g. `invalid_api_key`, `payload_too_large`).
+        message:
+          type: string
+          description: Human-readable explanation. Does not include raw bundle bytes.
+        request_id:
+          type: string
+          description: Correlation ID for support; the same value is logged server-side for the 24-hour debug retention window.

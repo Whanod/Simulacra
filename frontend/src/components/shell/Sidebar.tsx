@@ -182,8 +182,7 @@ export default function Sidebar() {
           <circle cx="16" cy="15" r="2" fill="var(--accent)" />
         </svg>
         <div>
-          <h1>DeFi Sim</h1>
-          <span>Solana Lab</span>
+          <h1>Simulacra</h1>
         </div>
       </div>
       <nav>

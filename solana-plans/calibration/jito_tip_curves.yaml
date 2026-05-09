@@ -1,0 +1,19 @@
+schema_version: 1
+captured_at: "2026-05-04T22:14:56+00:00"
+n_bundles: 54024
+n_slots: 1449
+landing_rate: 0.777155
+landing_rate_method: "1 - reverted_share over captured bundles (upper bound; pre-leader drops are unobserved)"
+cohorts:
+  "2JTw1fE2wz1SymWUQ7UqpVtrTuKjcd6mWwYwUJUCh2rq,3YQm7ujtXWJU2e9jhp2QGHpnn1ShXn12QjvzMvDgabpX,HJPjoWUrhoZzkNfRpHuieeFk9WcZWjwy6PBjZ81ngndJ":
+    n_bundles: 0
+    percentiles:
+fallback:
+  n_bundles: 54024
+  percentiles:
+    25: 1273
+    50: 2552
+    75: 10000
+    90: 100000
+    95: 500000
+    99: 3000352

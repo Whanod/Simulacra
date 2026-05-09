@@ -41,6 +41,12 @@ export const METRIC_META: Record<string, MetricMeta> = {
     digits: 2,
     direction: "higher",
   },
+  convergence_speed: {
+    label: "Convergence speed",
+    hint: "Round where rolling volatility stabilizes below threshold",
+    format: "integer",
+    direction: "lower",
+  },
   lp_fees_per_liquidity: {
     label: "LP fees ÷ liquidity",
     hint: "LP fee revenue as a share of the position's deposited notional",

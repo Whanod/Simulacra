@@ -68,6 +68,11 @@ COPY --from=node-src /usr/local/bin/node /usr/local/bin/node
 # Backend: install the defi-sim package with API extras into system site-packages
 COPY pyproject.toml ./
 COPY src ./src
+# Runtime calibration data + API specs (corpus, thresholds, OpenAPI). Code in
+# src/ resolves these via paths relative to the repo root, so they must ship
+# alongside src/ in the image. Phase docs (*.md) are stripped by the
+# .dockerignore.
+COPY solana-plans ./solana-plans
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install --no-compile ".[api]"
 

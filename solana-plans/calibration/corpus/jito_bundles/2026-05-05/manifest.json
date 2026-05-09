@@ -1,0 +1,15 @@
+{
+  "captured_at": "2026-05-04T22:14:50.571831+00:00",
+  "captured_bundles": 54024,
+  "captured_in_cohort": 0,
+  "captured_slots": 1456,
+  "cohort": [
+    "HJPjoWUrhoZzkNfRpHuieeFk9WcZWjwy6PBjZ81ngndJ",
+    "3YQm7ujtXWJU2e9jhp2QGHpnn1ShXn12QjvzMvDgabpX",
+    "2JTw1fE2wz1SymWUQ7UqpVtrTuKjcd6mWwYwUJUCh2rq"
+  ],
+  "endpoint_provider_id": "mainnet.helius-rpc.com",
+  "floor_slot": 417613860,
+  "head_slot": 417615315,
+  "started_at": "2026-05-04T21:40:45.767547+00:00"
+}
