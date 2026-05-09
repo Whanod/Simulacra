@@ -23,6 +23,7 @@ import {
   parseMetricKey,
   type ParsedMetricKey,
 } from "@/lib/api/adapters/metricMeta";
+import { formatPnl, pnlDenom } from "@/lib/utils/formatPnl";
 
 function formatValue(v: unknown): string {
   if (v === undefined || v === null) return "—";
@@ -340,6 +341,12 @@ export default function ComparePage() {
   const view = compareState.data ?? null;
   const sameSeed = runA && runB && runA.seed === runB.seed;
 
+  const leftMarket = runA?.spec.market;
+  const rightMarket = runB?.spec.market;
+  const leftDenom = pnlDenom(leftMarket, resultA);
+  const rightDenom = pnlDenom(rightMarket, resultB);
+  const denomMatch = leftDenom === rightDenom;
+
   const visibleAgents = useMemo(
     () => view?.agentSummary.slice(0, 12) ?? [],
     [view?.agentSummary],
@@ -582,15 +589,48 @@ export default function ComparePage() {
 
             {/* Price summary */}
             {view.priceSummary.length > 0 && (
-              <Card title="Price Endpoint Deltas">
+              <Card
+                title={`Price Endpoint Deltas${
+                  denomMatch ? ` (priced in ${leftDenom})` : ""
+                }`}
+              >
+                {!denomMatch && (
+                  <p
+                    style={{
+                      color: "var(--text-2)",
+                      fontSize: ".78rem",
+                      marginBottom: 8,
+                    }}
+                  >
+                    Prices are quoted per-run in each run&apos;s collateral token
+                    (left: <span className="mono">{leftDenom}</span>, right:{" "}
+                    <span className="mono">{rightDenom}</span>).
+                  </p>
+                )}
                 <div className="table-wrap" style={{ maxHeight: 220, overflowY: "auto" }}>
                   <table>
                     <thead>
                       <tr>
                         <th>Token</th>
-                        <th>Left end</th>
-                        <th>Right end</th>
-                        <th>Δ end</th>
+                        <th
+                          title={`End-of-run spot price, quoted in ${leftDenom}`}
+                        >
+                          Left end ({leftDenom})
+                        </th>
+                        <th
+                          title={`End-of-run spot price, quoted in ${rightDenom}`}
+                        >
+                          Right end ({rightDenom})
+                        </th>
+                        <th
+                          title={
+                            denomMatch
+                              ? `Right − Left, in ${leftDenom}`
+                              : "Hidden — runs use different quote denominations"
+                          }
+                        >
+                          Δ end{denomMatch ? ` (${leftDenom})` : ""}
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -625,14 +665,40 @@ export default function ComparePage() {
             {/* Agent PnL deltas */}
             {visibleAgents.length > 0 && (
               <Card title={`Agent PnL Deltas (top ${visibleAgents.length}/${view.agentSummary.length})`}>
+                {!denomMatch && (
+                  <p
+                    style={{
+                      color: "var(--text-2)",
+                      fontSize: ".78rem",
+                      marginBottom: 8,
+                    }}
+                  >
+                    ⚠ Runs use different collateral denominations (left:{" "}
+                    <span className="mono">{leftDenom}</span>, right:{" "}
+                    <span className="mono">{rightDenom}</span>). The Δ column is
+                    hidden because subtracting incompatible units is meaningless.
+                  </p>
+                )}
                 <div className="table-wrap" style={{ maxHeight: 300, overflowY: "auto" }}>
                   <table>
                     <thead>
                       <tr>
                         <th>Agent</th>
-                        <th>Left PnL</th>
-                        <th>Right PnL</th>
-                        <th>Δ PnL</th>
+                        <th title={`Realized PnL on left run, denominated in ${leftDenom}`}>
+                          Left PnL ({leftDenom})
+                        </th>
+                        <th title={`Realized PnL on right run, denominated in ${rightDenom}`}>
+                          Right PnL ({rightDenom})
+                        </th>
+                        <th
+                          title={
+                            denomMatch
+                              ? `Right − Left, denominated in ${leftDenom}`
+                              : "Hidden — runs use different denominations"
+                          }
+                        >
+                          Δ PnL{denomMatch ? ` (${leftDenom})` : ""}
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -646,9 +712,7 @@ export default function ComparePage() {
                                 (row.leftPnl ?? 0) >= 0 ? "var(--green)" : "var(--red)",
                             }}
                           >
-                            {row.leftPnl !== undefined
-                              ? `${row.leftPnl >= 0 ? "+" : ""}${row.leftPnl.toFixed(0)}`
-                              : "—"}
+                            {formatPnl(row.leftPnl, leftMarket, { result: resultA })}
                           </td>
                           <td
                             className="mono"
@@ -657,23 +721,23 @@ export default function ComparePage() {
                                 (row.rightPnl ?? 0) >= 0 ? "var(--green)" : "var(--red)",
                             }}
                           >
-                            {row.rightPnl !== undefined
-                              ? `${row.rightPnl >= 0 ? "+" : ""}${row.rightPnl.toFixed(0)}`
-                              : "—"}
+                            {formatPnl(row.rightPnl, rightMarket, { result: resultB })}
                           </td>
                           <td
                             className="mono"
                             style={{
                               color:
-                                (row.deltaPnl ?? 0) > 0
-                                  ? "var(--green)"
-                                  : (row.deltaPnl ?? 0) < 0
-                                    ? "var(--red)"
-                                    : undefined,
+                                !denomMatch
+                                  ? "var(--text-2)"
+                                  : (row.deltaPnl ?? 0) > 0
+                                    ? "var(--green)"
+                                    : (row.deltaPnl ?? 0) < 0
+                                      ? "var(--red)"
+                                      : undefined,
                             }}
                           >
-                            {row.deltaPnl !== undefined
-                              ? `${row.deltaPnl >= 0 ? "+" : ""}${row.deltaPnl.toFixed(0)}`
+                            {denomMatch
+                              ? formatPnl(row.deltaPnl, leftMarket, { result: resultA })
                               : "—"}
                           </td>
                         </tr>

@@ -20,6 +20,7 @@ import CalibrationBand, {
 } from "@/components/CalibrationBand";
 import { type AgentRow, type EvEntry, type SimMetrics, type SimRun } from "@/lib/types";
 import { hashColorVar } from "@/lib/utils/hashColor";
+import { formatPnl, pnlDenom } from "@/lib/utils/formatPnl";
 import {
   simulationService,
   type ExportFormat,
@@ -340,6 +341,10 @@ export default function ResultsPage({ params }: { params: Promise<{ runId: strin
   const isSolanaRun =
     bundle.data?.run?.spec.execution.model === "solana" ||
     bundle.data?.run?.spec.execution.model === "solana_like";
+
+  const market = bundle.data?.run?.spec.market;
+  const bundleResult = bundle.data?.result ?? null;
+  const denomLabel = pnlDenom(market, bundleResult);
 
   // ── World-market selector ─────────────────────────────
   const isWorldRun = bundle.data?.run?.market.toLowerCase().includes("world") ?? false;
@@ -1389,7 +1394,9 @@ export default function ResultsPage({ params }: { params: Promise<{ runId: strin
                       <th>Role</th>
                       <th>Balance</th>
                       <th>Volume</th>
-                      <th>PnL</th>
+                      <th title={`Realized PnL, denominated in ${denomLabel}`}>
+                        PnL ({denomLabel})
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1415,9 +1422,9 @@ export default function ResultsPage({ params }: { params: Promise<{ runId: strin
                           <td
                             className="mono"
                             style={{ color: a.pnl >= 0 ? "var(--green)" : "var(--red)" }}
+                            title={`Realized PnL in ${denomLabel}`}
                           >
-                            {a.pnl >= 0 ? "+" : ""}
-                            {a.pnl.toFixed(0)}
+                            {formatPnl(a.pnl, market, { result: bundleResult })}
                           </td>
                         </tr>
                       ))
