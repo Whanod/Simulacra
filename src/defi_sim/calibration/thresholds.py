@@ -24,15 +24,11 @@ from typing import Iterable, Mapping
 
 import yaml
 
+from defi_sim.paths import solana_plans_root
 from defi_sim.engine.replay_execution import ErrorBand
 
 
-THRESHOLDS_YAML_PATH = (
-    Path(__file__).resolve().parents[3]
-    / "solana-plans"
-    / "calibration"
-    / "thresholds.yaml"
-)
+THRESHOLDS_YAML_PATH = solana_plans_root(Path(__file__)) / "calibration" / "thresholds.yaml"
 
 
 @dataclass(frozen=True)

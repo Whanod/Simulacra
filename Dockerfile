@@ -9,12 +9,14 @@ RUN apt-get update \
 
 COPY pyproject.toml ./
 COPY src ./src
+COPY solana-plans ./solana-plans
 
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install ".[api]"
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
+    DEFI_SIM_REPO_ROOT=/app \
     DEFI_SIM_ARTIFACT_ROOT=/data/artifacts
 
 RUN mkdir -p /data/artifacts

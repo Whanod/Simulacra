@@ -22,6 +22,8 @@ import gzip
 import json
 from pathlib import Path
 
+from defi_sim.paths import solana_plans_root
+
 __all__ = ["corpus_root", "load_corpus_fixture"]
 
 
@@ -30,7 +32,7 @@ def corpus_root() -> Path:
 
     Resolves to ``<repo_root>/solana-plans/calibration/corpus/``.
     """
-    return Path(__file__).resolve().parents[3] / "solana-plans" / "calibration" / "corpus"
+    return solana_plans_root(Path(__file__)) / "calibration" / "corpus"
 
 
 def load_corpus_fixture(
