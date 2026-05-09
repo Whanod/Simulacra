@@ -147,3 +147,57 @@ export function formatPnl(
   const sign = signed && value >= 0 ? "+" : "";
   return `${sign}${formatScaled(value, decimals)} ${symbol}`;
 }
+
+/**
+ * Look up a token's decimals from the spec's tokens[] list, falling back to
+ * the hard-coded common-token table, then to `market.token_decimals`, then 0.
+ */
+export function tokenDecimals(
+  tokenId: string,
+  market?: RunSpec["market"] | null,
+): number {
+  const tokens = market?.tokens ?? [];
+  const tok =
+    tokens.find((t) => t.id === tokenId) ??
+    tokens.find((t) => t.symbol === tokenId);
+  if (tok?.decimals !== undefined) return tok.decimals;
+  const known = KNOWN_DECIMALS[tokenId.toUpperCase()];
+  if (known !== undefined) return known;
+  return market?.token_decimals ?? 0;
+}
+
+export function tokenSymbol(
+  tokenId: string,
+  market?: RunSpec["market"] | null,
+): string {
+  const tokens = market?.tokens ?? [];
+  const tok =
+    tokens.find((t) => t.id === tokenId) ??
+    tokens.find((t) => t.symbol === tokenId);
+  return tok?.symbol ?? tokenId;
+}
+
+/** Format a scaled token amount, e.g. `1,234.56 USDC`. */
+export function formatTokenAmount(
+  value: number | null | undefined,
+  tokenId: string,
+  market?: RunSpec["market"] | null,
+): string {
+  if (value === null || value === undefined || Number.isNaN(value)) return "—";
+  const decimals = tokenDecimals(tokenId, market);
+  const symbol = tokenSymbol(tokenId, market);
+  return `${formatScaled(value, decimals)} ${symbol}`;
+}
+
+/** Multi-line breakdown of a balances dict — one token per line. */
+export function formatBalancesBreakdown(
+  balances: Record<string, number> | undefined,
+  market?: RunSpec["market"] | null,
+): string {
+  if (!balances) return "";
+  const entries = Object.entries(balances)
+    .filter(([, v]) => typeof v === "number" && v !== 0)
+    .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]));
+  if (entries.length === 0) return "";
+  return entries.map(([id, v]) => formatTokenAmount(v, id, market)).join("\n");
+}

@@ -156,6 +156,7 @@ export interface ApiRunResult {
       role?: { name?: string; tags?: string[] };
       balances?: Record<string, number>;
       cumulative_volume?: number;
+      cumulative_volume_quote?: number;
       realized_pnl?: number;
     }
   >;
@@ -1484,6 +1485,10 @@ export function agentRowsFromResult(result: ApiRunResult): AgentRow[] {
       (s: number, v) => s + (typeof v === "number" ? v : 0),
       0,
     );
+    const cleanBalances: Record<string, number> = {};
+    for (const [k, v] of Object.entries(balances)) {
+      if (typeof v === "number") cleanBalances[k] = v;
+    }
     const agentId = state.agent_id != null ? String(state.agent_id) : String(key);
     rows.push({
       id: idx++,
@@ -1491,8 +1496,13 @@ export function agentRowsFromResult(result: ApiRunResult): AgentRow[] {
       role: normalizeRole(state.role?.name),
       balance,
       volume: state.cumulative_volume ?? 0,
+      volumeQuote:
+        typeof state.cumulative_volume_quote === "number"
+          ? state.cumulative_volume_quote
+          : undefined,
       pnl: state.realized_pnl ?? 0,
       trades: 0,
+      balances: cleanBalances,
     });
   }
   return rows;

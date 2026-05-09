@@ -20,7 +20,13 @@ import CalibrationBand, {
 } from "@/components/CalibrationBand";
 import { type AgentRow, type EvEntry, type SimMetrics, type SimRun } from "@/lib/types";
 import { hashColorVar } from "@/lib/utils/hashColor";
-import { formatPnl, pnlDenom } from "@/lib/utils/formatPnl";
+import {
+  formatBalancesBreakdown,
+  formatPnl,
+  formatTokenAmount,
+  pnlDenom,
+  resolvePnlDenom,
+} from "@/lib/utils/formatPnl";
 import {
   simulationService,
   type ExportFormat,
@@ -344,7 +350,17 @@ export default function ResultsPage({ params }: { params: Promise<{ runId: strin
 
   const market = bundle.data?.run?.spec.market;
   const bundleResult = bundle.data?.result ?? null;
-  const denomLabel = pnlDenom(market, bundleResult);
+  const { symbol: denomLabel } = resolvePnlDenom(market, bundleResult);
+  // Find the actual token id used for the denom — needed to look up
+  // per-token balances in the agent row breakdown.
+  const denomTokenId =
+    market?.tokens?.find((t) => t.symbol === denomLabel)?.id ?? denomLabel;
+  // Old runs (pre-`cumulative_volume_quote`) have no quote-side volume,
+  // and some markets (cfamm, …) don't emit it. Detect once so the column
+  // header is honest about what it is showing.
+  const hasQuoteVolume = (bundle.data?.agents ?? []).some(
+    (a) => a.volumeQuote !== undefined,
+  );
 
   // ── World-market selector ─────────────────────────────
   const isWorldRun = bundle.data?.run?.market.toLowerCase().includes("world") ?? false;
@@ -1392,8 +1408,20 @@ export default function ResultsPage({ params }: { params: Promise<{ runId: strin
                     <tr>
                       <th>Agent</th>
                       <th>Role</th>
-                      <th>Balance</th>
-                      <th>Volume</th>
+                      <th
+                        title={`Balance of ${denomLabel} held by the agent. Hover a row for the full per-token breakdown.`}
+                      >
+                        Balance ({denomLabel})
+                      </th>
+                      <th
+                        title={
+                          hasQuoteVolume
+                            ? `Cumulative swap volume, denominated in ${denomLabel} (sum of each swap's quote-side amount).`
+                            : "Cumulative swap volume in raw token base-units. This run was created before per-agent quote volume tracking; re-run to get USDC-denominated values."
+                        }
+                      >
+                        Volume ({hasQuoteVolume ? denomLabel : "raw"})
+                      </th>
                       <th title={`Realized PnL, denominated in ${denomLabel}`}>
                         PnL ({denomLabel})
                       </th>
@@ -1417,8 +1445,28 @@ export default function ResultsPage({ params }: { params: Promise<{ runId: strin
                           <td>
                             <span style={{ color: hashColorVar(a.role) }}>{a.role}</span>
                           </td>
-                          <td className="mono">{a.balance.toLocaleString()}</td>
-                          <td className="mono">{a.volume.toLocaleString()}</td>
+                          <td
+                            className="mono"
+                            title={formatBalancesBreakdown(a.balances, market)}
+                          >
+                            {formatTokenAmount(
+                              a.balances?.[denomTokenId] ?? 0,
+                              denomTokenId,
+                              market,
+                            )}
+                          </td>
+                          <td
+                            className="mono"
+                            title={
+                              a.volumeQuote !== undefined
+                                ? `Cumulative swap volume in ${denomLabel}.`
+                                : "Backend did not report quote-side volume; showing raw mixed-decimal sum."
+                            }
+                          >
+                            {a.volumeQuote !== undefined
+                              ? formatTokenAmount(a.volumeQuote, denomTokenId, market)
+                              : a.volume.toLocaleString()}
+                          </td>
                           <td
                             className="mono"
                             style={{ color: a.pnl >= 0 ? "var(--green)" : "var(--red)" }}

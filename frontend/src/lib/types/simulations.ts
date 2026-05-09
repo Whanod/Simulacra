@@ -363,8 +363,17 @@ export interface AgentRow {
   role: string;
   balance: number;
   volume: number;
+  /**
+   * Run-cumulative swap volume in raw quote-token units. Populated by
+   * markets that can attribute each swap to a single quote side (whirlpool:
+   * token B). Zero / undefined for markets that don't, in which case the
+   * UI falls back to `volume` (the mixed-decimal raw sum).
+   */
+  volumeQuote?: number;
   pnl: number;
   trades: number;
+  /** Per-token balance map (raw base-units) when available from the result. */
+  balances?: Record<string, number>;
 }
 
 export interface EvEntry {
