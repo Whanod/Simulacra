@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import sqlite3
 import threading
 from datetime import datetime, timezone
@@ -58,6 +59,9 @@ class ArtifactStore(Protocol):
         ...
 
     def count_runs(self) -> int:
+        ...
+
+    def purge_runs(self) -> dict[str, int]:
         ...
 
     def get_run_spec(self, run_id: str) -> dict[str, Any] | None:
@@ -450,6 +454,28 @@ class LocalArtifactStore:
         with self._lock, self._connect() as conn:
             row = conn.execute("SELECT COUNT(*) AS n FROM runs").fetchone()
         return int(row["n"] if row is not None else 0)
+
+    def purge_runs(self) -> dict[str, int]:
+        """Delete every run row, every round snapshot, every named snapshot,
+        and every blob owned by a run. Sweeps and reports are left intact."""
+        with self._lock, self._connect() as conn:
+            run_count = int(conn.execute("SELECT COUNT(*) AS n FROM runs").fetchone()["n"])
+            round_count = int(conn.execute("SELECT COUNT(*) AS n FROM round_snapshots").fetchone()["n"])
+            named_count = int(conn.execute("SELECT COUNT(*) AS n FROM named_snapshots").fetchone()["n"])
+            conn.execute("DELETE FROM round_snapshots")
+            conn.execute("DELETE FROM named_snapshots")
+            conn.execute("DELETE FROM runs")
+
+        for sub in ("runs", "snapshots"):
+            target = self._blobs_root / sub
+            if target.exists():
+                shutil.rmtree(target, ignore_errors=True)
+
+        return {
+            "runs": run_count,
+            "round_snapshots": round_count,
+            "named_snapshots": named_count,
+        }
 
     def get_run_spec(self, run_id: str) -> dict[str, Any] | None:
         with self._lock, self._connect() as conn:
