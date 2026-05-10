@@ -169,18 +169,7 @@ export default function Sidebar() {
   return (
     <aside id="sidebar">
       <div className="logo">
-        <svg viewBox="0 0 28 28" fill="none">
-          <rect x="2" y="2" width="24" height="24" rx="6" stroke="var(--accent)" strokeWidth="2" />
-          <path
-            d="M8 18L12 10L16 15L20 8"
-            stroke="var(--green)"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <circle cx="12" cy="10" r="2" fill="var(--accent)" />
-          <circle cx="16" cy="15" r="2" fill="var(--accent)" />
-        </svg>
+        <img src="/logo.png" alt="Simulacra" />
         <div>
           <h1>Simulacra</h1>
         </div>
