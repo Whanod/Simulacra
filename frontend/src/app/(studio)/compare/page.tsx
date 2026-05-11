@@ -221,9 +221,15 @@ function RecommendedCompareCard({ row }: { row: RecommendedRow }) {
 }
 
 export default function ComparePage() {
-  const { runs, compareTargets, toggleCompareTarget } = useStudioStore();
+  const { runs, compareTargets, toggleCompareTarget, refreshRuns } = useStudioStore();
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  // Pick up runs created in other tabs/pages (e.g. a Build & Run from the
+  // Builder) without forcing a full reload.
+  useEffect(() => {
+    void refreshRuns();
+  }, [refreshRuns]);
 
   // One-shot hydration from `?a=X&b=Y`: on first render, if the URL has query
   // params that differ from the zustand compareTargets, adopt them. After

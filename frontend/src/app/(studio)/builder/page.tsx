@@ -1451,9 +1451,19 @@ export default function BuilderPage() {
     if (!templates) return;
     const match = templates.find((t) => t.id === queryTemplateId);
     if (!match) return;
-    consumedTemplateRef.current = queryTemplateId;
     applyTemplate(match);
+    consumedTemplateRef.current = queryTemplateId;
   }, [searchParams, templatesState.data, applyTemplate]);
+
+  // True when we landed via `?template=X` and the auto-apply effect
+  // hasn't run yet (because templates are still loading). Used to gate
+  // the picker so the user can't click a stale card mid-flight.
+  const pendingQueryTemplate = (() => {
+    const id = searchParams.get("template");
+    if (!id) return null;
+    if (consumedTemplateRef.current === id) return null;
+    return id;
+  })();
 
   // ── Raw-mode switch handlers (US-014) ─────────────────
   const enterRawMode = useCallback(() => {
@@ -3810,7 +3820,14 @@ export default function BuilderPage() {
         }
       >
         {/* ════════ STEP 1: TEMPLATE PICKER ════════ */}
-        {step === "pick" && (
+        {step === "pick" && pendingQueryTemplate && (
+          <Card title="Applying template…">
+            <p style={{ color: "var(--text-2)", fontSize: ".9rem", margin: 0 }}>
+              Loading <code>{pendingQueryTemplate}</code>…
+            </p>
+          </Card>
+        )}
+        {step === "pick" && !pendingQueryTemplate && (
           <Card title="Start from Template">
             {templatesState.loading && (
               <div className="grid-4" style={{ marginBottom: 16 }}>

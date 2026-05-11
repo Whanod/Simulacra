@@ -70,6 +70,7 @@ interface StudioStore {
   runs: SimRun[];
   selectedRunId: string | null;
   selectRun: (id: string) => void;
+  refreshRuns: () => Promise<void>;
   agents: AgentRow[];
 
   // Runner
@@ -217,6 +218,16 @@ export default function StudioStoreProvider({ children }: { children: React.Reac
       .catch((err: unknown) => {
         console.error("Failed to load agents", err);
       });
+  }, [sharedMode]);
+
+  const refreshRuns = useCallback(async () => {
+    if (sharedMode === true) return;
+    try {
+      const next = await simulationService.listRuns();
+      setRuns(next);
+    } catch (err) {
+      console.error("Failed to refresh runs", err);
+    }
   }, [sharedMode]);
 
   // ── Compare ───────────────────────────────────────────
@@ -421,6 +432,7 @@ export default function StudioStoreProvider({ children }: { children: React.Reac
       runs,
       selectedRunId,
       selectRun: setSelectedRunId,
+      refreshRuns,
       agents,
       runner,
       setIsPlaying,
@@ -456,6 +468,7 @@ export default function StudioStoreProvider({ children }: { children: React.Reac
     [
       runs,
       selectedRunId,
+      refreshRuns,
       agents,
       runner,
       setIsPlaying,
