@@ -1,0 +1,432 @@
+{
+  "agent_id": "noise-1",
+  "run_id": "<run-0>",
+  "timeline": [
+    {
+      "epoch": 1,
+      "round": 1,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "noise-1",
+        "balances": {
+          "USDC": 1000000000
+        },
+        "cumulative_volume": 0,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "noise",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 1
+    },
+    {
+      "epoch": 2,
+      "round": 2,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "noise-1",
+        "balances": {
+          "USDC": 1000000000
+        },
+        "cumulative_volume": 0,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "noise",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 2
+    },
+    {
+      "epoch": 3,
+      "round": 3,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "noise-1",
+        "balances": {
+          "USDC": 1000000000
+        },
+        "cumulative_volume": 0,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "noise",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 3
+    },
+    {
+      "epoch": 4,
+      "round": 4,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "noise-1",
+        "balances": {
+          "USDC": 1000000328
+        },
+        "cumulative_volume": 231,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "noise",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 4
+    },
+    {
+      "epoch": 5,
+      "round": 5,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "noise-1",
+        "balances": {
+          "USDC": 1000000328
+        },
+        "cumulative_volume": 231,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "noise",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 5
+    },
+    {
+      "epoch": 6,
+      "round": 6,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "noise-1",
+        "balances": {
+          "USDC": 1000001580
+        },
+        "cumulative_volume": 1119,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "noise",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 6
+    },
+    {
+      "epoch": 7,
+      "round": 7,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "noise-1",
+        "balances": {
+          "USDC": 1000001580
+        },
+        "cumulative_volume": 1119,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "noise",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 7
+    },
+    {
+      "epoch": 8,
+      "round": 8,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "noise-1",
+        "balances": {
+          "USDC": 1000002454
+        },
+        "cumulative_volume": 1739,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "noise",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 8
+    },
+    {
+      "epoch": 9,
+      "round": 9,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "noise-1",
+        "balances": {
+          "USDC": 1000002454
+        },
+        "cumulative_volume": 1739,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "noise",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 9
+    },
+    {
+      "epoch": 10,
+      "round": 10,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "noise-1",
+        "balances": {
+          "USDC": 1000002454
+        },
+        "cumulative_volume": 1739,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "noise",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 10
+    },
+    {
+      "epoch": 11,
+      "round": 11,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "noise-1",
+        "balances": {
+          "USDC": 1000002454
+        },
+        "cumulative_volume": 1739,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "noise",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 11
+    },
+    {
+      "epoch": 12,
+      "round": 12,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "noise-1",
+        "balances": {
+          "USDC": 1000002454
+        },
+        "cumulative_volume": 1739,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "noise",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 12
+    },
+    {
+      "epoch": 13,
+      "round": 13,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "noise-1",
+        "balances": {
+          "USDC": 1000002454
+        },
+        "cumulative_volume": 1739,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "noise",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 13
+    },
+    {
+      "epoch": 14,
+      "round": 14,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "noise-1",
+        "balances": {
+          "USDC": 1000002454
+        },
+        "cumulative_volume": 1739,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "noise",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 14
+    },
+    {
+      "epoch": 15,
+      "round": 15,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "noise-1",
+        "balances": {
+          "SOL": 687,
+          "USDC": 1000001968
+        },
+        "cumulative_volume": 2225,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "noise",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 15
+    },
+    {
+      "epoch": 16,
+      "round": 16,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "noise-1",
+        "balances": {
+          "SOL": 687,
+          "USDC": 1000001968
+        },
+        "cumulative_volume": 2225,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "noise",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 16
+    },
+    {
+      "epoch": 17,
+      "round": 17,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "noise-1",
+        "balances": {
+          "SOL": 687,
+          "USDC": 1000002661
+        },
+        "cumulative_volume": 2717,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "noise",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 17
+    },
+    {
+      "epoch": 18,
+      "round": 18,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "noise-1",
+        "balances": {
+          "SOL": 687,
+          "USDC": 1000002661
+        },
+        "cumulative_volume": 2717,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "noise",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 18
+    },
+    {
+      "epoch": 19,
+      "round": 19,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "noise-1",
+        "balances": {
+          "SOL": 687,
+          "USDC": 1000003988
+        },
+        "cumulative_volume": 3659,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "noise",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 19
+    },
+    {
+      "epoch": 20,
+      "round": 20,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "noise-1",
+        "balances": {
+          "SOL": 687,
+          "USDC": 1000003988
+        },
+        "cumulative_volume": 3659,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "noise",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 20
+    }
+  ]
+}

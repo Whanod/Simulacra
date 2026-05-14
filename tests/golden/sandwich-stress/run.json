@@ -1,0 +1,1529 @@
+{
+  "result": {
+    "__type__": "SimulationResult",
+    "agent_final_states": {
+      "lp-1": {
+        "__type__": "AgentState",
+        "agent_id": "lp-1",
+        "balances": {
+          "USDC": 1001191159
+        },
+        "cumulative_volume": 0,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "lp",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "noise-1": {
+        "__type__": "AgentState",
+        "agent_id": "noise-1",
+        "balances": {
+          "SOL": 5000001129,
+          "USDC": 499998869
+        },
+        "cumulative_volume": 1131,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "noise",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "sandwich-1": {
+        "__type__": "AgentState",
+        "agent_id": "sandwich-1",
+        "balances": {
+          "SOL": 792343601,
+          "USDC": 205891135
+        },
+        "cumulative_volume": 794108865,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "manipulator",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      }
+    },
+    "cancelled": false,
+    "fee_history": [
+      {
+        "lp": {
+          "USDC": 150000
+        },
+        "protocol": {
+          "USDC": 150000
+        }
+      },
+      {
+        "lp": {
+          "USDC": 135000
+        },
+        "protocol": {
+          "USDC": 135000
+        }
+      },
+      {
+        "lp": {
+          "USDC": 121500
+        },
+        "protocol": {
+          "USDC": 121500
+        }
+      },
+      {
+        "lp": {
+          "USDC": 109350
+        },
+        "protocol": {
+          "USDC": 109350
+        }
+      },
+      {
+        "lp": {
+          "USDC": 98415
+        },
+        "protocol": {
+          "USDC": 98415
+        }
+      },
+      {
+        "lp": {
+          "USDC": 88573
+        },
+        "protocol": {
+          "USDC": 88573
+        }
+      },
+      {
+        "lp": {
+          "USDC": 79716
+        },
+        "protocol": {
+          "USDC": 79716
+        }
+      },
+      {
+        "lp": {
+          "USDC": 71744
+        },
+        "protocol": {
+          "USDC": 71744
+        }
+      },
+      {
+        "lp": {
+          "USDC": 64570
+        },
+        "protocol": {
+          "USDC": 64570
+        }
+      },
+      {
+        "lp": {
+          "USDC": 58113
+        },
+        "protocol": {
+          "USDC": 58113
+        }
+      },
+      {
+        "lp": {
+          "USDC": 52301
+        },
+        "protocol": {
+          "USDC": 52301
+        }
+      },
+      {
+        "lp": {
+          "USDC": 47071
+        },
+        "protocol": {
+          "USDC": 47071
+        }
+      },
+      {
+        "lp": {
+          "USDC": 42364
+        },
+        "protocol": {
+          "USDC": 42364
+        }
+      },
+      {
+        "lp": {
+          "USDC": 38127
+        },
+        "protocol": {
+          "USDC": 38127
+        }
+      },
+      {
+        "lp": {
+          "USDC": 34315
+        },
+        "protocol": {
+          "USDC": 34315
+        }
+      }
+    ],
+    "metadata": {
+      "derived_metrics": {
+        "convergence_speed": 0,
+        "exitability": null,
+        "kl_divergence": 0.800061395477,
+        "manipulation_cost": null,
+        "slippage": 0
+      },
+      "fee_destination_balances": {
+        "protocol": {
+          "USDC": 1191159
+        }
+      },
+      "parameter_state": {
+        "history": [],
+        "params": {},
+        "pending": []
+      }
+    },
+    "num_rounds": 15,
+    "num_rounds_executed": 15,
+    "price_history": [
+      {
+        "SOL": 999806617,
+        "USDC": 193369
+      },
+      {
+        "SOL": 999834659,
+        "USDC": 165339
+      },
+      {
+        "SOL": 999854984,
+        "USDC": 145014
+      },
+      {
+        "SOL": 999870235,
+        "USDC": 129764
+      },
+      {
+        "SOL": 999881992,
+        "USDC": 118005
+      },
+      {
+        "SOL": 999891261,
+        "USDC": 108737
+      },
+      {
+        "SOL": 999898700,
+        "USDC": 101299
+      },
+      {
+        "SOL": 999904761,
+        "USDC": 95238
+      },
+      {
+        "SOL": 999909761,
+        "USDC": 90236
+      },
+      {
+        "SOL": 999913933,
+        "USDC": 86065
+      },
+      {
+        "SOL": 999917447,
+        "USDC": 82552
+      },
+      {
+        "SOL": 999920427,
+        "USDC": 79572
+      },
+      {
+        "SOL": 999922973,
+        "USDC": 77025
+      },
+      {
+        "SOL": 999925162,
+        "USDC": 74837
+      },
+      {
+        "SOL": 999927053,
+        "USDC": 72945
+      }
+    ],
+    "round_snapshots": [
+      {
+        "__type__": "RoundSnapshot",
+        "agent_states": {
+          "lp-1": {
+            "__type__": "AgentState",
+            "agent_id": "lp-1",
+            "balances": {
+              "USDC": 1000150000
+            },
+            "cumulative_volume": 0,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "lp",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "noise-1": {
+            "__type__": "AgentState",
+            "agent_id": "noise-1",
+            "balances": {
+              "SOL": 5000000000,
+              "USDC": 500000000
+            },
+            "cumulative_volume": 0,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "noise",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "sandwich-1": {
+            "__type__": "AgentState",
+            "agent_id": "sandwich-1",
+            "balances": {
+              "SOL": 100275953,
+              "USDC": 900000000
+            },
+            "cumulative_volume": 100000000,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "manipulator",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          }
+        },
+        "all_market_states": null,
+        "bundle_outcomes": [],
+        "current_leader": null,
+        "current_slot": null,
+        "epoch": 1,
+        "market_state": {
+          "__type__": "AmmSnapshot",
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "1213742873892083816"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999806617,
+            "USDC": 193369
+          },
+          "reserves": {
+            "SOL": 106530,
+            "USDC": 1086380054
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1101700000
+        },
+        "metrics": {},
+        "round": 1,
+        "timestamp": 1
+      },
+      {
+        "__type__": "RoundSnapshot",
+        "agent_states": {
+          "lp-1": {
+            "__type__": "AgentState",
+            "agent_id": "lp-1",
+            "balances": {
+              "USDC": 1000285000
+            },
+            "cumulative_volume": 0,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "lp",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "noise-1": {
+            "__type__": "AgentState",
+            "agent_id": "noise-1",
+            "balances": {
+              "SOL": 5000000000,
+              "USDC": 500000000
+            },
+            "cumulative_volume": 0,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "noise",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "sandwich-1": {
+            "__type__": "AgentState",
+            "agent_id": "sandwich-1",
+            "balances": {
+              "SOL": 190013983,
+              "USDC": 810000000
+            },
+            "cumulative_volume": 190000000,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "manipulator",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          }
+        },
+        "all_market_states": null,
+        "bundle_outcomes": [],
+        "current_leader": null,
+        "current_slot": null,
+        "epoch": 2,
+        "market_state": {
+          "__type__": "AmmSnapshot",
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "1419505443637692916"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999834659,
+            "USDC": 165339
+          },
+          "reserves": {
+            "SOL": 98500,
+            "USDC": 1176110054
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1191430000
+        },
+        "metrics": {},
+        "round": 2,
+        "timestamp": 2
+      },
+      {
+        "__type__": "RoundSnapshot",
+        "agent_states": {
+          "lp-1": {
+            "__type__": "AgentState",
+            "agent_id": "lp-1",
+            "balances": {
+              "USDC": 1000406500
+            },
+            "cumulative_volume": 0,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "lp",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "noise-1": {
+            "__type__": "AgentState",
+            "agent_id": "noise-1",
+            "balances": {
+              "SOL": 5000000000,
+              "USDC": 500000000
+            },
+            "cumulative_volume": 0,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "noise",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "sandwich-1": {
+            "__type__": "AgentState",
+            "agent_id": "sandwich-1",
+            "balances": {
+              "SOL": 270777236,
+              "USDC": 729000000
+            },
+            "cumulative_volume": 271000000,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "manipulator",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          }
+        },
+        "all_market_states": null,
+        "bundle_outcomes": [],
+        "current_leader": null,
+        "current_slot": null,
+        "epoch": 3,
+        "market_state": {
+          "__type__": "AmmSnapshot",
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "1618459761355573925"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999854984,
+            "USDC": 145014
+          },
+          "reserves": {
+            "SOL": 92247,
+            "USDC": 1256867054
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1272187000
+        },
+        "metrics": {},
+        "round": 3,
+        "timestamp": 3
+      },
+      {
+        "__type__": "RoundSnapshot",
+        "agent_states": {
+          "lp-1": {
+            "__type__": "AgentState",
+            "agent_id": "lp-1",
+            "balances": {
+              "USDC": 1000515850
+            },
+            "cumulative_volume": 0,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "lp",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "noise-1": {
+            "__type__": "AgentState",
+            "agent_id": "noise-1",
+            "balances": {
+              "SOL": 5000000000,
+              "USDC": 500000000
+            },
+            "cumulative_volume": 0,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "noise",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "sandwich-1": {
+            "__type__": "AgentState",
+            "agent_id": "sandwich-1",
+            "balances": {
+              "SOL": 343463522,
+              "USDC": 656100000
+            },
+            "cumulative_volume": 343900000,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "manipulator",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          }
+        },
+        "all_market_states": null,
+        "bundle_outcomes": [],
+        "current_leader": null,
+        "current_slot": null,
+        "epoch": 4,
+        "market_state": {
+          "__type__": "AmmSnapshot",
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "1808670743599362437"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999870235,
+            "USDC": 129764
+          },
+          "reserves": {
+            "SOL": 87261,
+            "USDC": 1329548354
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1344868300
+        },
+        "metrics": {},
+        "round": 4,
+        "timestamp": 4
+      },
+      {
+        "__type__": "RoundSnapshot",
+        "agent_states": {
+          "lp-1": {
+            "__type__": "AgentState",
+            "agent_id": "lp-1",
+            "balances": {
+              "USDC": 1000614265
+            },
+            "cumulative_volume": 0,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "lp",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "noise-1": {
+            "__type__": "AgentState",
+            "agent_id": "noise-1",
+            "balances": {
+              "SOL": 5000000000,
+              "USDC": 500000000
+            },
+            "cumulative_volume": 0,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "noise",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "sandwich-1": {
+            "__type__": "AgentState",
+            "agent_id": "sandwich-1",
+            "balances": {
+              "SOL": 408880739,
+              "USDC": 590490000
+            },
+            "cumulative_volume": 409510000,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "manipulator",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          }
+        },
+        "all_market_states": null,
+        "bundle_outcomes": [],
+        "current_leader": null,
+        "current_slot": null,
+        "epoch": 5,
+        "market_state": {
+          "__type__": "AmmSnapshot",
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "1988893821970884452"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999881992,
+            "USDC": 118005
+          },
+          "reserves": {
+            "SOL": 83214,
+            "USDC": 1394961524
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1410281470
+        },
+        "metrics": {},
+        "round": 5,
+        "timestamp": 5
+      },
+      {
+        "__type__": "RoundSnapshot",
+        "agent_states": {
+          "lp-1": {
+            "__type__": "AgentState",
+            "agent_id": "lp-1",
+            "balances": {
+              "USDC": 1000702838
+            },
+            "cumulative_volume": 0,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "lp",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "noise-1": {
+            "__type__": "AgentState",
+            "agent_id": "noise-1",
+            "balances": {
+              "SOL": 5000000000,
+              "USDC": 500000000
+            },
+            "cumulative_volume": 0,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "noise",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "sandwich-1": {
+            "__type__": "AgentState",
+            "agent_id": "sandwich-1",
+            "balances": {
+              "SOL": 467755927,
+              "USDC": 531441000
+            },
+            "cumulative_volume": 468559000,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "manipulator",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          }
+        },
+        "all_market_states": null,
+        "bundle_outcomes": [],
+        "current_leader": null,
+        "current_slot": null,
+        "epoch": 6,
+        "market_state": {
+          "__type__": "AmmSnapshot",
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "2158411484611464052"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999891261,
+            "USDC": 108737
+          },
+          "reserves": {
+            "SOL": 79879,
+            "USDC": 1453833377
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1469153323
+        },
+        "metrics": {},
+        "round": 6,
+        "timestamp": 6
+      },
+      {
+        "__type__": "RoundSnapshot",
+        "agent_states": {
+          "lp-1": {
+            "__type__": "AgentState",
+            "agent_id": "lp-1",
+            "balances": {
+              "USDC": 1000782554
+            },
+            "cumulative_volume": 0,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "lp",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "noise-1": {
+            "__type__": "AgentState",
+            "agent_id": "noise-1",
+            "balances": {
+              "SOL": 5000000632,
+              "USDC": 499999367
+            },
+            "cumulative_volume": 633,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "noise",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "sandwich-1": {
+            "__type__": "AgentState",
+            "agent_id": "sandwich-1",
+            "balances": {
+              "SOL": 520743376,
+              "USDC": 478296900
+            },
+            "cumulative_volume": 521703100,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "manipulator",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          }
+        },
+        "all_market_states": null,
+        "bundle_outcomes": [],
+        "current_leader": null,
+        "current_slot": null,
+        "epoch": 7,
+        "market_state": {
+          "__type__": "AmmSnapshot",
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "2316905986630768541"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999898700,
+            "USDC": 101299
+          },
+          "reserves": {
+            "SOL": 77098,
+            "USDC": 1506818677
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1522138623
+        },
+        "metrics": {},
+        "round": 7,
+        "timestamp": 7
+      },
+      {
+        "__type__": "RoundSnapshot",
+        "agent_states": {
+          "lp-1": {
+            "__type__": "AgentState",
+            "agent_id": "lp-1",
+            "balances": {
+              "USDC": 1000854298
+            },
+            "cumulative_volume": 0,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "lp",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "noise-1": {
+            "__type__": "AgentState",
+            "agent_id": "noise-1",
+            "balances": {
+              "SOL": 5000000632,
+              "USDC": 499999367
+            },
+            "cumulative_volume": 633,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "noise",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "sandwich-1": {
+            "__type__": "AgentState",
+            "agent_id": "sandwich-1",
+            "balances": {
+              "SOL": 568431919,
+              "USDC": 430467210
+            },
+            "cumulative_volume": 569532790,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "manipulator",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          }
+        },
+        "all_market_states": null,
+        "bundle_outcomes": [],
+        "current_leader": null,
+        "current_slot": null,
+        "epoch": 8,
+        "market_state": {
+          "__type__": "AmmSnapshot",
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "2464349976731447540"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999904761,
+            "USDC": 95238
+          },
+          "reserves": {
+            "SOL": 74756,
+            "USDC": 1554504878
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1569824824
+        },
+        "metrics": {},
+        "round": 8,
+        "timestamp": 8
+      },
+      {
+        "__type__": "RoundSnapshot",
+        "agent_states": {
+          "lp-1": {
+            "__type__": "AgentState",
+            "agent_id": "lp-1",
+            "balances": {
+              "USDC": 1000918868
+            },
+            "cumulative_volume": 0,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "lp",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "noise-1": {
+            "__type__": "AgentState",
+            "agent_id": "noise-1",
+            "balances": {
+              "SOL": 5000000632,
+              "USDC": 499999367
+            },
+            "cumulative_volume": 633,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "noise",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "sandwich-1": {
+            "__type__": "AgentState",
+            "agent_id": "sandwich-1",
+            "balances": {
+              "SOL": 611351489,
+              "USDC": 387420489
+            },
+            "cumulative_volume": 612579511,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "manipulator",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          }
+        },
+        "all_market_states": null,
+        "bundle_outcomes": [],
+        "current_leader": null,
+        "current_slot": null,
+        "epoch": 9,
+        "market_state": {
+          "__type__": "AmmSnapshot",
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "2600938062072493960"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999909761,
+            "USDC": 90236
+          },
+          "reserves": {
+            "SOL": 72767,
+            "USDC": 1597422459
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1612742405
+        },
+        "metrics": {},
+        "round": 9,
+        "timestamp": 9
+      },
+      {
+        "__type__": "RoundSnapshot",
+        "agent_states": {
+          "lp-1": {
+            "__type__": "AgentState",
+            "agent_id": "lp-1",
+            "balances": {
+              "USDC": 1000976981
+            },
+            "cumulative_volume": 0,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "lp",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "noise-1": {
+            "__type__": "AgentState",
+            "agent_id": "noise-1",
+            "balances": {
+              "SOL": 5000000632,
+              "USDC": 499999367
+            },
+            "cumulative_volume": 633,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "noise",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "sandwich-1": {
+            "__type__": "AgentState",
+            "agent_id": "sandwich-1",
+            "balances": {
+              "SOL": 649979013,
+              "USDC": 348678441
+            },
+            "cumulative_volume": 651321559,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "manipulator",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          }
+        },
+        "all_market_states": null,
+        "bundle_outcomes": [],
+        "current_leader": null,
+        "current_slot": null,
+        "epoch": 10,
+        "market_state": {
+          "__type__": "AmmSnapshot",
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "2727017017974697160"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999913933,
+            "USDC": 86065
+          },
+          "reserves": {
+            "SOL": 71065,
+            "USDC": 1636048281
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1651368227
+        },
+        "metrics": {},
+        "round": 10,
+        "timestamp": 10
+      },
+      {
+        "__type__": "RoundSnapshot",
+        "agent_states": {
+          "lp-1": {
+            "__type__": "AgentState",
+            "agent_id": "lp-1",
+            "balances": {
+              "USDC": 1001029282
+            },
+            "cumulative_volume": 0,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "lp",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "noise-1": {
+            "__type__": "AgentState",
+            "agent_id": "noise-1",
+            "balances": {
+              "SOL": 5000000632,
+              "USDC": 499999367
+            },
+            "cumulative_volume": 633,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "noise",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "sandwich-1": {
+            "__type__": "AgentState",
+            "agent_id": "sandwich-1",
+            "balances": {
+              "SOL": 684743720,
+              "USDC": 313810597
+            },
+            "cumulative_volume": 686189403,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "manipulator",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          }
+        },
+        "all_market_states": null,
+        "bundle_outcomes": [],
+        "current_leader": null,
+        "current_slot": null,
+        "epoch": 11,
+        "market_state": {
+          "__type__": "AmmSnapshot",
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "2843039326841216077"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999917447,
+            "USDC": 82552
+          },
+          "reserves": {
+            "SOL": 69599,
+            "USDC": 1670811522
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1686131468
+        },
+        "metrics": {},
+        "round": 11,
+        "timestamp": 11
+      },
+      {
+        "__type__": "RoundSnapshot",
+        "agent_states": {
+          "lp-1": {
+            "__type__": "AgentState",
+            "agent_id": "lp-1",
+            "balances": {
+              "USDC": 1001076353
+            },
+            "cumulative_volume": 0,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "lp",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "noise-1": {
+            "__type__": "AgentState",
+            "agent_id": "noise-1",
+            "balances": {
+              "SOL": 5000000632,
+              "USDC": 499999367
+            },
+            "cumulative_volume": 633,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "noise",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "sandwich-1": {
+            "__type__": "AgentState",
+            "agent_id": "sandwich-1",
+            "balances": {
+              "SOL": 716031904,
+              "USDC": 282429538
+            },
+            "cumulative_volume": 717570462,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "manipulator",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          }
+        },
+        "all_market_states": null,
+        "bundle_outcomes": [],
+        "current_leader": null,
+        "current_slot": null,
+        "epoch": 12,
+        "market_state": {
+          "__type__": "AmmSnapshot",
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "2949525905284545725"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999920427,
+            "USDC": 79572
+          },
+          "reserves": {
+            "SOL": 68331,
+            "USDC": 1702098438
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1717418384
+        },
+        "metrics": {},
+        "round": 12,
+        "timestamp": 12
+      },
+      {
+        "__type__": "RoundSnapshot",
+        "agent_states": {
+          "lp-1": {
+            "__type__": "AgentState",
+            "agent_id": "lp-1",
+            "balances": {
+              "USDC": 1001118717
+            },
+            "cumulative_volume": 0,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "lp",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "noise-1": {
+            "__type__": "AgentState",
+            "agent_id": "noise-1",
+            "balances": {
+              "SOL": 5000000632,
+              "USDC": 499999367
+            },
+            "cumulative_volume": 633,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "noise",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "sandwich-1": {
+            "__type__": "AgentState",
+            "agent_id": "sandwich-1",
+            "balances": {
+              "SOL": 744191231,
+              "USDC": 254186585
+            },
+            "cumulative_volume": 745813415,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "manipulator",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          }
+        },
+        "all_market_states": null,
+        "bundle_outcomes": [],
+        "current_leader": null,
+        "current_slot": null,
+        "epoch": 13,
+        "market_state": {
+          "__type__": "AmmSnapshot",
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "3047037696413427316"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999922973,
+            "USDC": 77025
+          },
+          "reserves": {
+            "SOL": 67229,
+            "USDC": 1730256663
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1745576609
+        },
+        "metrics": {},
+        "round": 13,
+        "timestamp": 13
+      },
+      {
+        "__type__": "RoundSnapshot",
+        "agent_states": {
+          "lp-1": {
+            "__type__": "AgentState",
+            "agent_id": "lp-1",
+            "balances": {
+              "USDC": 1001156844
+            },
+            "cumulative_volume": 0,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "lp",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "noise-1": {
+            "__type__": "AgentState",
+            "agent_id": "noise-1",
+            "balances": {
+              "SOL": 5000001129,
+              "USDC": 499998869
+            },
+            "cumulative_volume": 1131,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "noise",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "sandwich-1": {
+            "__type__": "AgentState",
+            "agent_id": "sandwich-1",
+            "balances": {
+              "SOL": 769534596,
+              "USDC": 228767927
+            },
+            "cumulative_volume": 771232073,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "manipulator",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          }
+        },
+        "all_market_states": null,
+        "bundle_outcomes": [],
+        "current_leader": null,
+        "current_slot": null,
+        "epoch": 14,
+        "market_state": {
+          "__type__": "AmmSnapshot",
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "3136155905447353480"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999925162,
+            "USDC": 74837
+          },
+          "reserves": {
+            "SOL": 66267,
+            "USDC": 1755599563
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1770919509
+        },
+        "metrics": {},
+        "round": 14,
+        "timestamp": 14
+      },
+      {
+        "__type__": "RoundSnapshot",
+        "agent_states": {
+          "lp-1": {
+            "__type__": "AgentState",
+            "agent_id": "lp-1",
+            "balances": {
+              "USDC": 1001191159
+            },
+            "cumulative_volume": 0,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "lp",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "noise-1": {
+            "__type__": "AgentState",
+            "agent_id": "noise-1",
+            "balances": {
+              "SOL": 5000001129,
+              "USDC": 499998869
+            },
+            "cumulative_volume": 1131,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "noise",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          },
+          "sandwich-1": {
+            "__type__": "AgentState",
+            "agent_id": "sandwich-1",
+            "balances": {
+              "SOL": 792343601,
+              "USDC": 205891135
+            },
+            "cumulative_volume": 794108865,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "role": {
+              "__type__": "AgentRole",
+              "name": "manipulator",
+              "tags": []
+            },
+            "unrealized_pnl": 0
+          }
+        },
+        "all_market_states": null,
+        "bundle_outcomes": [],
+        "current_leader": null,
+        "current_slot": null,
+        "epoch": 15,
+        "market_state": {
+          "__type__": "AmmSnapshot",
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "3217458957058531925"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999927053,
+            "USDC": 72945
+          },
+          "reserves": {
+            "SOL": 65424,
+            "USDC": 1778407725
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1793727671
+        },
+        "metrics": {},
+        "round": 15,
+        "timestamp": 15
+      }
+    ],
+    "seed": 7,
+    "stop_reason": null,
+    "stopped_early": false
+  },
+  "run_id": "<run-0>"
+}

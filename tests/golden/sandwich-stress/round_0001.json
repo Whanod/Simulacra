@@ -1,0 +1,87 @@
+{
+  "run_id": "<run-0>",
+  "snapshot": {
+    "__type__": "RoundSnapshot",
+    "agent_states": {
+      "lp-1": {
+        "__type__": "AgentState",
+        "agent_id": "lp-1",
+        "balances": {
+          "USDC": 1000150000
+        },
+        "cumulative_volume": 0,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "lp",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "noise-1": {
+        "__type__": "AgentState",
+        "agent_id": "noise-1",
+        "balances": {
+          "SOL": 5000000000,
+          "USDC": 500000000
+        },
+        "cumulative_volume": 0,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "noise",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "sandwich-1": {
+        "__type__": "AgentState",
+        "agent_id": "sandwich-1",
+        "balances": {
+          "SOL": 100275953,
+          "USDC": 900000000
+        },
+        "cumulative_volume": 100000000,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "manipulator",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      }
+    },
+    "all_market_states": null,
+    "bundle_outcomes": [],
+    "current_leader": null,
+    "current_slot": null,
+    "epoch": 1,
+    "market_state": {
+      "__type__": "AmmSnapshot",
+      "fee_bps": null,
+      "invariant": {
+        "__defi_sim_bigint__": "1213742873892083816"
+      },
+      "num_assets": 2,
+      "prices": {
+        "SOL": 999806617,
+        "USDC": 193369
+      },
+      "reserves": {
+        "SOL": 106530,
+        "USDC": 1086380054
+      },
+      "tokens": [
+        "SOL",
+        "USDC"
+      ],
+      "total_liquidity": 1101700000
+    },
+    "metrics": {},
+    "round": 1,
+    "timestamp": 1
+  }
+}

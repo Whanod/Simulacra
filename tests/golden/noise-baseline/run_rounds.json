@@ -1,0 +1,994 @@
+{
+  "available_rounds": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20
+  ],
+  "count": 20,
+  "run_id": "<run-0>",
+  "snapshots": [
+    {
+      "__type__": "RoundSnapshot",
+      "agent_states": {
+        "noise-1": {
+          "__type__": "AgentState",
+          "agent_id": "noise-1",
+          "balances": {
+            "USDC": 1000000000
+          },
+          "cumulative_volume": 0,
+          "cumulative_volume_quote": 0,
+          "realized_pnl": 0,
+          "role": {
+            "__type__": "AgentRole",
+            "name": "noise",
+            "tags": []
+          },
+          "unrealized_pnl": 0
+        }
+      },
+      "all_market_states": null,
+      "bundle_outcomes": [],
+      "current_leader": null,
+      "current_slot": null,
+      "epoch": 1,
+      "market_state": {
+        "__type__": "AmmSnapshot",
+        "fee_bps": null,
+        "invariant": 999997790472,
+        "num_assets": 2,
+        "prices": {
+          "SOL": 499998895,
+          "USDC": 499998895
+        },
+        "reserves": {
+          "SOL": 292894,
+          "USDC": 292894
+        },
+        "tokens": [
+          "SOL",
+          "USDC"
+        ],
+        "total_liquidity": 1000000
+      },
+      "metrics": {},
+      "round": 1,
+      "timestamp": 1
+    },
+    {
+      "__type__": "RoundSnapshot",
+      "agent_states": {
+        "noise-1": {
+          "__type__": "AgentState",
+          "agent_id": "noise-1",
+          "balances": {
+            "USDC": 1000000000
+          },
+          "cumulative_volume": 0,
+          "cumulative_volume_quote": 0,
+          "realized_pnl": 0,
+          "role": {
+            "__type__": "AgentRole",
+            "name": "noise",
+            "tags": []
+          },
+          "unrealized_pnl": 0
+        }
+      },
+      "all_market_states": null,
+      "bundle_outcomes": [],
+      "current_leader": null,
+      "current_slot": null,
+      "epoch": 2,
+      "market_state": {
+        "__type__": "AmmSnapshot",
+        "fee_bps": null,
+        "invariant": 999997790472,
+        "num_assets": 2,
+        "prices": {
+          "SOL": 499998895,
+          "USDC": 499998895
+        },
+        "reserves": {
+          "SOL": 292894,
+          "USDC": 292894
+        },
+        "tokens": [
+          "SOL",
+          "USDC"
+        ],
+        "total_liquidity": 1000000
+      },
+      "metrics": {},
+      "round": 2,
+      "timestamp": 2
+    },
+    {
+      "__type__": "RoundSnapshot",
+      "agent_states": {
+        "noise-1": {
+          "__type__": "AgentState",
+          "agent_id": "noise-1",
+          "balances": {
+            "USDC": 1000000000
+          },
+          "cumulative_volume": 0,
+          "cumulative_volume_quote": 0,
+          "realized_pnl": 0,
+          "role": {
+            "__type__": "AgentRole",
+            "name": "noise",
+            "tags": []
+          },
+          "unrealized_pnl": 0
+        }
+      },
+      "all_market_states": null,
+      "bundle_outcomes": [],
+      "current_leader": null,
+      "current_slot": null,
+      "epoch": 3,
+      "market_state": {
+        "__type__": "AmmSnapshot",
+        "fee_bps": null,
+        "invariant": 999997790472,
+        "num_assets": 2,
+        "prices": {
+          "SOL": 499998895,
+          "USDC": 499998895
+        },
+        "reserves": {
+          "SOL": 292894,
+          "USDC": 292894
+        },
+        "tokens": [
+          "SOL",
+          "USDC"
+        ],
+        "total_liquidity": 1000000
+      },
+      "metrics": {},
+      "round": 3,
+      "timestamp": 3
+    },
+    {
+      "__type__": "RoundSnapshot",
+      "agent_states": {
+        "noise-1": {
+          "__type__": "AgentState",
+          "agent_id": "noise-1",
+          "balances": {
+            "USDC": 1000000328
+          },
+          "cumulative_volume": 231,
+          "cumulative_volume_quote": 0,
+          "realized_pnl": 0,
+          "role": {
+            "__type__": "AgentRole",
+            "name": "noise",
+            "tags": []
+          },
+          "unrealized_pnl": 0
+        }
+      },
+      "all_market_states": null,
+      "bundle_outcomes": [],
+      "current_leader": null,
+      "current_slot": null,
+      "epoch": 4,
+      "market_state": {
+        "__type__": "AmmSnapshot",
+        "fee_bps": null,
+        "invariant": 1000461759592,
+        "num_assets": 2,
+        "prices": {
+          "SOL": 499767975,
+          "USDC": 500231730
+        },
+        "reserves": {
+          "SOL": 293125,
+          "USDC": 292797
+        },
+        "tokens": [
+          "SOL",
+          "USDC"
+        ],
+        "total_liquidity": 1000231
+      },
+      "metrics": {},
+      "round": 4,
+      "timestamp": 4
+    },
+    {
+      "__type__": "RoundSnapshot",
+      "agent_states": {
+        "noise-1": {
+          "__type__": "AgentState",
+          "agent_id": "noise-1",
+          "balances": {
+            "USDC": 1000000328
+          },
+          "cumulative_volume": 231,
+          "cumulative_volume_quote": 0,
+          "realized_pnl": 0,
+          "role": {
+            "__type__": "AgentRole",
+            "name": "noise",
+            "tags": []
+          },
+          "unrealized_pnl": 0
+        }
+      },
+      "all_market_states": null,
+      "bundle_outcomes": [],
+      "current_leader": null,
+      "current_slot": null,
+      "epoch": 5,
+      "market_state": {
+        "__type__": "AmmSnapshot",
+        "fee_bps": null,
+        "invariant": 1000461759592,
+        "num_assets": 2,
+        "prices": {
+          "SOL": 499767975,
+          "USDC": 500231730
+        },
+        "reserves": {
+          "SOL": 293125,
+          "USDC": 292797
+        },
+        "tokens": [
+          "SOL",
+          "USDC"
+        ],
+        "total_liquidity": 1000231
+      },
+      "metrics": {},
+      "round": 5,
+      "timestamp": 5
+    },
+    {
+      "__type__": "RoundSnapshot",
+      "agent_states": {
+        "noise-1": {
+          "__type__": "AgentState",
+          "agent_id": "noise-1",
+          "balances": {
+            "USDC": 1000001580
+          },
+          "cumulative_volume": 1119,
+          "cumulative_volume_quote": 0,
+          "realized_pnl": 0,
+          "role": {
+            "__type__": "AgentRole",
+            "name": "noise",
+            "tags": []
+          },
+          "unrealized_pnl": 0
+        }
+      },
+      "all_market_states": null,
+      "bundle_outcomes": [],
+      "current_leader": null,
+      "current_slot": null,
+      "epoch": 6,
+      "market_state": {
+        "__type__": "AmmSnapshot",
+        "fee_bps": null,
+        "invariant": 1002234741832,
+        "num_assets": 2,
+        "prices": {
+          "SOL": 498883766,
+          "USDC": 501115728
+        },
+        "reserves": {
+          "SOL": 294011,
+          "USDC": 292431
+        },
+        "tokens": [
+          "SOL",
+          "USDC"
+        ],
+        "total_liquidity": 1001117
+      },
+      "metrics": {},
+      "round": 6,
+      "timestamp": 6
+    },
+    {
+      "__type__": "RoundSnapshot",
+      "agent_states": {
+        "noise-1": {
+          "__type__": "AgentState",
+          "agent_id": "noise-1",
+          "balances": {
+            "USDC": 1000001580
+          },
+          "cumulative_volume": 1119,
+          "cumulative_volume_quote": 0,
+          "realized_pnl": 0,
+          "role": {
+            "__type__": "AgentRole",
+            "name": "noise",
+            "tags": []
+          },
+          "unrealized_pnl": 0
+        }
+      },
+      "all_market_states": null,
+      "bundle_outcomes": [],
+      "current_leader": null,
+      "current_slot": null,
+      "epoch": 7,
+      "market_state": {
+        "__type__": "AmmSnapshot",
+        "fee_bps": null,
+        "invariant": 1002234741832,
+        "num_assets": 2,
+        "prices": {
+          "SOL": 498883766,
+          "USDC": 501115728
+        },
+        "reserves": {
+          "SOL": 294011,
+          "USDC": 292431
+        },
+        "tokens": [
+          "SOL",
+          "USDC"
+        ],
+        "total_liquidity": 1001117
+      },
+      "metrics": {},
+      "round": 7,
+      "timestamp": 7
+    },
+    {
+      "__type__": "RoundSnapshot",
+      "agent_states": {
+        "noise-1": {
+          "__type__": "AgentState",
+          "agent_id": "noise-1",
+          "balances": {
+            "USDC": 1000002454
+          },
+          "cumulative_volume": 1739,
+          "cumulative_volume_quote": 0,
+          "realized_pnl": 0,
+          "role": {
+            "__type__": "AgentRole",
+            "name": "noise",
+            "tags": []
+          },
+          "unrealized_pnl": 0
+        }
+      },
+      "all_market_states": null,
+      "bundle_outcomes": [],
+      "current_leader": null,
+      "current_slot": null,
+      "epoch": 8,
+      "market_state": {
+        "__type__": "AmmSnapshot",
+        "fee_bps": null,
+        "invariant": 1003474288836,
+        "num_assets": 2,
+        "prices": {
+          "SOL": 498267409,
+          "USDC": 501731868
+        },
+        "reserves": {
+          "SOL": 294630,
+          "USDC": 292176
+        },
+        "tokens": [
+          "SOL",
+          "USDC"
+        ],
+        "total_liquidity": 1001736
+      },
+      "metrics": {},
+      "round": 8,
+      "timestamp": 8
+    },
+    {
+      "__type__": "RoundSnapshot",
+      "agent_states": {
+        "noise-1": {
+          "__type__": "AgentState",
+          "agent_id": "noise-1",
+          "balances": {
+            "USDC": 1000002454
+          },
+          "cumulative_volume": 1739,
+          "cumulative_volume_quote": 0,
+          "realized_pnl": 0,
+          "role": {
+            "__type__": "AgentRole",
+            "name": "noise",
+            "tags": []
+          },
+          "unrealized_pnl": 0
+        }
+      },
+      "all_market_states": null,
+      "bundle_outcomes": [],
+      "current_leader": null,
+      "current_slot": null,
+      "epoch": 9,
+      "market_state": {
+        "__type__": "AmmSnapshot",
+        "fee_bps": null,
+        "invariant": 1003474288836,
+        "num_assets": 2,
+        "prices": {
+          "SOL": 498267409,
+          "USDC": 501731868
+        },
+        "reserves": {
+          "SOL": 294630,
+          "USDC": 292176
+        },
+        "tokens": [
+          "SOL",
+          "USDC"
+        ],
+        "total_liquidity": 1001736
+      },
+      "metrics": {},
+      "round": 9,
+      "timestamp": 9
+    },
+    {
+      "__type__": "RoundSnapshot",
+      "agent_states": {
+        "noise-1": {
+          "__type__": "AgentState",
+          "agent_id": "noise-1",
+          "balances": {
+            "USDC": 1000002454
+          },
+          "cumulative_volume": 1739,
+          "cumulative_volume_quote": 0,
+          "realized_pnl": 0,
+          "role": {
+            "__type__": "AgentRole",
+            "name": "noise",
+            "tags": []
+          },
+          "unrealized_pnl": 0
+        }
+      },
+      "all_market_states": null,
+      "bundle_outcomes": [],
+      "current_leader": null,
+      "current_slot": null,
+      "epoch": 10,
+      "market_state": {
+        "__type__": "AmmSnapshot",
+        "fee_bps": null,
+        "invariant": 1003474288836,
+        "num_assets": 2,
+        "prices": {
+          "SOL": 498267409,
+          "USDC": 501731868
+        },
+        "reserves": {
+          "SOL": 294630,
+          "USDC": 292176
+        },
+        "tokens": [
+          "SOL",
+          "USDC"
+        ],
+        "total_liquidity": 1001736
+      },
+      "metrics": {},
+      "round": 10,
+      "timestamp": 10
+    },
+    {
+      "__type__": "RoundSnapshot",
+      "agent_states": {
+        "noise-1": {
+          "__type__": "AgentState",
+          "agent_id": "noise-1",
+          "balances": {
+            "USDC": 1000002454
+          },
+          "cumulative_volume": 1739,
+          "cumulative_volume_quote": 0,
+          "realized_pnl": 0,
+          "role": {
+            "__type__": "AgentRole",
+            "name": "noise",
+            "tags": []
+          },
+          "unrealized_pnl": 0
+        }
+      },
+      "all_market_states": null,
+      "bundle_outcomes": [],
+      "current_leader": null,
+      "current_slot": null,
+      "epoch": 11,
+      "market_state": {
+        "__type__": "AmmSnapshot",
+        "fee_bps": null,
+        "invariant": 1003474288836,
+        "num_assets": 2,
+        "prices": {
+          "SOL": 498267409,
+          "USDC": 501731868
+        },
+        "reserves": {
+          "SOL": 294630,
+          "USDC": 292176
+        },
+        "tokens": [
+          "SOL",
+          "USDC"
+        ],
+        "total_liquidity": 1001736
+      },
+      "metrics": {},
+      "round": 11,
+      "timestamp": 11
+    },
+    {
+      "__type__": "RoundSnapshot",
+      "agent_states": {
+        "noise-1": {
+          "__type__": "AgentState",
+          "agent_id": "noise-1",
+          "balances": {
+            "USDC": 1000002454
+          },
+          "cumulative_volume": 1739,
+          "cumulative_volume_quote": 0,
+          "realized_pnl": 0,
+          "role": {
+            "__type__": "AgentRole",
+            "name": "noise",
+            "tags": []
+          },
+          "unrealized_pnl": 0
+        }
+      },
+      "all_market_states": null,
+      "bundle_outcomes": [],
+      "current_leader": null,
+      "current_slot": null,
+      "epoch": 12,
+      "market_state": {
+        "__type__": "AmmSnapshot",
+        "fee_bps": null,
+        "invariant": 1003474288836,
+        "num_assets": 2,
+        "prices": {
+          "SOL": 498267409,
+          "USDC": 501731868
+        },
+        "reserves": {
+          "SOL": 294630,
+          "USDC": 292176
+        },
+        "tokens": [
+          "SOL",
+          "USDC"
+        ],
+        "total_liquidity": 1001736
+      },
+      "metrics": {},
+      "round": 12,
+      "timestamp": 12
+    },
+    {
+      "__type__": "RoundSnapshot",
+      "agent_states": {
+        "noise-1": {
+          "__type__": "AgentState",
+          "agent_id": "noise-1",
+          "balances": {
+            "USDC": 1000002454
+          },
+          "cumulative_volume": 1739,
+          "cumulative_volume_quote": 0,
+          "realized_pnl": 0,
+          "role": {
+            "__type__": "AgentRole",
+            "name": "noise",
+            "tags": []
+          },
+          "unrealized_pnl": 0
+        }
+      },
+      "all_market_states": null,
+      "bundle_outcomes": [],
+      "current_leader": null,
+      "current_slot": null,
+      "epoch": 13,
+      "market_state": {
+        "__type__": "AmmSnapshot",
+        "fee_bps": null,
+        "invariant": 1003474288836,
+        "num_assets": 2,
+        "prices": {
+          "SOL": 498267409,
+          "USDC": 501731868
+        },
+        "reserves": {
+          "SOL": 294630,
+          "USDC": 292176
+        },
+        "tokens": [
+          "SOL",
+          "USDC"
+        ],
+        "total_liquidity": 1001736
+      },
+      "metrics": {},
+      "round": 13,
+      "timestamp": 13
+    },
+    {
+      "__type__": "RoundSnapshot",
+      "agent_states": {
+        "noise-1": {
+          "__type__": "AgentState",
+          "agent_id": "noise-1",
+          "balances": {
+            "USDC": 1000002454
+          },
+          "cumulative_volume": 1739,
+          "cumulative_volume_quote": 0,
+          "realized_pnl": 0,
+          "role": {
+            "__type__": "AgentRole",
+            "name": "noise",
+            "tags": []
+          },
+          "unrealized_pnl": 0
+        }
+      },
+      "all_market_states": null,
+      "bundle_outcomes": [],
+      "current_leader": null,
+      "current_slot": null,
+      "epoch": 14,
+      "market_state": {
+        "__type__": "AmmSnapshot",
+        "fee_bps": null,
+        "invariant": 1003474288836,
+        "num_assets": 2,
+        "prices": {
+          "SOL": 498267409,
+          "USDC": 501731868
+        },
+        "reserves": {
+          "SOL": 294630,
+          "USDC": 292176
+        },
+        "tokens": [
+          "SOL",
+          "USDC"
+        ],
+        "total_liquidity": 1001736
+      },
+      "metrics": {},
+      "round": 14,
+      "timestamp": 14
+    },
+    {
+      "__type__": "RoundSnapshot",
+      "agent_states": {
+        "noise-1": {
+          "__type__": "AgentState",
+          "agent_id": "noise-1",
+          "balances": {
+            "SOL": 687,
+            "USDC": 1000001968
+          },
+          "cumulative_volume": 2225,
+          "cumulative_volume_quote": 0,
+          "realized_pnl": 0,
+          "role": {
+            "__type__": "AgentRole",
+            "name": "noise",
+            "tags": []
+          },
+          "unrealized_pnl": 0
+        }
+      },
+      "all_market_states": null,
+      "bundle_outcomes": [],
+      "current_leader": null,
+      "current_slot": null,
+      "epoch": 15,
+      "market_state": {
+        "__type__": "AmmSnapshot",
+        "fee_bps": null,
+        "invariant": 1004446324449,
+        "num_assets": 2,
+        "prices": {
+          "SOL": 498753009,
+          "USDC": 501246384
+        },
+        "reserves": {
+          "SOL": 294428,
+          "USDC": 292661
+        },
+        "tokens": [
+          "SOL",
+          "USDC"
+        ],
+        "total_liquidity": 1002221
+      },
+      "metrics": {},
+      "round": 15,
+      "timestamp": 15
+    },
+    {
+      "__type__": "RoundSnapshot",
+      "agent_states": {
+        "noise-1": {
+          "__type__": "AgentState",
+          "agent_id": "noise-1",
+          "balances": {
+            "SOL": 687,
+            "USDC": 1000001968
+          },
+          "cumulative_volume": 2225,
+          "cumulative_volume_quote": 0,
+          "realized_pnl": 0,
+          "role": {
+            "__type__": "AgentRole",
+            "name": "noise",
+            "tags": []
+          },
+          "unrealized_pnl": 0
+        }
+      },
+      "all_market_states": null,
+      "bundle_outcomes": [],
+      "current_leader": null,
+      "current_slot": null,
+      "epoch": 16,
+      "market_state": {
+        "__type__": "AmmSnapshot",
+        "fee_bps": null,
+        "invariant": 1004446324449,
+        "num_assets": 2,
+        "prices": {
+          "SOL": 498753009,
+          "USDC": 501246384
+        },
+        "reserves": {
+          "SOL": 294428,
+          "USDC": 292661
+        },
+        "tokens": [
+          "SOL",
+          "USDC"
+        ],
+        "total_liquidity": 1002221
+      },
+      "metrics": {},
+      "round": 16,
+      "timestamp": 16
+    },
+    {
+      "__type__": "RoundSnapshot",
+      "agent_states": {
+        "noise-1": {
+          "__type__": "AgentState",
+          "agent_id": "noise-1",
+          "balances": {
+            "SOL": 687,
+            "USDC": 1000002661
+          },
+          "cumulative_volume": 2717,
+          "cumulative_volume_quote": 0,
+          "realized_pnl": 0,
+          "role": {
+            "__type__": "AgentRole",
+            "name": "noise",
+            "tags": []
+          },
+          "unrealized_pnl": 0
+        }
+      },
+      "all_market_states": null,
+      "bundle_outcomes": [],
+      "current_leader": null,
+      "current_slot": null,
+      "epoch": 17,
+      "market_state": {
+        "__type__": "AmmSnapshot",
+        "fee_bps": null,
+        "invariant": 1005430254858,
+        "num_assets": 2,
+        "prices": {
+          "SOL": 498264678,
+          "USDC": 501734227
+        },
+        "reserves": {
+          "SOL": 294919,
+          "USDC": 292459
+        },
+        "tokens": [
+          "SOL",
+          "USDC"
+        ],
+        "total_liquidity": 1002712
+      },
+      "metrics": {},
+      "round": 17,
+      "timestamp": 17
+    },
+    {
+      "__type__": "RoundSnapshot",
+      "agent_states": {
+        "noise-1": {
+          "__type__": "AgentState",
+          "agent_id": "noise-1",
+          "balances": {
+            "SOL": 687,
+            "USDC": 1000002661
+          },
+          "cumulative_volume": 2717,
+          "cumulative_volume_quote": 0,
+          "realized_pnl": 0,
+          "role": {
+            "__type__": "AgentRole",
+            "name": "noise",
+            "tags": []
+          },
+          "unrealized_pnl": 0
+        }
+      },
+      "all_market_states": null,
+      "bundle_outcomes": [],
+      "current_leader": null,
+      "current_slot": null,
+      "epoch": 18,
+      "market_state": {
+        "__type__": "AmmSnapshot",
+        "fee_bps": null,
+        "invariant": 1005430254858,
+        "num_assets": 2,
+        "prices": {
+          "SOL": 498264678,
+          "USDC": 501734227
+        },
+        "reserves": {
+          "SOL": 294919,
+          "USDC": 292459
+        },
+        "tokens": [
+          "SOL",
+          "USDC"
+        ],
+        "total_liquidity": 1002712
+      },
+      "metrics": {},
+      "round": 18,
+      "timestamp": 18
+    },
+    {
+      "__type__": "RoundSnapshot",
+      "agent_states": {
+        "noise-1": {
+          "__type__": "AgentState",
+          "agent_id": "noise-1",
+          "balances": {
+            "SOL": 687,
+            "USDC": 1000003988
+          },
+          "cumulative_volume": 3659,
+          "cumulative_volume_quote": 0,
+          "realized_pnl": 0,
+          "role": {
+            "__type__": "AgentRole",
+            "name": "noise",
+            "tags": []
+          },
+          "unrealized_pnl": 0
+        }
+      },
+      "all_market_states": null,
+      "bundle_outcomes": [],
+      "current_leader": null,
+      "current_slot": null,
+      "epoch": 19,
+      "market_state": {
+        "__type__": "AmmSnapshot",
+        "fee_bps": null,
+        "invariant": 1007317027249,
+        "num_assets": 2,
+        "prices": {
+          "SOL": 497331786,
+          "USDC": 502667905
+        },
+        "reserves": {
+          "SOL": 295859,
+          "USDC": 292072
+        },
+        "tokens": [
+          "SOL",
+          "USDC"
+        ],
+        "total_liquidity": 1003652
+      },
+      "metrics": {},
+      "round": 19,
+      "timestamp": 19
+    },
+    {
+      "__type__": "RoundSnapshot",
+      "agent_states": {
+        "noise-1": {
+          "__type__": "AgentState",
+          "agent_id": "noise-1",
+          "balances": {
+            "SOL": 687,
+            "USDC": 1000003988
+          },
+          "cumulative_volume": 3659,
+          "cumulative_volume_quote": 0,
+          "realized_pnl": 0,
+          "role": {
+            "__type__": "AgentRole",
+            "name": "noise",
+            "tags": []
+          },
+          "unrealized_pnl": 0
+        }
+      },
+      "all_market_states": null,
+      "bundle_outcomes": [],
+      "current_leader": null,
+      "current_slot": null,
+      "epoch": 20,
+      "market_state": {
+        "__type__": "AmmSnapshot",
+        "fee_bps": null,
+        "invariant": 1007317027249,
+        "num_assets": 2,
+        "prices": {
+          "SOL": 497331786,
+          "USDC": 502667905
+        },
+        "reserves": {
+          "SOL": 295859,
+          "USDC": 292072
+        },
+        "tokens": [
+          "SOL",
+          "USDC"
+        ],
+        "total_liquidity": 1003652
+      },
+      "metrics": {},
+      "round": 20,
+      "timestamp": 20
+    }
+  ]
+}

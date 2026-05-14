@@ -1,0 +1,2034 @@
+{
+  "events": [
+    {
+      "data": {
+        "agents": [
+          "noise-1",
+          "sandwich-1",
+          "lp-1"
+        ],
+        "all_markets": null,
+        "market": {
+          "fee_bps": null,
+          "invariant": 3999996818738,
+          "num_assets": 2,
+          "prices": {
+            "SOL": 499999602,
+            "USDC": 499999602
+          },
+          "reserves": {
+            "SOL": 585787,
+            "USDC": 585787
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 2000000
+        },
+        "num_rounds": 15,
+        "run_id": "<run-0>"
+      },
+      "event_id": 1,
+      "round": 0,
+      "run_id": "<run-0>",
+      "timestamp": 0,
+      "type": "SIMULATION_START"
+    },
+    {
+      "data": {
+        "epoch": 1,
+        "prev_epoch": 0,
+        "run_id": "<run-0>"
+      },
+      "event_id": 2,
+      "round": 1,
+      "run_id": "<run-0>",
+      "timestamp": 1,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 1,
+        "run_id": "<run-0>"
+      },
+      "event_id": 3,
+      "round": 1,
+      "run_id": "<run-0>",
+      "timestamp": 1,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "action": {
+          "agent_id": "sandwich-1",
+          "amount": 100000000,
+          "asset": "SOL",
+          "collateral": "USDC",
+          "compute_unit_limit": null,
+          "compute_unit_price_micro_lamports": null,
+          "expiry_slot": null,
+          "num_required_signatures": 1,
+          "oracle_account_ids": [],
+          "recent_blockhash": null,
+          "side": "buy",
+          "submission_path": "rpc"
+        },
+        "action_type": "SingleAssetAction",
+        "agent_id": "sandwich-1",
+        "correlation_id": "<run-0>:action:4",
+        "correlation_kind": "action",
+        "cost_token": "COLLATERAL",
+        "execution_cost": 0,
+        "gas_cost": 0,
+        "result": {
+          "error": null,
+          "fee_splits": {
+            "lp": 150000,
+            "protocol": 150000
+          },
+          "fee_token": "USDC",
+          "fees_paid": 300000,
+          "is_lp_action": false,
+          "lp_realized_pnl": 0,
+          "other_agent_deltas": {},
+          "other_agent_volume_quotes": {},
+          "other_agent_volumes": {},
+          "success": true,
+          "token_deltas": {
+            "SOL": 100275953,
+            "USDC": -100000000
+          },
+          "volume": 100000000,
+          "volume_quote": null
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 4,
+      "round": 1,
+      "run_id": "<run-0>",
+      "timestamp": 1,
+      "type": "ACTION_EXECUTED"
+    },
+    {
+      "data": {
+        "action": {
+          "agent_id": "lp-1",
+          "amount": 1000000000,
+          "collateral": "USDC",
+          "compute_unit_limit": null,
+          "compute_unit_price_micro_lamports": null,
+          "expiry_slot": null,
+          "lp_type": "deposit",
+          "num_required_signatures": 1,
+          "oracle_account_ids": [],
+          "position_id": null,
+          "price_range": null,
+          "recent_blockhash": null,
+          "submission_path": "rpc",
+          "target_weights": null
+        },
+        "action_type": "LPAction",
+        "agent_id": "lp-1",
+        "correlation_id": "<run-0>:action:5",
+        "correlation_kind": "action",
+        "cost_token": "COLLATERAL",
+        "execution_cost": 0,
+        "gas_cost": 0,
+        "result": {
+          "error": null,
+          "fee_splits": {},
+          "fee_token": null,
+          "fees_paid": 0,
+          "is_lp_action": false,
+          "lp_realized_pnl": 0,
+          "other_agent_deltas": {},
+          "other_agent_volume_quotes": {},
+          "other_agent_volumes": {},
+          "success": true,
+          "token_deltas": {
+            "USDC": -1000000000
+          },
+          "volume": 0,
+          "volume_quote": null
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 5,
+      "round": 1,
+      "run_id": "<run-0>",
+      "timestamp": 1,
+      "type": "ACTION_EXECUTED"
+    },
+    {
+      "data": {
+        "per_agent": {
+          "lp-1": {
+            "USDC": 150000
+          }
+        },
+        "run_id": "<run-0>",
+        "total_fees": 150000
+      },
+      "event_id": 6,
+      "round": 1,
+      "run_id": "<run-0>",
+      "timestamp": 1,
+      "type": "LP_FEES_DISTRIBUTED"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "1213742873892083816"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999806617,
+            "USDC": 193369
+          },
+          "reserves": {
+            "SOL": 106530,
+            "USDC": 1086380054
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1101700000
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 7,
+      "round": 1,
+      "run_id": "<run-0>",
+      "timestamp": 1,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 2,
+        "prev_epoch": 1,
+        "run_id": "<run-0>"
+      },
+      "event_id": 8,
+      "round": 2,
+      "run_id": "<run-0>",
+      "timestamp": 2,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 2,
+        "run_id": "<run-0>"
+      },
+      "event_id": 9,
+      "round": 2,
+      "run_id": "<run-0>",
+      "timestamp": 2,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "action": {
+          "agent_id": "sandwich-1",
+          "amount": 90000000,
+          "asset": "SOL",
+          "collateral": "USDC",
+          "compute_unit_limit": null,
+          "compute_unit_price_micro_lamports": null,
+          "expiry_slot": null,
+          "num_required_signatures": 1,
+          "oracle_account_ids": [],
+          "recent_blockhash": null,
+          "side": "buy",
+          "submission_path": "rpc"
+        },
+        "action_type": "SingleAssetAction",
+        "agent_id": "sandwich-1",
+        "correlation_id": "<run-0>:action:10",
+        "correlation_kind": "action",
+        "cost_token": "COLLATERAL",
+        "execution_cost": 0,
+        "gas_cost": 0,
+        "result": {
+          "error": null,
+          "fee_splits": {
+            "lp": 135000,
+            "protocol": 135000
+          },
+          "fee_token": "USDC",
+          "fees_paid": 270000,
+          "is_lp_action": false,
+          "lp_realized_pnl": 0,
+          "other_agent_deltas": {},
+          "other_agent_volume_quotes": {},
+          "other_agent_volumes": {},
+          "success": true,
+          "token_deltas": {
+            "SOL": 89738030,
+            "USDC": -90000000
+          },
+          "volume": 90000000,
+          "volume_quote": null
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 10,
+      "round": 2,
+      "run_id": "<run-0>",
+      "timestamp": 2,
+      "type": "ACTION_EXECUTED"
+    },
+    {
+      "data": {
+        "per_agent": {
+          "lp-1": {
+            "USDC": 135000
+          }
+        },
+        "run_id": "<run-0>",
+        "total_fees": 135000
+      },
+      "event_id": 11,
+      "round": 2,
+      "run_id": "<run-0>",
+      "timestamp": 2,
+      "type": "LP_FEES_DISTRIBUTED"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "1419505443637692916"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999834659,
+            "USDC": 165339
+          },
+          "reserves": {
+            "SOL": 98500,
+            "USDC": 1176110054
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1191430000
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 12,
+      "round": 2,
+      "run_id": "<run-0>",
+      "timestamp": 2,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 3,
+        "prev_epoch": 2,
+        "run_id": "<run-0>"
+      },
+      "event_id": 13,
+      "round": 3,
+      "run_id": "<run-0>",
+      "timestamp": 3,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 3,
+        "run_id": "<run-0>"
+      },
+      "event_id": 14,
+      "round": 3,
+      "run_id": "<run-0>",
+      "timestamp": 3,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "action": {
+          "agent_id": "sandwich-1",
+          "amount": 81000000,
+          "asset": "SOL",
+          "collateral": "USDC",
+          "compute_unit_limit": null,
+          "compute_unit_price_micro_lamports": null,
+          "expiry_slot": null,
+          "num_required_signatures": 1,
+          "oracle_account_ids": [],
+          "recent_blockhash": null,
+          "side": "buy",
+          "submission_path": "rpc"
+        },
+        "action_type": "SingleAssetAction",
+        "agent_id": "sandwich-1",
+        "correlation_id": "<run-0>:action:15",
+        "correlation_kind": "action",
+        "cost_token": "COLLATERAL",
+        "execution_cost": 0,
+        "gas_cost": 0,
+        "result": {
+          "error": null,
+          "fee_splits": {
+            "lp": 121500,
+            "protocol": 121500
+          },
+          "fee_token": "USDC",
+          "fees_paid": 243000,
+          "is_lp_action": false,
+          "lp_realized_pnl": 0,
+          "other_agent_deltas": {},
+          "other_agent_volume_quotes": {},
+          "other_agent_volumes": {},
+          "success": true,
+          "token_deltas": {
+            "SOL": 80763253,
+            "USDC": -81000000
+          },
+          "volume": 81000000,
+          "volume_quote": null
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 15,
+      "round": 3,
+      "run_id": "<run-0>",
+      "timestamp": 3,
+      "type": "ACTION_EXECUTED"
+    },
+    {
+      "data": {
+        "per_agent": {
+          "lp-1": {
+            "USDC": 121500
+          }
+        },
+        "run_id": "<run-0>",
+        "total_fees": 121500
+      },
+      "event_id": 16,
+      "round": 3,
+      "run_id": "<run-0>",
+      "timestamp": 3,
+      "type": "LP_FEES_DISTRIBUTED"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "1618459761355573925"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999854984,
+            "USDC": 145014
+          },
+          "reserves": {
+            "SOL": 92247,
+            "USDC": 1256867054
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1272187000
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 17,
+      "round": 3,
+      "run_id": "<run-0>",
+      "timestamp": 3,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 4,
+        "prev_epoch": 3,
+        "run_id": "<run-0>"
+      },
+      "event_id": 18,
+      "round": 4,
+      "run_id": "<run-0>",
+      "timestamp": 4,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 4,
+        "run_id": "<run-0>"
+      },
+      "event_id": 19,
+      "round": 4,
+      "run_id": "<run-0>",
+      "timestamp": 4,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "action": {
+          "agent_id": "sandwich-1",
+          "amount": 72900000,
+          "asset": "SOL",
+          "collateral": "USDC",
+          "compute_unit_limit": null,
+          "compute_unit_price_micro_lamports": null,
+          "expiry_slot": null,
+          "num_required_signatures": 1,
+          "oracle_account_ids": [],
+          "recent_blockhash": null,
+          "side": "buy",
+          "submission_path": "rpc"
+        },
+        "action_type": "SingleAssetAction",
+        "agent_id": "sandwich-1",
+        "correlation_id": "<run-0>:action:20",
+        "correlation_kind": "action",
+        "cost_token": "COLLATERAL",
+        "execution_cost": 0,
+        "gas_cost": 0,
+        "result": {
+          "error": null,
+          "fee_splits": {
+            "lp": 109350,
+            "protocol": 109350
+          },
+          "fee_token": "USDC",
+          "fees_paid": 218700,
+          "is_lp_action": false,
+          "lp_realized_pnl": 0,
+          "other_agent_deltas": {},
+          "other_agent_volume_quotes": {},
+          "other_agent_volumes": {},
+          "success": true,
+          "token_deltas": {
+            "SOL": 72686286,
+            "USDC": -72900000
+          },
+          "volume": 72900000,
+          "volume_quote": null
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 20,
+      "round": 4,
+      "run_id": "<run-0>",
+      "timestamp": 4,
+      "type": "ACTION_EXECUTED"
+    },
+    {
+      "data": {
+        "per_agent": {
+          "lp-1": {
+            "USDC": 109350
+          }
+        },
+        "run_id": "<run-0>",
+        "total_fees": 109350
+      },
+      "event_id": 21,
+      "round": 4,
+      "run_id": "<run-0>",
+      "timestamp": 4,
+      "type": "LP_FEES_DISTRIBUTED"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "1808670743599362437"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999870235,
+            "USDC": 129764
+          },
+          "reserves": {
+            "SOL": 87261,
+            "USDC": 1329548354
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1344868300
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 22,
+      "round": 4,
+      "run_id": "<run-0>",
+      "timestamp": 4,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 5,
+        "prev_epoch": 4,
+        "run_id": "<run-0>"
+      },
+      "event_id": 23,
+      "round": 5,
+      "run_id": "<run-0>",
+      "timestamp": 5,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 5,
+        "run_id": "<run-0>"
+      },
+      "event_id": 24,
+      "round": 5,
+      "run_id": "<run-0>",
+      "timestamp": 5,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "action": {
+          "agent_id": "sandwich-1",
+          "amount": 65610000,
+          "asset": "SOL",
+          "collateral": "USDC",
+          "compute_unit_limit": null,
+          "compute_unit_price_micro_lamports": null,
+          "expiry_slot": null,
+          "num_required_signatures": 1,
+          "oracle_account_ids": [],
+          "recent_blockhash": null,
+          "side": "buy",
+          "submission_path": "rpc"
+        },
+        "action_type": "SingleAssetAction",
+        "agent_id": "sandwich-1",
+        "correlation_id": "<run-0>:action:25",
+        "correlation_kind": "action",
+        "cost_token": "COLLATERAL",
+        "execution_cost": 0,
+        "gas_cost": 0,
+        "result": {
+          "error": null,
+          "fee_splits": {
+            "lp": 98415,
+            "protocol": 98415
+          },
+          "fee_token": "USDC",
+          "fees_paid": 196830,
+          "is_lp_action": false,
+          "lp_realized_pnl": 0,
+          "other_agent_deltas": {},
+          "other_agent_volume_quotes": {},
+          "other_agent_volumes": {},
+          "success": true,
+          "token_deltas": {
+            "SOL": 65417217,
+            "USDC": -65610000
+          },
+          "volume": 65610000,
+          "volume_quote": null
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 25,
+      "round": 5,
+      "run_id": "<run-0>",
+      "timestamp": 5,
+      "type": "ACTION_EXECUTED"
+    },
+    {
+      "data": {
+        "per_agent": {
+          "lp-1": {
+            "USDC": 98415
+          }
+        },
+        "run_id": "<run-0>",
+        "total_fees": 98415
+      },
+      "event_id": 26,
+      "round": 5,
+      "run_id": "<run-0>",
+      "timestamp": 5,
+      "type": "LP_FEES_DISTRIBUTED"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "1988893821970884452"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999881992,
+            "USDC": 118005
+          },
+          "reserves": {
+            "SOL": 83214,
+            "USDC": 1394961524
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1410281470
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 27,
+      "round": 5,
+      "run_id": "<run-0>",
+      "timestamp": 5,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 6,
+        "prev_epoch": 5,
+        "run_id": "<run-0>"
+      },
+      "event_id": 28,
+      "round": 6,
+      "run_id": "<run-0>",
+      "timestamp": 6,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 6,
+        "run_id": "<run-0>"
+      },
+      "event_id": 29,
+      "round": 6,
+      "run_id": "<run-0>",
+      "timestamp": 6,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "action": {
+          "agent_id": "sandwich-1",
+          "amount": 59049000,
+          "asset": "SOL",
+          "collateral": "USDC",
+          "compute_unit_limit": null,
+          "compute_unit_price_micro_lamports": null,
+          "expiry_slot": null,
+          "num_required_signatures": 1,
+          "oracle_account_ids": [],
+          "recent_blockhash": null,
+          "side": "buy",
+          "submission_path": "rpc"
+        },
+        "action_type": "SingleAssetAction",
+        "agent_id": "sandwich-1",
+        "correlation_id": "<run-0>:action:30",
+        "correlation_kind": "action",
+        "cost_token": "COLLATERAL",
+        "execution_cost": 0,
+        "gas_cost": 0,
+        "result": {
+          "error": null,
+          "fee_splits": {
+            "lp": 88573,
+            "protocol": 88573
+          },
+          "fee_token": "USDC",
+          "fees_paid": 177147,
+          "is_lp_action": false,
+          "lp_realized_pnl": 0,
+          "other_agent_deltas": {},
+          "other_agent_volume_quotes": {},
+          "other_agent_volumes": {},
+          "success": true,
+          "token_deltas": {
+            "SOL": 58875188,
+            "USDC": -59049000
+          },
+          "volume": 59049000,
+          "volume_quote": null
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 30,
+      "round": 6,
+      "run_id": "<run-0>",
+      "timestamp": 6,
+      "type": "ACTION_EXECUTED"
+    },
+    {
+      "data": {
+        "per_agent": {
+          "lp-1": {
+            "USDC": 88573
+          }
+        },
+        "run_id": "<run-0>",
+        "total_fees": 88573
+      },
+      "event_id": 31,
+      "round": 6,
+      "run_id": "<run-0>",
+      "timestamp": 6,
+      "type": "LP_FEES_DISTRIBUTED"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "2158411484611464052"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999891261,
+            "USDC": 108737
+          },
+          "reserves": {
+            "SOL": 79879,
+            "USDC": 1453833377
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1469153323
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 32,
+      "round": 6,
+      "run_id": "<run-0>",
+      "timestamp": 6,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 7,
+        "prev_epoch": 6,
+        "run_id": "<run-0>"
+      },
+      "event_id": 33,
+      "round": 7,
+      "run_id": "<run-0>",
+      "timestamp": 7,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 7,
+        "run_id": "<run-0>"
+      },
+      "event_id": 34,
+      "round": 7,
+      "run_id": "<run-0>",
+      "timestamp": 7,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "action": {
+          "agent_id": "noise-1",
+          "amount": 633,
+          "asset": "SOL",
+          "collateral": "USDC",
+          "compute_unit_limit": null,
+          "compute_unit_price_micro_lamports": null,
+          "expiry_slot": null,
+          "num_required_signatures": 1,
+          "oracle_account_ids": [],
+          "recent_blockhash": null,
+          "side": "buy",
+          "submission_path": "rpc"
+        },
+        "action_type": "SingleAssetAction",
+        "agent_id": "noise-1",
+        "correlation_id": "<run-0>:action:35",
+        "correlation_kind": "action",
+        "cost_token": "COLLATERAL",
+        "execution_cost": 0,
+        "gas_cost": 0,
+        "result": {
+          "error": null,
+          "fee_splits": {
+            "lp": 0,
+            "protocol": 0
+          },
+          "fee_token": "USDC",
+          "fees_paid": 1,
+          "is_lp_action": false,
+          "lp_realized_pnl": 0,
+          "other_agent_deltas": {},
+          "other_agent_volume_quotes": {},
+          "other_agent_volumes": {},
+          "success": true,
+          "token_deltas": {
+            "SOL": 632,
+            "USDC": -633
+          },
+          "volume": 633,
+          "volume_quote": null
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 35,
+      "round": 7,
+      "run_id": "<run-0>",
+      "timestamp": 7,
+      "type": "ACTION_EXECUTED"
+    },
+    {
+      "data": {
+        "action": {
+          "agent_id": "sandwich-1",
+          "amount": 53144100,
+          "asset": "SOL",
+          "collateral": "USDC",
+          "compute_unit_limit": null,
+          "compute_unit_price_micro_lamports": null,
+          "expiry_slot": null,
+          "num_required_signatures": 1,
+          "oracle_account_ids": [],
+          "recent_blockhash": null,
+          "side": "buy",
+          "submission_path": "rpc"
+        },
+        "action_type": "SingleAssetAction",
+        "agent_id": "sandwich-1",
+        "correlation_id": "<run-0>:action:36",
+        "correlation_kind": "action",
+        "cost_token": "COLLATERAL",
+        "execution_cost": 0,
+        "gas_cost": 0,
+        "result": {
+          "error": null,
+          "fee_splits": {
+            "lp": 79716,
+            "protocol": 79716
+          },
+          "fee_token": "USDC",
+          "fees_paid": 159432,
+          "is_lp_action": false,
+          "lp_realized_pnl": 0,
+          "other_agent_deltas": {},
+          "other_agent_volume_quotes": {},
+          "other_agent_volumes": {},
+          "success": true,
+          "token_deltas": {
+            "SOL": 52987449,
+            "USDC": -53144100
+          },
+          "volume": 53144100,
+          "volume_quote": null
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 36,
+      "round": 7,
+      "run_id": "<run-0>",
+      "timestamp": 7,
+      "type": "ACTION_EXECUTED"
+    },
+    {
+      "data": {
+        "per_agent": {
+          "lp-1": {
+            "USDC": 79716
+          }
+        },
+        "run_id": "<run-0>",
+        "total_fees": 79716
+      },
+      "event_id": 37,
+      "round": 7,
+      "run_id": "<run-0>",
+      "timestamp": 7,
+      "type": "LP_FEES_DISTRIBUTED"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "2316905986630768541"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999898700,
+            "USDC": 101299
+          },
+          "reserves": {
+            "SOL": 77098,
+            "USDC": 1506818677
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1522138623
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 38,
+      "round": 7,
+      "run_id": "<run-0>",
+      "timestamp": 7,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 8,
+        "prev_epoch": 7,
+        "run_id": "<run-0>"
+      },
+      "event_id": 39,
+      "round": 8,
+      "run_id": "<run-0>",
+      "timestamp": 8,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 8,
+        "run_id": "<run-0>"
+      },
+      "event_id": 40,
+      "round": 8,
+      "run_id": "<run-0>",
+      "timestamp": 8,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "action": {
+          "agent_id": "sandwich-1",
+          "amount": 47829690,
+          "asset": "SOL",
+          "collateral": "USDC",
+          "compute_unit_limit": null,
+          "compute_unit_price_micro_lamports": null,
+          "expiry_slot": null,
+          "num_required_signatures": 1,
+          "oracle_account_ids": [],
+          "recent_blockhash": null,
+          "side": "buy",
+          "submission_path": "rpc"
+        },
+        "action_type": "SingleAssetAction",
+        "agent_id": "sandwich-1",
+        "correlation_id": "<run-0>:action:41",
+        "correlation_kind": "action",
+        "cost_token": "COLLATERAL",
+        "execution_cost": 0,
+        "gas_cost": 0,
+        "result": {
+          "error": null,
+          "fee_splits": {
+            "lp": 71744,
+            "protocol": 71744
+          },
+          "fee_token": "USDC",
+          "fees_paid": 143489,
+          "is_lp_action": false,
+          "lp_realized_pnl": 0,
+          "other_agent_deltas": {},
+          "other_agent_volume_quotes": {},
+          "other_agent_volumes": {},
+          "success": true,
+          "token_deltas": {
+            "SOL": 47688543,
+            "USDC": -47829690
+          },
+          "volume": 47829690,
+          "volume_quote": null
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 41,
+      "round": 8,
+      "run_id": "<run-0>",
+      "timestamp": 8,
+      "type": "ACTION_EXECUTED"
+    },
+    {
+      "data": {
+        "per_agent": {
+          "lp-1": {
+            "USDC": 71744
+          }
+        },
+        "run_id": "<run-0>",
+        "total_fees": 71744
+      },
+      "event_id": 42,
+      "round": 8,
+      "run_id": "<run-0>",
+      "timestamp": 8,
+      "type": "LP_FEES_DISTRIBUTED"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "2464349976731447540"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999904761,
+            "USDC": 95238
+          },
+          "reserves": {
+            "SOL": 74756,
+            "USDC": 1554504878
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1569824824
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 43,
+      "round": 8,
+      "run_id": "<run-0>",
+      "timestamp": 8,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 9,
+        "prev_epoch": 8,
+        "run_id": "<run-0>"
+      },
+      "event_id": 44,
+      "round": 9,
+      "run_id": "<run-0>",
+      "timestamp": 9,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 9,
+        "run_id": "<run-0>"
+      },
+      "event_id": 45,
+      "round": 9,
+      "run_id": "<run-0>",
+      "timestamp": 9,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "action": {
+          "agent_id": "sandwich-1",
+          "amount": 43046721,
+          "asset": "SOL",
+          "collateral": "USDC",
+          "compute_unit_limit": null,
+          "compute_unit_price_micro_lamports": null,
+          "expiry_slot": null,
+          "num_required_signatures": 1,
+          "oracle_account_ids": [],
+          "recent_blockhash": null,
+          "side": "buy",
+          "submission_path": "rpc"
+        },
+        "action_type": "SingleAssetAction",
+        "agent_id": "sandwich-1",
+        "correlation_id": "<run-0>:action:46",
+        "correlation_kind": "action",
+        "cost_token": "COLLATERAL",
+        "execution_cost": 0,
+        "gas_cost": 0,
+        "result": {
+          "error": null,
+          "fee_splits": {
+            "lp": 64570,
+            "protocol": 64570
+          },
+          "fee_token": "USDC",
+          "fees_paid": 129140,
+          "is_lp_action": false,
+          "lp_realized_pnl": 0,
+          "other_agent_deltas": {},
+          "other_agent_volume_quotes": {},
+          "other_agent_volumes": {},
+          "success": true,
+          "token_deltas": {
+            "SOL": 42919570,
+            "USDC": -43046721
+          },
+          "volume": 43046721,
+          "volume_quote": null
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 46,
+      "round": 9,
+      "run_id": "<run-0>",
+      "timestamp": 9,
+      "type": "ACTION_EXECUTED"
+    },
+    {
+      "data": {
+        "per_agent": {
+          "lp-1": {
+            "USDC": 64570
+          }
+        },
+        "run_id": "<run-0>",
+        "total_fees": 64570
+      },
+      "event_id": 47,
+      "round": 9,
+      "run_id": "<run-0>",
+      "timestamp": 9,
+      "type": "LP_FEES_DISTRIBUTED"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "2600938062072493960"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999909761,
+            "USDC": 90236
+          },
+          "reserves": {
+            "SOL": 72767,
+            "USDC": 1597422459
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1612742405
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 48,
+      "round": 9,
+      "run_id": "<run-0>",
+      "timestamp": 9,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 10,
+        "prev_epoch": 9,
+        "run_id": "<run-0>"
+      },
+      "event_id": 49,
+      "round": 10,
+      "run_id": "<run-0>",
+      "timestamp": 10,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 10,
+        "run_id": "<run-0>"
+      },
+      "event_id": 50,
+      "round": 10,
+      "run_id": "<run-0>",
+      "timestamp": 10,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "action": {
+          "agent_id": "sandwich-1",
+          "amount": 38742048,
+          "asset": "SOL",
+          "collateral": "USDC",
+          "compute_unit_limit": null,
+          "compute_unit_price_micro_lamports": null,
+          "expiry_slot": null,
+          "num_required_signatures": 1,
+          "oracle_account_ids": [],
+          "recent_blockhash": null,
+          "side": "buy",
+          "submission_path": "rpc"
+        },
+        "action_type": "SingleAssetAction",
+        "agent_id": "sandwich-1",
+        "correlation_id": "<run-0>:action:51",
+        "correlation_kind": "action",
+        "cost_token": "COLLATERAL",
+        "execution_cost": 0,
+        "gas_cost": 0,
+        "result": {
+          "error": null,
+          "fee_splits": {
+            "lp": 58113,
+            "protocol": 58113
+          },
+          "fee_token": "USDC",
+          "fees_paid": 116226,
+          "is_lp_action": false,
+          "lp_realized_pnl": 0,
+          "other_agent_deltas": {},
+          "other_agent_volume_quotes": {},
+          "other_agent_volumes": {},
+          "success": true,
+          "token_deltas": {
+            "SOL": 38627524,
+            "USDC": -38742048
+          },
+          "volume": 38742048,
+          "volume_quote": null
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 51,
+      "round": 10,
+      "run_id": "<run-0>",
+      "timestamp": 10,
+      "type": "ACTION_EXECUTED"
+    },
+    {
+      "data": {
+        "per_agent": {
+          "lp-1": {
+            "USDC": 58113
+          }
+        },
+        "run_id": "<run-0>",
+        "total_fees": 58113
+      },
+      "event_id": 52,
+      "round": 10,
+      "run_id": "<run-0>",
+      "timestamp": 10,
+      "type": "LP_FEES_DISTRIBUTED"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "2727017017974697160"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999913933,
+            "USDC": 86065
+          },
+          "reserves": {
+            "SOL": 71065,
+            "USDC": 1636048281
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1651368227
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 53,
+      "round": 10,
+      "run_id": "<run-0>",
+      "timestamp": 10,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 11,
+        "prev_epoch": 10,
+        "run_id": "<run-0>"
+      },
+      "event_id": 54,
+      "round": 11,
+      "run_id": "<run-0>",
+      "timestamp": 11,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 11,
+        "run_id": "<run-0>"
+      },
+      "event_id": 55,
+      "round": 11,
+      "run_id": "<run-0>",
+      "timestamp": 11,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "action": {
+          "agent_id": "sandwich-1",
+          "amount": 34867844,
+          "asset": "SOL",
+          "collateral": "USDC",
+          "compute_unit_limit": null,
+          "compute_unit_price_micro_lamports": null,
+          "expiry_slot": null,
+          "num_required_signatures": 1,
+          "oracle_account_ids": [],
+          "recent_blockhash": null,
+          "side": "buy",
+          "submission_path": "rpc"
+        },
+        "action_type": "SingleAssetAction",
+        "agent_id": "sandwich-1",
+        "correlation_id": "<run-0>:action:56",
+        "correlation_kind": "action",
+        "cost_token": "COLLATERAL",
+        "execution_cost": 0,
+        "gas_cost": 0,
+        "result": {
+          "error": null,
+          "fee_splits": {
+            "lp": 52301,
+            "protocol": 52301
+          },
+          "fee_token": "USDC",
+          "fees_paid": 104603,
+          "is_lp_action": false,
+          "lp_realized_pnl": 0,
+          "other_agent_deltas": {},
+          "other_agent_volume_quotes": {},
+          "other_agent_volumes": {},
+          "success": true,
+          "token_deltas": {
+            "SOL": 34764707,
+            "USDC": -34867844
+          },
+          "volume": 34867844,
+          "volume_quote": null
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 56,
+      "round": 11,
+      "run_id": "<run-0>",
+      "timestamp": 11,
+      "type": "ACTION_EXECUTED"
+    },
+    {
+      "data": {
+        "per_agent": {
+          "lp-1": {
+            "USDC": 52301
+          }
+        },
+        "run_id": "<run-0>",
+        "total_fees": 52301
+      },
+      "event_id": 57,
+      "round": 11,
+      "run_id": "<run-0>",
+      "timestamp": 11,
+      "type": "LP_FEES_DISTRIBUTED"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "2843039326841216077"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999917447,
+            "USDC": 82552
+          },
+          "reserves": {
+            "SOL": 69599,
+            "USDC": 1670811522
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1686131468
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 58,
+      "round": 11,
+      "run_id": "<run-0>",
+      "timestamp": 11,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 12,
+        "prev_epoch": 11,
+        "run_id": "<run-0>"
+      },
+      "event_id": 59,
+      "round": 12,
+      "run_id": "<run-0>",
+      "timestamp": 12,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 12,
+        "run_id": "<run-0>"
+      },
+      "event_id": 60,
+      "round": 12,
+      "run_id": "<run-0>",
+      "timestamp": 12,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "action": {
+          "agent_id": "sandwich-1",
+          "amount": 31381059,
+          "asset": "SOL",
+          "collateral": "USDC",
+          "compute_unit_limit": null,
+          "compute_unit_price_micro_lamports": null,
+          "expiry_slot": null,
+          "num_required_signatures": 1,
+          "oracle_account_ids": [],
+          "recent_blockhash": null,
+          "side": "buy",
+          "submission_path": "rpc"
+        },
+        "action_type": "SingleAssetAction",
+        "agent_id": "sandwich-1",
+        "correlation_id": "<run-0>:action:61",
+        "correlation_kind": "action",
+        "cost_token": "COLLATERAL",
+        "execution_cost": 0,
+        "gas_cost": 0,
+        "result": {
+          "error": null,
+          "fee_splits": {
+            "lp": 47071,
+            "protocol": 47071
+          },
+          "fee_token": "USDC",
+          "fees_paid": 94143,
+          "is_lp_action": false,
+          "lp_realized_pnl": 0,
+          "other_agent_deltas": {},
+          "other_agent_volume_quotes": {},
+          "other_agent_volumes": {},
+          "success": true,
+          "token_deltas": {
+            "SOL": 31288184,
+            "USDC": -31381059
+          },
+          "volume": 31381059,
+          "volume_quote": null
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 61,
+      "round": 12,
+      "run_id": "<run-0>",
+      "timestamp": 12,
+      "type": "ACTION_EXECUTED"
+    },
+    {
+      "data": {
+        "per_agent": {
+          "lp-1": {
+            "USDC": 47071
+          }
+        },
+        "run_id": "<run-0>",
+        "total_fees": 47071
+      },
+      "event_id": 62,
+      "round": 12,
+      "run_id": "<run-0>",
+      "timestamp": 12,
+      "type": "LP_FEES_DISTRIBUTED"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "2949525905284545725"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999920427,
+            "USDC": 79572
+          },
+          "reserves": {
+            "SOL": 68331,
+            "USDC": 1702098438
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1717418384
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 63,
+      "round": 12,
+      "run_id": "<run-0>",
+      "timestamp": 12,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 13,
+        "prev_epoch": 12,
+        "run_id": "<run-0>"
+      },
+      "event_id": 64,
+      "round": 13,
+      "run_id": "<run-0>",
+      "timestamp": 13,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 13,
+        "run_id": "<run-0>"
+      },
+      "event_id": 65,
+      "round": 13,
+      "run_id": "<run-0>",
+      "timestamp": 13,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "action": {
+          "agent_id": "sandwich-1",
+          "amount": 28242953,
+          "asset": "SOL",
+          "collateral": "USDC",
+          "compute_unit_limit": null,
+          "compute_unit_price_micro_lamports": null,
+          "expiry_slot": null,
+          "num_required_signatures": 1,
+          "oracle_account_ids": [],
+          "recent_blockhash": null,
+          "side": "buy",
+          "submission_path": "rpc"
+        },
+        "action_type": "SingleAssetAction",
+        "agent_id": "sandwich-1",
+        "correlation_id": "<run-0>:action:66",
+        "correlation_kind": "action",
+        "cost_token": "COLLATERAL",
+        "execution_cost": 0,
+        "gas_cost": 0,
+        "result": {
+          "error": null,
+          "fee_splits": {
+            "lp": 42364,
+            "protocol": 42364
+          },
+          "fee_token": "USDC",
+          "fees_paid": 84728,
+          "is_lp_action": false,
+          "lp_realized_pnl": 0,
+          "other_agent_deltas": {},
+          "other_agent_volume_quotes": {},
+          "other_agent_volumes": {},
+          "success": true,
+          "token_deltas": {
+            "SOL": 28159327,
+            "USDC": -28242953
+          },
+          "volume": 28242953,
+          "volume_quote": null
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 66,
+      "round": 13,
+      "run_id": "<run-0>",
+      "timestamp": 13,
+      "type": "ACTION_EXECUTED"
+    },
+    {
+      "data": {
+        "per_agent": {
+          "lp-1": {
+            "USDC": 42364
+          }
+        },
+        "run_id": "<run-0>",
+        "total_fees": 42364
+      },
+      "event_id": 67,
+      "round": 13,
+      "run_id": "<run-0>",
+      "timestamp": 13,
+      "type": "LP_FEES_DISTRIBUTED"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "3047037696413427316"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999922973,
+            "USDC": 77025
+          },
+          "reserves": {
+            "SOL": 67229,
+            "USDC": 1730256663
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1745576609
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 68,
+      "round": 13,
+      "run_id": "<run-0>",
+      "timestamp": 13,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 14,
+        "prev_epoch": 13,
+        "run_id": "<run-0>"
+      },
+      "event_id": 69,
+      "round": 14,
+      "run_id": "<run-0>",
+      "timestamp": 14,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 14,
+        "run_id": "<run-0>"
+      },
+      "event_id": 70,
+      "round": 14,
+      "run_id": "<run-0>",
+      "timestamp": 14,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "action": {
+          "agent_id": "noise-1",
+          "amount": 498,
+          "asset": "SOL",
+          "collateral": "USDC",
+          "compute_unit_limit": null,
+          "compute_unit_price_micro_lamports": null,
+          "expiry_slot": null,
+          "num_required_signatures": 1,
+          "oracle_account_ids": [],
+          "recent_blockhash": null,
+          "side": "buy",
+          "submission_path": "rpc"
+        },
+        "action_type": "SingleAssetAction",
+        "agent_id": "noise-1",
+        "correlation_id": "<run-0>:action:71",
+        "correlation_kind": "action",
+        "cost_token": "COLLATERAL",
+        "execution_cost": 0,
+        "gas_cost": 0,
+        "result": {
+          "error": null,
+          "fee_splits": {
+            "lp": 0,
+            "protocol": 0
+          },
+          "fee_token": "USDC",
+          "fees_paid": 1,
+          "is_lp_action": false,
+          "lp_realized_pnl": 0,
+          "other_agent_deltas": {},
+          "other_agent_volume_quotes": {},
+          "other_agent_volumes": {},
+          "success": true,
+          "token_deltas": {
+            "SOL": 497,
+            "USDC": -498
+          },
+          "volume": 498,
+          "volume_quote": null
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 71,
+      "round": 14,
+      "run_id": "<run-0>",
+      "timestamp": 14,
+      "type": "ACTION_EXECUTED"
+    },
+    {
+      "data": {
+        "action": {
+          "agent_id": "sandwich-1",
+          "amount": 25418658,
+          "asset": "SOL",
+          "collateral": "USDC",
+          "compute_unit_limit": null,
+          "compute_unit_price_micro_lamports": null,
+          "expiry_slot": null,
+          "num_required_signatures": 1,
+          "oracle_account_ids": [],
+          "recent_blockhash": null,
+          "side": "buy",
+          "submission_path": "rpc"
+        },
+        "action_type": "SingleAssetAction",
+        "agent_id": "sandwich-1",
+        "correlation_id": "<run-0>:action:72",
+        "correlation_kind": "action",
+        "cost_token": "COLLATERAL",
+        "execution_cost": 0,
+        "gas_cost": 0,
+        "result": {
+          "error": null,
+          "fee_splits": {
+            "lp": 38127,
+            "protocol": 38127
+          },
+          "fee_token": "USDC",
+          "fees_paid": 76255,
+          "is_lp_action": false,
+          "lp_realized_pnl": 0,
+          "other_agent_deltas": {},
+          "other_agent_volume_quotes": {},
+          "other_agent_volumes": {},
+          "success": true,
+          "token_deltas": {
+            "SOL": 25343365,
+            "USDC": -25418658
+          },
+          "volume": 25418658,
+          "volume_quote": null
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 72,
+      "round": 14,
+      "run_id": "<run-0>",
+      "timestamp": 14,
+      "type": "ACTION_EXECUTED"
+    },
+    {
+      "data": {
+        "per_agent": {
+          "lp-1": {
+            "USDC": 38127
+          }
+        },
+        "run_id": "<run-0>",
+        "total_fees": 38127
+      },
+      "event_id": 73,
+      "round": 14,
+      "run_id": "<run-0>",
+      "timestamp": 14,
+      "type": "LP_FEES_DISTRIBUTED"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "3136155905447353480"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999925162,
+            "USDC": 74837
+          },
+          "reserves": {
+            "SOL": 66267,
+            "USDC": 1755599563
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1770919509
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 74,
+      "round": 14,
+      "run_id": "<run-0>",
+      "timestamp": 14,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 15,
+        "prev_epoch": 14,
+        "run_id": "<run-0>"
+      },
+      "event_id": 75,
+      "round": 15,
+      "run_id": "<run-0>",
+      "timestamp": 15,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 15,
+        "run_id": "<run-0>"
+      },
+      "event_id": 76,
+      "round": 15,
+      "run_id": "<run-0>",
+      "timestamp": 15,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "action": {
+          "agent_id": "sandwich-1",
+          "amount": 22876792,
+          "asset": "SOL",
+          "collateral": "USDC",
+          "compute_unit_limit": null,
+          "compute_unit_price_micro_lamports": null,
+          "expiry_slot": null,
+          "num_required_signatures": 1,
+          "oracle_account_ids": [],
+          "recent_blockhash": null,
+          "side": "buy",
+          "submission_path": "rpc"
+        },
+        "action_type": "SingleAssetAction",
+        "agent_id": "sandwich-1",
+        "correlation_id": "<run-0>:action:77",
+        "correlation_kind": "action",
+        "cost_token": "COLLATERAL",
+        "execution_cost": 0,
+        "gas_cost": 0,
+        "result": {
+          "error": null,
+          "fee_splits": {
+            "lp": 34315,
+            "protocol": 34315
+          },
+          "fee_token": "USDC",
+          "fees_paid": 68630,
+          "is_lp_action": false,
+          "lp_realized_pnl": 0,
+          "other_agent_deltas": {},
+          "other_agent_volume_quotes": {},
+          "other_agent_volumes": {},
+          "success": true,
+          "token_deltas": {
+            "SOL": 22809005,
+            "USDC": -22876792
+          },
+          "volume": 22876792,
+          "volume_quote": null
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 77,
+      "round": 15,
+      "run_id": "<run-0>",
+      "timestamp": 15,
+      "type": "ACTION_EXECUTED"
+    },
+    {
+      "data": {
+        "per_agent": {
+          "lp-1": {
+            "USDC": 34315
+          }
+        },
+        "run_id": "<run-0>",
+        "total_fees": 34315
+      },
+      "event_id": 78,
+      "round": 15,
+      "run_id": "<run-0>",
+      "timestamp": 15,
+      "type": "LP_FEES_DISTRIBUTED"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": {
+            "__defi_sim_bigint__": "3217458957058531925"
+          },
+          "num_assets": 2,
+          "prices": {
+            "SOL": 999927053,
+            "USDC": 72945
+          },
+          "reserves": {
+            "SOL": 65424,
+            "USDC": 1778407725
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1793727671
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 79,
+      "round": 15,
+      "run_id": "<run-0>",
+      "timestamp": 15,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "run_id": "<run-0>"
+      },
+      "event_id": 80,
+      "round": 15,
+      "run_id": "<run-0>",
+      "timestamp": 15,
+      "type": "SIMULATION_END"
+    }
+  ],
+  "run_id": "<run-0>"
+}

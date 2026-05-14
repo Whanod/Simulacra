@@ -1,0 +1,164 @@
+{
+  "created_at": "<masked-timestamp>",
+  "current_round": 15,
+  "market_type": "cfamm",
+  "run_id": "<run-0>",
+  "seed": 7,
+  "simulation_id": "<run-0>",
+  "source": "sync",
+  "source_run_id": null,
+  "source_snapshot_id": null,
+  "spec": {
+    "agents": [
+      {
+        "agent_id": "noise-1",
+        "initial_balances": {
+          "SOL": 5000000000,
+          "USDC": 500000000
+        },
+        "initial_cumulative_volume": 0,
+        "initial_realized_pnl": 0,
+        "params": {
+          "collateral": "USDC",
+          "frequency": 0.25
+        },
+        "type": "noise"
+      },
+      {
+        "agent_id": "sandwich-1",
+        "initial_balances": {
+          "USDC": 1000000000
+        },
+        "initial_cumulative_volume": 0,
+        "initial_realized_pnl": 0,
+        "params": {
+          "collateral": "USDC"
+        },
+        "type": "manipulator"
+      },
+      {
+        "agent_id": "lp-1",
+        "initial_balances": {
+          "USDC": 2000000000
+        },
+        "initial_cumulative_volume": 0,
+        "initial_realized_pnl": 0,
+        "params": {
+          "collateral": "USDC"
+        },
+        "type": "passive_lp"
+      }
+    ],
+    "alts": [],
+    "feeds": [],
+    "lighthouse_sizing": false,
+    "market": {
+      "fee_model": {
+        "params": {
+          "trade_fee_bps": 30
+        },
+        "type": "flat"
+      },
+      "params": {
+        "collateral_token": "USDC",
+        "initial_liquidity": 2000000
+      },
+      "tokens": [
+        {
+          "decimals": 9,
+          "id": "SOL",
+          "native": true,
+          "standard": "native",
+          "symbol": "SOL"
+        },
+        {
+          "decimals": 6,
+          "id": "USDC",
+          "standard": "spl",
+          "symbol": "USDC"
+        }
+      ],
+      "type": "cfamm"
+    },
+    "metadata": {},
+    "num_rounds": 15,
+    "numeric_mode": "fixed",
+    "parameters": {},
+    "retain_snapshots": true,
+    "seed": 7,
+    "snapshot_interval": 1
+  },
+  "status": "completed",
+  "summary": {
+    "agent_count": 3,
+    "agent_summary": {
+      "lp-1": {
+        "balance_total": 1001191159,
+        "cumulative_volume": 0,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "unrealized_pnl": 0
+      },
+      "noise-1": {
+        "balance_total": 5499999998,
+        "cumulative_volume": 1131,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "unrealized_pnl": 0
+      },
+      "sandwich-1": {
+        "balance_total": 998234736,
+        "cumulative_volume": 794108865,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "unrealized_pnl": 0
+      }
+    },
+    "available_rounds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "cancelled": false,
+    "current_round": 15,
+    "event_count": 80,
+    "final_agent_ids": [
+      "lp-1",
+      "noise-1",
+      "sandwich-1"
+    ],
+    "market_type": "cfamm",
+    "num_rounds": 15,
+    "num_rounds_executed": 15,
+    "price_points": 15,
+    "price_summary": {
+      "SOL": {
+        "delta": 120436,
+        "end": 999927053,
+        "start": 999806617
+      },
+      "USDC": {
+        "delta": -120424,
+        "end": 72945,
+        "start": 193369
+      }
+    },
+    "seed": 7,
+    "status": "completed",
+    "stop_reason": null,
+    "stopped_early": false
+  },
+  "updated_at": "<masked-timestamp>"
+}

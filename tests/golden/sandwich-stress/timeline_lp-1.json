@@ -1,0 +1,321 @@
+{
+  "agent_id": "lp-1",
+  "run_id": "<run-0>",
+  "timeline": [
+    {
+      "epoch": 1,
+      "round": 1,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "lp-1",
+        "balances": {
+          "USDC": 1000150000
+        },
+        "cumulative_volume": 0,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "lp",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 1
+    },
+    {
+      "epoch": 2,
+      "round": 2,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "lp-1",
+        "balances": {
+          "USDC": 1000285000
+        },
+        "cumulative_volume": 0,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "lp",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 2
+    },
+    {
+      "epoch": 3,
+      "round": 3,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "lp-1",
+        "balances": {
+          "USDC": 1000406500
+        },
+        "cumulative_volume": 0,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "lp",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 3
+    },
+    {
+      "epoch": 4,
+      "round": 4,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "lp-1",
+        "balances": {
+          "USDC": 1000515850
+        },
+        "cumulative_volume": 0,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "lp",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 4
+    },
+    {
+      "epoch": 5,
+      "round": 5,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "lp-1",
+        "balances": {
+          "USDC": 1000614265
+        },
+        "cumulative_volume": 0,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "lp",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 5
+    },
+    {
+      "epoch": 6,
+      "round": 6,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "lp-1",
+        "balances": {
+          "USDC": 1000702838
+        },
+        "cumulative_volume": 0,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "lp",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 6
+    },
+    {
+      "epoch": 7,
+      "round": 7,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "lp-1",
+        "balances": {
+          "USDC": 1000782554
+        },
+        "cumulative_volume": 0,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "lp",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 7
+    },
+    {
+      "epoch": 8,
+      "round": 8,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "lp-1",
+        "balances": {
+          "USDC": 1000854298
+        },
+        "cumulative_volume": 0,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "lp",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 8
+    },
+    {
+      "epoch": 9,
+      "round": 9,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "lp-1",
+        "balances": {
+          "USDC": 1000918868
+        },
+        "cumulative_volume": 0,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "lp",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 9
+    },
+    {
+      "epoch": 10,
+      "round": 10,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "lp-1",
+        "balances": {
+          "USDC": 1000976981
+        },
+        "cumulative_volume": 0,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "lp",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 10
+    },
+    {
+      "epoch": 11,
+      "round": 11,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "lp-1",
+        "balances": {
+          "USDC": 1001029282
+        },
+        "cumulative_volume": 0,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "lp",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 11
+    },
+    {
+      "epoch": 12,
+      "round": 12,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "lp-1",
+        "balances": {
+          "USDC": 1001076353
+        },
+        "cumulative_volume": 0,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "lp",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 12
+    },
+    {
+      "epoch": 13,
+      "round": 13,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "lp-1",
+        "balances": {
+          "USDC": 1001118717
+        },
+        "cumulative_volume": 0,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "lp",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 13
+    },
+    {
+      "epoch": 14,
+      "round": 14,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "lp-1",
+        "balances": {
+          "USDC": 1001156844
+        },
+        "cumulative_volume": 0,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "lp",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 14
+    },
+    {
+      "epoch": 15,
+      "round": 15,
+      "state": {
+        "__type__": "AgentState",
+        "agent_id": "lp-1",
+        "balances": {
+          "USDC": 1001191159
+        },
+        "cumulative_volume": 0,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "lp",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "timestamp": 15
+    }
+  ]
+}

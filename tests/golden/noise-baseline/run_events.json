@@ -1,0 +1,1395 @@
+{
+  "events": [
+    {
+      "data": {
+        "agents": [
+          "noise-1"
+        ],
+        "all_markets": null,
+        "market": {
+          "fee_bps": null,
+          "invariant": 999997790472,
+          "num_assets": 2,
+          "prices": {
+            "SOL": 499998895,
+            "USDC": 499998895
+          },
+          "reserves": {
+            "SOL": 292894,
+            "USDC": 292894
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1000000
+        },
+        "num_rounds": 20,
+        "run_id": "<run-0>"
+      },
+      "event_id": 1,
+      "round": 0,
+      "run_id": "<run-0>",
+      "timestamp": 0,
+      "type": "SIMULATION_START"
+    },
+    {
+      "data": {
+        "epoch": 1,
+        "prev_epoch": 0,
+        "run_id": "<run-0>"
+      },
+      "event_id": 2,
+      "round": 1,
+      "run_id": "<run-0>",
+      "timestamp": 1,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 1,
+        "run_id": "<run-0>"
+      },
+      "event_id": 3,
+      "round": 1,
+      "run_id": "<run-0>",
+      "timestamp": 1,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": 999997790472,
+          "num_assets": 2,
+          "prices": {
+            "SOL": 499998895,
+            "USDC": 499998895
+          },
+          "reserves": {
+            "SOL": 292894,
+            "USDC": 292894
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1000000
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 4,
+      "round": 1,
+      "run_id": "<run-0>",
+      "timestamp": 1,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 2,
+        "prev_epoch": 1,
+        "run_id": "<run-0>"
+      },
+      "event_id": 5,
+      "round": 2,
+      "run_id": "<run-0>",
+      "timestamp": 2,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 2,
+        "run_id": "<run-0>"
+      },
+      "event_id": 6,
+      "round": 2,
+      "run_id": "<run-0>",
+      "timestamp": 2,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": 999997790472,
+          "num_assets": 2,
+          "prices": {
+            "SOL": 499998895,
+            "USDC": 499998895
+          },
+          "reserves": {
+            "SOL": 292894,
+            "USDC": 292894
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1000000
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 7,
+      "round": 2,
+      "run_id": "<run-0>",
+      "timestamp": 2,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 3,
+        "prev_epoch": 2,
+        "run_id": "<run-0>"
+      },
+      "event_id": 8,
+      "round": 3,
+      "run_id": "<run-0>",
+      "timestamp": 3,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 3,
+        "run_id": "<run-0>"
+      },
+      "event_id": 9,
+      "round": 3,
+      "run_id": "<run-0>",
+      "timestamp": 3,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": 999997790472,
+          "num_assets": 2,
+          "prices": {
+            "SOL": 499998895,
+            "USDC": 499998895
+          },
+          "reserves": {
+            "SOL": 292894,
+            "USDC": 292894
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1000000
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 10,
+      "round": 3,
+      "run_id": "<run-0>",
+      "timestamp": 3,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 4,
+        "prev_epoch": 3,
+        "run_id": "<run-0>"
+      },
+      "event_id": 11,
+      "round": 4,
+      "run_id": "<run-0>",
+      "timestamp": 4,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 4,
+        "run_id": "<run-0>"
+      },
+      "event_id": 12,
+      "round": 4,
+      "run_id": "<run-0>",
+      "timestamp": 4,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "action": {
+          "agent_id": "noise-1",
+          "amount": 231,
+          "asset": "USDC",
+          "collateral": "USDC",
+          "compute_unit_limit": null,
+          "compute_unit_price_micro_lamports": null,
+          "expiry_slot": null,
+          "num_required_signatures": 1,
+          "oracle_account_ids": [],
+          "recent_blockhash": null,
+          "side": "buy",
+          "submission_path": "rpc"
+        },
+        "action_type": "SingleAssetAction",
+        "agent_id": "noise-1",
+        "correlation_id": "<run-0>:action:13",
+        "correlation_kind": "action",
+        "cost_token": "COLLATERAL",
+        "execution_cost": 0,
+        "gas_cost": 0,
+        "result": {
+          "error": null,
+          "fee_splits": {
+            "lp": 0,
+            "protocol": 0
+          },
+          "fee_token": "USDC",
+          "fees_paid": 0,
+          "is_lp_action": false,
+          "lp_realized_pnl": 0,
+          "other_agent_deltas": {},
+          "other_agent_volume_quotes": {},
+          "other_agent_volumes": {},
+          "success": true,
+          "token_deltas": {
+            "USDC": 328
+          },
+          "volume": 231,
+          "volume_quote": null
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 13,
+      "round": 4,
+      "run_id": "<run-0>",
+      "timestamp": 4,
+      "type": "ACTION_EXECUTED"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": 1000461759592,
+          "num_assets": 2,
+          "prices": {
+            "SOL": 499767975,
+            "USDC": 500231730
+          },
+          "reserves": {
+            "SOL": 293125,
+            "USDC": 292797
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1000231
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 14,
+      "round": 4,
+      "run_id": "<run-0>",
+      "timestamp": 4,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 5,
+        "prev_epoch": 4,
+        "run_id": "<run-0>"
+      },
+      "event_id": 15,
+      "round": 5,
+      "run_id": "<run-0>",
+      "timestamp": 5,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 5,
+        "run_id": "<run-0>"
+      },
+      "event_id": 16,
+      "round": 5,
+      "run_id": "<run-0>",
+      "timestamp": 5,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": 1000461759592,
+          "num_assets": 2,
+          "prices": {
+            "SOL": 499767975,
+            "USDC": 500231730
+          },
+          "reserves": {
+            "SOL": 293125,
+            "USDC": 292797
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1000231
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 17,
+      "round": 5,
+      "run_id": "<run-0>",
+      "timestamp": 5,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 6,
+        "prev_epoch": 5,
+        "run_id": "<run-0>"
+      },
+      "event_id": 18,
+      "round": 6,
+      "run_id": "<run-0>",
+      "timestamp": 6,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 6,
+        "run_id": "<run-0>"
+      },
+      "event_id": 19,
+      "round": 6,
+      "run_id": "<run-0>",
+      "timestamp": 6,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "action": {
+          "agent_id": "noise-1",
+          "amount": 888,
+          "asset": "USDC",
+          "collateral": "USDC",
+          "compute_unit_limit": null,
+          "compute_unit_price_micro_lamports": null,
+          "expiry_slot": null,
+          "num_required_signatures": 1,
+          "oracle_account_ids": [],
+          "recent_blockhash": null,
+          "side": "buy",
+          "submission_path": "rpc"
+        },
+        "action_type": "SingleAssetAction",
+        "agent_id": "noise-1",
+        "correlation_id": "<run-0>:action:20",
+        "correlation_kind": "action",
+        "cost_token": "COLLATERAL",
+        "execution_cost": 0,
+        "gas_cost": 0,
+        "result": {
+          "error": null,
+          "fee_splits": {
+            "lp": 1,
+            "protocol": 1
+          },
+          "fee_token": "USDC",
+          "fees_paid": 2,
+          "is_lp_action": false,
+          "lp_realized_pnl": 0,
+          "other_agent_deltas": {},
+          "other_agent_volume_quotes": {},
+          "other_agent_volumes": {},
+          "success": true,
+          "token_deltas": {
+            "USDC": 1252
+          },
+          "volume": 888,
+          "volume_quote": null
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 20,
+      "round": 6,
+      "run_id": "<run-0>",
+      "timestamp": 6,
+      "type": "ACTION_EXECUTED"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": 1002234741832,
+          "num_assets": 2,
+          "prices": {
+            "SOL": 498883766,
+            "USDC": 501115728
+          },
+          "reserves": {
+            "SOL": 294011,
+            "USDC": 292431
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1001117
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 21,
+      "round": 6,
+      "run_id": "<run-0>",
+      "timestamp": 6,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 7,
+        "prev_epoch": 6,
+        "run_id": "<run-0>"
+      },
+      "event_id": 22,
+      "round": 7,
+      "run_id": "<run-0>",
+      "timestamp": 7,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 7,
+        "run_id": "<run-0>"
+      },
+      "event_id": 23,
+      "round": 7,
+      "run_id": "<run-0>",
+      "timestamp": 7,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": 1002234741832,
+          "num_assets": 2,
+          "prices": {
+            "SOL": 498883766,
+            "USDC": 501115728
+          },
+          "reserves": {
+            "SOL": 294011,
+            "USDC": 292431
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1001117
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 24,
+      "round": 7,
+      "run_id": "<run-0>",
+      "timestamp": 7,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 8,
+        "prev_epoch": 7,
+        "run_id": "<run-0>"
+      },
+      "event_id": 25,
+      "round": 8,
+      "run_id": "<run-0>",
+      "timestamp": 8,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 8,
+        "run_id": "<run-0>"
+      },
+      "event_id": 26,
+      "round": 8,
+      "run_id": "<run-0>",
+      "timestamp": 8,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "action": {
+          "agent_id": "noise-1",
+          "amount": 620,
+          "asset": "USDC",
+          "collateral": "USDC",
+          "compute_unit_limit": null,
+          "compute_unit_price_micro_lamports": null,
+          "expiry_slot": null,
+          "num_required_signatures": 1,
+          "oracle_account_ids": [],
+          "recent_blockhash": null,
+          "side": "buy",
+          "submission_path": "rpc"
+        },
+        "action_type": "SingleAssetAction",
+        "agent_id": "noise-1",
+        "correlation_id": "<run-0>:action:27",
+        "correlation_kind": "action",
+        "cost_token": "COLLATERAL",
+        "execution_cost": 0,
+        "gas_cost": 0,
+        "result": {
+          "error": null,
+          "fee_splits": {
+            "lp": 0,
+            "protocol": 0
+          },
+          "fee_token": "USDC",
+          "fees_paid": 1,
+          "is_lp_action": false,
+          "lp_realized_pnl": 0,
+          "other_agent_deltas": {},
+          "other_agent_volume_quotes": {},
+          "other_agent_volumes": {},
+          "success": true,
+          "token_deltas": {
+            "USDC": 874
+          },
+          "volume": 620,
+          "volume_quote": null
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 27,
+      "round": 8,
+      "run_id": "<run-0>",
+      "timestamp": 8,
+      "type": "ACTION_EXECUTED"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": 1003474288836,
+          "num_assets": 2,
+          "prices": {
+            "SOL": 498267409,
+            "USDC": 501731868
+          },
+          "reserves": {
+            "SOL": 294630,
+            "USDC": 292176
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1001736
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 28,
+      "round": 8,
+      "run_id": "<run-0>",
+      "timestamp": 8,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 9,
+        "prev_epoch": 8,
+        "run_id": "<run-0>"
+      },
+      "event_id": 29,
+      "round": 9,
+      "run_id": "<run-0>",
+      "timestamp": 9,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 9,
+        "run_id": "<run-0>"
+      },
+      "event_id": 30,
+      "round": 9,
+      "run_id": "<run-0>",
+      "timestamp": 9,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": 1003474288836,
+          "num_assets": 2,
+          "prices": {
+            "SOL": 498267409,
+            "USDC": 501731868
+          },
+          "reserves": {
+            "SOL": 294630,
+            "USDC": 292176
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1001736
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 31,
+      "round": 9,
+      "run_id": "<run-0>",
+      "timestamp": 9,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 10,
+        "prev_epoch": 9,
+        "run_id": "<run-0>"
+      },
+      "event_id": 32,
+      "round": 10,
+      "run_id": "<run-0>",
+      "timestamp": 10,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 10,
+        "run_id": "<run-0>"
+      },
+      "event_id": 33,
+      "round": 10,
+      "run_id": "<run-0>",
+      "timestamp": 10,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": 1003474288836,
+          "num_assets": 2,
+          "prices": {
+            "SOL": 498267409,
+            "USDC": 501731868
+          },
+          "reserves": {
+            "SOL": 294630,
+            "USDC": 292176
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1001736
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 34,
+      "round": 10,
+      "run_id": "<run-0>",
+      "timestamp": 10,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 11,
+        "prev_epoch": 10,
+        "run_id": "<run-0>"
+      },
+      "event_id": 35,
+      "round": 11,
+      "run_id": "<run-0>",
+      "timestamp": 11,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 11,
+        "run_id": "<run-0>"
+      },
+      "event_id": 36,
+      "round": 11,
+      "run_id": "<run-0>",
+      "timestamp": 11,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": 1003474288836,
+          "num_assets": 2,
+          "prices": {
+            "SOL": 498267409,
+            "USDC": 501731868
+          },
+          "reserves": {
+            "SOL": 294630,
+            "USDC": 292176
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1001736
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 37,
+      "round": 11,
+      "run_id": "<run-0>",
+      "timestamp": 11,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 12,
+        "prev_epoch": 11,
+        "run_id": "<run-0>"
+      },
+      "event_id": 38,
+      "round": 12,
+      "run_id": "<run-0>",
+      "timestamp": 12,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 12,
+        "run_id": "<run-0>"
+      },
+      "event_id": 39,
+      "round": 12,
+      "run_id": "<run-0>",
+      "timestamp": 12,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": 1003474288836,
+          "num_assets": 2,
+          "prices": {
+            "SOL": 498267409,
+            "USDC": 501731868
+          },
+          "reserves": {
+            "SOL": 294630,
+            "USDC": 292176
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1001736
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 40,
+      "round": 12,
+      "run_id": "<run-0>",
+      "timestamp": 12,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 13,
+        "prev_epoch": 12,
+        "run_id": "<run-0>"
+      },
+      "event_id": 41,
+      "round": 13,
+      "run_id": "<run-0>",
+      "timestamp": 13,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 13,
+        "run_id": "<run-0>"
+      },
+      "event_id": 42,
+      "round": 13,
+      "run_id": "<run-0>",
+      "timestamp": 13,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": 1003474288836,
+          "num_assets": 2,
+          "prices": {
+            "SOL": 498267409,
+            "USDC": 501731868
+          },
+          "reserves": {
+            "SOL": 294630,
+            "USDC": 292176
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1001736
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 43,
+      "round": 13,
+      "run_id": "<run-0>",
+      "timestamp": 13,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 14,
+        "prev_epoch": 13,
+        "run_id": "<run-0>"
+      },
+      "event_id": 44,
+      "round": 14,
+      "run_id": "<run-0>",
+      "timestamp": 14,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 14,
+        "run_id": "<run-0>"
+      },
+      "event_id": 45,
+      "round": 14,
+      "run_id": "<run-0>",
+      "timestamp": 14,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": 1003474288836,
+          "num_assets": 2,
+          "prices": {
+            "SOL": 498267409,
+            "USDC": 501731868
+          },
+          "reserves": {
+            "SOL": 294630,
+            "USDC": 292176
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1001736
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 46,
+      "round": 14,
+      "run_id": "<run-0>",
+      "timestamp": 14,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 15,
+        "prev_epoch": 14,
+        "run_id": "<run-0>"
+      },
+      "event_id": 47,
+      "round": 15,
+      "run_id": "<run-0>",
+      "timestamp": 15,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 15,
+        "run_id": "<run-0>"
+      },
+      "event_id": 48,
+      "round": 15,
+      "run_id": "<run-0>",
+      "timestamp": 15,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "action": {
+          "agent_id": "noise-1",
+          "amount": 486,
+          "asset": "SOL",
+          "collateral": "USDC",
+          "compute_unit_limit": null,
+          "compute_unit_price_micro_lamports": null,
+          "expiry_slot": null,
+          "num_required_signatures": 1,
+          "oracle_account_ids": [],
+          "recent_blockhash": null,
+          "side": "buy",
+          "submission_path": "rpc"
+        },
+        "action_type": "SingleAssetAction",
+        "agent_id": "noise-1",
+        "correlation_id": "<run-0>:action:49",
+        "correlation_kind": "action",
+        "cost_token": "COLLATERAL",
+        "execution_cost": 0,
+        "gas_cost": 0,
+        "result": {
+          "error": null,
+          "fee_splits": {
+            "lp": 0,
+            "protocol": 0
+          },
+          "fee_token": "USDC",
+          "fees_paid": 1,
+          "is_lp_action": false,
+          "lp_realized_pnl": 0,
+          "other_agent_deltas": {},
+          "other_agent_volume_quotes": {},
+          "other_agent_volumes": {},
+          "success": true,
+          "token_deltas": {
+            "SOL": 687,
+            "USDC": -486
+          },
+          "volume": 486,
+          "volume_quote": null
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 49,
+      "round": 15,
+      "run_id": "<run-0>",
+      "timestamp": 15,
+      "type": "ACTION_EXECUTED"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": 1004446324449,
+          "num_assets": 2,
+          "prices": {
+            "SOL": 498753009,
+            "USDC": 501246384
+          },
+          "reserves": {
+            "SOL": 294428,
+            "USDC": 292661
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1002221
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 50,
+      "round": 15,
+      "run_id": "<run-0>",
+      "timestamp": 15,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 16,
+        "prev_epoch": 15,
+        "run_id": "<run-0>"
+      },
+      "event_id": 51,
+      "round": 16,
+      "run_id": "<run-0>",
+      "timestamp": 16,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 16,
+        "run_id": "<run-0>"
+      },
+      "event_id": 52,
+      "round": 16,
+      "run_id": "<run-0>",
+      "timestamp": 16,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": 1004446324449,
+          "num_assets": 2,
+          "prices": {
+            "SOL": 498753009,
+            "USDC": 501246384
+          },
+          "reserves": {
+            "SOL": 294428,
+            "USDC": 292661
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1002221
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 53,
+      "round": 16,
+      "run_id": "<run-0>",
+      "timestamp": 16,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 17,
+        "prev_epoch": 16,
+        "run_id": "<run-0>"
+      },
+      "event_id": 54,
+      "round": 17,
+      "run_id": "<run-0>",
+      "timestamp": 17,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 17,
+        "run_id": "<run-0>"
+      },
+      "event_id": 55,
+      "round": 17,
+      "run_id": "<run-0>",
+      "timestamp": 17,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "action": {
+          "agent_id": "noise-1",
+          "amount": 492,
+          "asset": "USDC",
+          "collateral": "USDC",
+          "compute_unit_limit": null,
+          "compute_unit_price_micro_lamports": null,
+          "expiry_slot": null,
+          "num_required_signatures": 1,
+          "oracle_account_ids": [],
+          "recent_blockhash": null,
+          "side": "buy",
+          "submission_path": "rpc"
+        },
+        "action_type": "SingleAssetAction",
+        "agent_id": "noise-1",
+        "correlation_id": "<run-0>:action:56",
+        "correlation_kind": "action",
+        "cost_token": "COLLATERAL",
+        "execution_cost": 0,
+        "gas_cost": 0,
+        "result": {
+          "error": null,
+          "fee_splits": {
+            "lp": 0,
+            "protocol": 0
+          },
+          "fee_token": "USDC",
+          "fees_paid": 1,
+          "is_lp_action": false,
+          "lp_realized_pnl": 0,
+          "other_agent_deltas": {},
+          "other_agent_volume_quotes": {},
+          "other_agent_volumes": {},
+          "success": true,
+          "token_deltas": {
+            "USDC": 693
+          },
+          "volume": 492,
+          "volume_quote": null
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 56,
+      "round": 17,
+      "run_id": "<run-0>",
+      "timestamp": 17,
+      "type": "ACTION_EXECUTED"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": 1005430254858,
+          "num_assets": 2,
+          "prices": {
+            "SOL": 498264678,
+            "USDC": 501734227
+          },
+          "reserves": {
+            "SOL": 294919,
+            "USDC": 292459
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1002712
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 57,
+      "round": 17,
+      "run_id": "<run-0>",
+      "timestamp": 17,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 18,
+        "prev_epoch": 17,
+        "run_id": "<run-0>"
+      },
+      "event_id": 58,
+      "round": 18,
+      "run_id": "<run-0>",
+      "timestamp": 18,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 18,
+        "run_id": "<run-0>"
+      },
+      "event_id": 59,
+      "round": 18,
+      "run_id": "<run-0>",
+      "timestamp": 18,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": 1005430254858,
+          "num_assets": 2,
+          "prices": {
+            "SOL": 498264678,
+            "USDC": 501734227
+          },
+          "reserves": {
+            "SOL": 294919,
+            "USDC": 292459
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1002712
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 60,
+      "round": 18,
+      "run_id": "<run-0>",
+      "timestamp": 18,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 19,
+        "prev_epoch": 18,
+        "run_id": "<run-0>"
+      },
+      "event_id": 61,
+      "round": 19,
+      "run_id": "<run-0>",
+      "timestamp": 19,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 19,
+        "run_id": "<run-0>"
+      },
+      "event_id": 62,
+      "round": 19,
+      "run_id": "<run-0>",
+      "timestamp": 19,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "action": {
+          "agent_id": "noise-1",
+          "amount": 942,
+          "asset": "USDC",
+          "collateral": "USDC",
+          "compute_unit_limit": null,
+          "compute_unit_price_micro_lamports": null,
+          "expiry_slot": null,
+          "num_required_signatures": 1,
+          "oracle_account_ids": [],
+          "recent_blockhash": null,
+          "side": "buy",
+          "submission_path": "rpc"
+        },
+        "action_type": "SingleAssetAction",
+        "agent_id": "noise-1",
+        "correlation_id": "<run-0>:action:63",
+        "correlation_kind": "action",
+        "cost_token": "COLLATERAL",
+        "execution_cost": 0,
+        "gas_cost": 0,
+        "result": {
+          "error": null,
+          "fee_splits": {
+            "lp": 1,
+            "protocol": 1
+          },
+          "fee_token": "USDC",
+          "fees_paid": 2,
+          "is_lp_action": false,
+          "lp_realized_pnl": 0,
+          "other_agent_deltas": {},
+          "other_agent_volume_quotes": {},
+          "other_agent_volumes": {},
+          "success": true,
+          "token_deltas": {
+            "USDC": 1327
+          },
+          "volume": 942,
+          "volume_quote": null
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 63,
+      "round": 19,
+      "run_id": "<run-0>",
+      "timestamp": 19,
+      "type": "ACTION_EXECUTED"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": 1007317027249,
+          "num_assets": 2,
+          "prices": {
+            "SOL": 497331786,
+            "USDC": 502667905
+          },
+          "reserves": {
+            "SOL": 295859,
+            "USDC": 292072
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1003652
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 64,
+      "round": 19,
+      "run_id": "<run-0>",
+      "timestamp": 19,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "epoch": 20,
+        "prev_epoch": 19,
+        "run_id": "<run-0>"
+      },
+      "event_id": 65,
+      "round": 20,
+      "run_id": "<run-0>",
+      "timestamp": 20,
+      "type": "EPOCH_BOUNDARY"
+    },
+    {
+      "data": {
+        "epoch": 20,
+        "run_id": "<run-0>"
+      },
+      "event_id": 66,
+      "round": 20,
+      "run_id": "<run-0>",
+      "timestamp": 20,
+      "type": "ROUND_START"
+    },
+    {
+      "data": {
+        "all_market_states": null,
+        "market_state": {
+          "fee_bps": null,
+          "invariant": 1007317027249,
+          "num_assets": 2,
+          "prices": {
+            "SOL": 497331786,
+            "USDC": 502667905
+          },
+          "reserves": {
+            "SOL": 295859,
+            "USDC": 292072
+          },
+          "tokens": [
+            "SOL",
+            "USDC"
+          ],
+          "total_liquidity": 1003652
+        },
+        "run_id": "<run-0>"
+      },
+      "event_id": 67,
+      "round": 20,
+      "run_id": "<run-0>",
+      "timestamp": 20,
+      "type": "ROUND_END"
+    },
+    {
+      "data": {
+        "run_id": "<run-0>"
+      },
+      "event_id": 68,
+      "round": 20,
+      "run_id": "<run-0>",
+      "timestamp": 20,
+      "type": "SIMULATION_END"
+    }
+  ],
+  "run_id": "<run-0>"
+}

@@ -1,0 +1,83 @@
+{
+  "run_id": "<run-0>",
+  "spec": {
+    "agents": [
+      {
+        "agent_id": "noise-1",
+        "initial_balances": {
+          "SOL": 5000000000,
+          "USDC": 500000000
+        },
+        "initial_cumulative_volume": 0,
+        "initial_realized_pnl": 0,
+        "params": {
+          "collateral": "USDC",
+          "frequency": 0.25
+        },
+        "type": "noise"
+      },
+      {
+        "agent_id": "sandwich-1",
+        "initial_balances": {
+          "USDC": 1000000000
+        },
+        "initial_cumulative_volume": 0,
+        "initial_realized_pnl": 0,
+        "params": {
+          "collateral": "USDC"
+        },
+        "type": "manipulator"
+      },
+      {
+        "agent_id": "lp-1",
+        "initial_balances": {
+          "USDC": 2000000000
+        },
+        "initial_cumulative_volume": 0,
+        "initial_realized_pnl": 0,
+        "params": {
+          "collateral": "USDC"
+        },
+        "type": "passive_lp"
+      }
+    ],
+    "alts": [],
+    "feeds": [],
+    "lighthouse_sizing": false,
+    "market": {
+      "fee_model": {
+        "params": {
+          "trade_fee_bps": 30
+        },
+        "type": "flat"
+      },
+      "params": {
+        "collateral_token": "USDC",
+        "initial_liquidity": 2000000
+      },
+      "tokens": [
+        {
+          "decimals": 9,
+          "id": "SOL",
+          "native": true,
+          "standard": "native",
+          "symbol": "SOL"
+        },
+        {
+          "decimals": 6,
+          "id": "USDC",
+          "standard": "spl",
+          "symbol": "USDC"
+        }
+      ],
+      "type": "cfamm"
+    },
+    "metadata": {},
+    "num_rounds": 15,
+    "numeric_mode": "fixed",
+    "parameters": {},
+    "retain_snapshots": true,
+    "seed": 7,
+    "snapshot_interval": 1
+  }
+}

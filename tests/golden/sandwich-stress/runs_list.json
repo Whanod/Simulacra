@@ -1,0 +1,91 @@
+{
+  "count": 1,
+  "limit": 100,
+  "offset": 0,
+  "runs": [
+    {
+      "created_at": "<masked-timestamp>",
+      "current_round": 15,
+      "market_type": "cfamm",
+      "run_id": "<run-0>",
+      "seed": 7,
+      "simulation_id": "<run-0>",
+      "source": "sync",
+      "source_run_id": null,
+      "source_snapshot_id": null,
+      "status": "completed",
+      "summary": {
+        "agent_count": 3,
+        "agent_summary": {
+          "lp-1": {
+            "balance_total": 1001191159,
+            "cumulative_volume": 0,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "unrealized_pnl": 0
+          },
+          "noise-1": {
+            "balance_total": 5499999998,
+            "cumulative_volume": 1131,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "unrealized_pnl": 0
+          },
+          "sandwich-1": {
+            "balance_total": 998234736,
+            "cumulative_volume": 794108865,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "unrealized_pnl": 0
+          }
+        },
+        "available_rounds": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "cancelled": false,
+        "current_round": 15,
+        "event_count": 80,
+        "final_agent_ids": [
+          "lp-1",
+          "noise-1",
+          "sandwich-1"
+        ],
+        "market_type": "cfamm",
+        "num_rounds": 15,
+        "num_rounds_executed": 15,
+        "price_points": 15,
+        "price_summary": {
+          "SOL": {
+            "delta": 120436,
+            "end": 999927053,
+            "start": 999806617
+          },
+          "USDC": {
+            "delta": -120424,
+            "end": 72945,
+            "start": 193369
+          }
+        },
+        "seed": 7,
+        "status": "completed",
+        "stop_reason": null,
+        "stopped_early": false
+      },
+      "updated_at": "<masked-timestamp>"
+    }
+  ]
+}

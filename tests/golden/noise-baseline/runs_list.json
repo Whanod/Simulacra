@@ -1,0 +1,80 @@
+{
+  "count": 1,
+  "limit": 100,
+  "offset": 0,
+  "runs": [
+    {
+      "created_at": "<masked-timestamp>",
+      "current_round": 20,
+      "market_type": "cfamm",
+      "run_id": "<run-0>",
+      "seed": 42,
+      "simulation_id": "<run-0>",
+      "source": "sync",
+      "source_run_id": null,
+      "source_snapshot_id": null,
+      "status": "completed",
+      "summary": {
+        "agent_count": 1,
+        "agent_summary": {
+          "noise-1": {
+            "balance_total": 1000004675,
+            "cumulative_volume": 3659,
+            "cumulative_volume_quote": 0,
+            "realized_pnl": 0,
+            "unrealized_pnl": 0
+          }
+        },
+        "available_rounds": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20
+        ],
+        "cancelled": false,
+        "current_round": 20,
+        "event_count": 68,
+        "final_agent_ids": [
+          "noise-1"
+        ],
+        "market_type": "cfamm",
+        "num_rounds": 20,
+        "num_rounds_executed": 20,
+        "price_points": 20,
+        "price_summary": {
+          "SOL": {
+            "delta": -2667109,
+            "end": 497331786,
+            "start": 499998895
+          },
+          "USDC": {
+            "delta": 2669010,
+            "end": 502667905,
+            "start": 499998895
+          }
+        },
+        "seed": 42,
+        "status": "completed",
+        "stop_reason": null,
+        "stopped_early": false
+      },
+      "updated_at": "<masked-timestamp>"
+    }
+  ]
+}

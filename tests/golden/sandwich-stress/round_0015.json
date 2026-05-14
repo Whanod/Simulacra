@@ -1,0 +1,87 @@
+{
+  "run_id": "<run-0>",
+  "snapshot": {
+    "__type__": "RoundSnapshot",
+    "agent_states": {
+      "lp-1": {
+        "__type__": "AgentState",
+        "agent_id": "lp-1",
+        "balances": {
+          "USDC": 1001191159
+        },
+        "cumulative_volume": 0,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "lp",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "noise-1": {
+        "__type__": "AgentState",
+        "agent_id": "noise-1",
+        "balances": {
+          "SOL": 5000001129,
+          "USDC": 499998869
+        },
+        "cumulative_volume": 1131,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "noise",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      },
+      "sandwich-1": {
+        "__type__": "AgentState",
+        "agent_id": "sandwich-1",
+        "balances": {
+          "SOL": 792343601,
+          "USDC": 205891135
+        },
+        "cumulative_volume": 794108865,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "manipulator",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      }
+    },
+    "all_market_states": null,
+    "bundle_outcomes": [],
+    "current_leader": null,
+    "current_slot": null,
+    "epoch": 15,
+    "market_state": {
+      "__type__": "AmmSnapshot",
+      "fee_bps": null,
+      "invariant": {
+        "__defi_sim_bigint__": "3217458957058531925"
+      },
+      "num_assets": 2,
+      "prices": {
+        "SOL": 999927053,
+        "USDC": 72945
+      },
+      "reserves": {
+        "SOL": 65424,
+        "USDC": 1778407725
+      },
+      "tokens": [
+        "SOL",
+        "USDC"
+      ],
+      "total_liquidity": 1793727671
+    },
+    "metrics": {},
+    "round": 15,
+    "timestamp": 15
+  }
+}

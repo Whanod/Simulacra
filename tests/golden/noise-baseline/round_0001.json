@@ -1,0 +1,51 @@
+{
+  "run_id": "<run-0>",
+  "snapshot": {
+    "__type__": "RoundSnapshot",
+    "agent_states": {
+      "noise-1": {
+        "__type__": "AgentState",
+        "agent_id": "noise-1",
+        "balances": {
+          "USDC": 1000000000
+        },
+        "cumulative_volume": 0,
+        "cumulative_volume_quote": 0,
+        "realized_pnl": 0,
+        "role": {
+          "__type__": "AgentRole",
+          "name": "noise",
+          "tags": []
+        },
+        "unrealized_pnl": 0
+      }
+    },
+    "all_market_states": null,
+    "bundle_outcomes": [],
+    "current_leader": null,
+    "current_slot": null,
+    "epoch": 1,
+    "market_state": {
+      "__type__": "AmmSnapshot",
+      "fee_bps": null,
+      "invariant": 999997790472,
+      "num_assets": 2,
+      "prices": {
+        "SOL": 499998895,
+        "USDC": 499998895
+      },
+      "reserves": {
+        "SOL": 292894,
+        "USDC": 292894
+      },
+      "tokens": [
+        "SOL",
+        "USDC"
+      ],
+      "total_liquidity": 1000000
+    },
+    "metrics": {},
+    "round": 1,
+    "timestamp": 1
+  }
+}

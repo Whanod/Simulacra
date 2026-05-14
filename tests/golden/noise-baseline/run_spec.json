@@ -1,0 +1,58 @@
+{
+  "run_id": "<run-0>",
+  "spec": {
+    "agents": [
+      {
+        "agent_id": "noise-1",
+        "initial_balances": {
+          "USDC": 1000000000
+        },
+        "initial_cumulative_volume": 0,
+        "initial_realized_pnl": 0,
+        "params": {
+          "collateral": "USDC",
+          "frequency": 0.2
+        },
+        "type": "noise"
+      }
+    ],
+    "alts": [],
+    "feeds": [],
+    "lighthouse_sizing": false,
+    "market": {
+      "fee_model": {
+        "params": {
+          "trade_fee_bps": 30
+        },
+        "type": "flat"
+      },
+      "params": {
+        "collateral_token": "USDC",
+        "initial_liquidity": 1000000
+      },
+      "tokens": [
+        {
+          "decimals": 9,
+          "id": "SOL",
+          "native": true,
+          "standard": "native",
+          "symbol": "SOL"
+        },
+        {
+          "decimals": 6,
+          "id": "USDC",
+          "standard": "spl",
+          "symbol": "USDC"
+        }
+      ],
+      "type": "cfamm"
+    },
+    "metadata": {},
+    "num_rounds": 20,
+    "numeric_mode": "fixed",
+    "parameters": {},
+    "retain_snapshots": true,
+    "seed": 42,
+    "snapshot_interval": 1
+  }
+}
