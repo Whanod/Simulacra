@@ -9,13 +9,15 @@ import Badge from "@/components/ui/Badge";
 import Skeleton from "@/components/feedback/Skeleton";
 import { ChartCanvas } from "@/components/charts";
 import { simulationService } from "@/lib/services/simulationService";
+import { type OverviewView } from "@/lib/services/runViewService";
+import { useRunOverview } from "@/lib/hooks/useRunQueries";
 import type { CompareView } from "@/lib/api/adapters/compare";
 import { useAsync } from "@/lib/hooks/useAsync";
 import { ApiError, toToastMessage } from "@/lib/api/errors";
 import {
-  chartDataFromResult,
-  derivedNumericMetrics,
-  metricsFromResult,
+  chartDataFromOverview,
+  derivedNumericMetricsFromOverview,
+  metricsFromOverview,
   type ApiRunResult,
 } from "@/lib/api/adapters/runs";
 import {
@@ -68,14 +70,14 @@ function deltaText(delta: number, digits = 3): string {
 }
 
 function buildRecommendedComparison(
-  a: ApiRunResult | null,
-  b: ApiRunResult | null,
+  a: OverviewView | null,
+  b: OverviewView | null,
 ): RecommendedRow[] {
   if (!a || !b) return [];
-  const derivedA = derivedNumericMetrics(a);
-  const derivedB = derivedNumericMetrics(b);
-  const metricsA = metricsFromResult(a);
-  const metricsB = metricsFromResult(b);
+  const derivedA = derivedNumericMetricsFromOverview(a);
+  const derivedB = derivedNumericMetricsFromOverview(b);
+  const metricsA = metricsFromOverview(a);
+  const metricsB = metricsFromOverview(b);
 
   const rows: RecommendedRow[] = [];
 
@@ -293,55 +295,35 @@ export default function ComparePage() {
     [leftId, rightId, ready],
   );
 
-  // ── Per-run results (drives chart overlay + recommended-metrics cards) ──
-  const [chartLoading, setChartLoading] = useState(false);
-  const [chartError, setChartError] = useState<string | null>(null);
-  const [resultA, setResultA] = useState<ApiRunResult | null>(null);
-  const [resultB, setResultB] = useState<ApiRunResult | null>(null);
-
-  useEffect(() => {
-    if (!ready) {
-      setResultA(null);
-      setResultB(null);
-      setChartError(null);
-      return;
-    }
-    let cancelled = false;
-    setChartLoading(true);
-    setChartError(null);
-    (async () => {
-      try {
-        const [a, b] = await Promise.all([
-          simulationService.getResult(leftId!),
-          simulationService.getResult(rightId!),
-        ]);
-        if (cancelled) return;
-        setResultA(a);
-        setResultB(b);
-      } catch (err) {
-        if (cancelled) return;
-        setChartError(toToastMessage(err));
-      } finally {
-        if (!cancelled) setChartLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [leftId, rightId, ready]);
+  // ── Per-run overview bundles (drives chart overlay + recommended-metrics cards) ──
+  // useRunOverview goes through the shared react-query cache so revisits and
+  // sibling pages (e.g. /results/{id}) dedup with this fetch.
+  const overviewQueryA = useRunOverview(ready ? leftId : undefined);
+  const overviewQueryB = useRunOverview(ready ? rightId : undefined);
+  const overviewA: OverviewView | null = overviewQueryA.data ?? null;
+  const overviewB: OverviewView | null = overviewQueryB.data ?? null;
+  const chartLoading =
+    ready && (overviewQueryA.isLoading || overviewQueryB.isLoading);
+  const chartError = ready
+    ? overviewQueryA.error
+      ? toToastMessage(overviewQueryA.error)
+      : overviewQueryB.error
+        ? toToastMessage(overviewQueryB.error)
+        : null
+    : null;
 
   const seriesA = useMemo(
-    () => (resultA ? chartDataFromResult(resultA).priceData[0] ?? [] : []),
-    [resultA],
+    () => (overviewA ? chartDataFromOverview(overviewA).priceData[0] ?? [] : []),
+    [overviewA],
   );
   const seriesB = useMemo(
-    () => (resultB ? chartDataFromResult(resultB).priceData[0] ?? [] : []),
-    [resultB],
+    () => (overviewB ? chartDataFromOverview(overviewB).priceData[0] ?? [] : []),
+    [overviewB],
   );
 
   const recommendedComparison = useMemo(
-    () => buildRecommendedComparison(resultA, resultB),
-    [resultA, resultB],
+    () => buildRecommendedComparison(overviewA, overviewB),
+    [overviewA, overviewB],
   );
 
   const view = compareState.data ?? null;
@@ -349,8 +331,25 @@ export default function ComparePage() {
 
   const leftMarket = runA?.spec.market;
   const rightMarket = runB?.spec.market;
-  const leftDenom = pnlDenom(leftMarket, resultA);
-  const rightDenom = pnlDenom(rightMarket, resultB);
+  // Shim: `pnlDenom`/`formatPnl` only consult `result.agent_final_states` for
+  // the quote-token heuristic, so passing a minimal stand-in keeps them
+  // working off the view bundle without changing their signatures.
+  const resultShimA = useMemo<ApiRunResult | null>(
+    () =>
+      overviewA?.agent_final_states
+        ? ({ agent_final_states: overviewA.agent_final_states } as ApiRunResult)
+        : null,
+    [overviewA],
+  );
+  const resultShimB = useMemo<ApiRunResult | null>(
+    () =>
+      overviewB?.agent_final_states
+        ? ({ agent_final_states: overviewB.agent_final_states } as ApiRunResult)
+        : null,
+    [overviewB],
+  );
+  const leftDenom = pnlDenom(leftMarket, resultShimA);
+  const rightDenom = pnlDenom(rightMarket, resultShimB);
   const denomMatch = leftDenom === rightDenom;
 
   const visibleAgents = useMemo(
@@ -718,7 +717,7 @@ export default function ComparePage() {
                                 (row.leftPnl ?? 0) >= 0 ? "var(--green)" : "var(--red)",
                             }}
                           >
-                            {formatPnl(row.leftPnl, leftMarket, { result: resultA })}
+                            {formatPnl(row.leftPnl, leftMarket, { result: resultShimA })}
                           </td>
                           <td
                             className="mono"
@@ -727,7 +726,7 @@ export default function ComparePage() {
                                 (row.rightPnl ?? 0) >= 0 ? "var(--green)" : "var(--red)",
                             }}
                           >
-                            {formatPnl(row.rightPnl, rightMarket, { result: resultB })}
+                            {formatPnl(row.rightPnl, rightMarket, { result: resultShimB })}
                           </td>
                           <td
                             className="mono"
@@ -743,7 +742,7 @@ export default function ComparePage() {
                             }}
                           >
                             {denomMatch
-                              ? formatPnl(row.deltaPnl, leftMarket, { result: resultA })
+                              ? formatPnl(row.deltaPnl, leftMarket, { result: resultShimA })
                               : "—"}
                           </td>
                         </tr>

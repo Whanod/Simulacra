@@ -1,24 +1,17 @@
 import type {
-  AgentRow,
   EvEntry,
   RunSpec,
-  SimMetrics,
   SimRun,
 } from "@/lib/types";
 import { apiFetch } from "@/lib/api/client";
 import {
-  agentRowsFromResult,
-  chartDataFromResult,
-  type ChartData,
   fromApiEvents,
   fromApiRun,
   fromApiRuns,
-  metricsFromResult,
   specToApi,
   type ApiRun,
   type ApiRunEventsResponse,
   type ApiRunResult,
-  type ApiRunResultResponse,
   type ApiRunSpec,
   type ApiRunsListResponse,
 } from "@/lib/api/adapters/runs";
@@ -34,6 +27,7 @@ import {
 } from "@/lib/api/adapters/compare";
 import { apiFetchBlob } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/errors";
+import { runViewService } from "@/lib/services/runViewService";
 
 export interface ValidationResult {
   valid: boolean;
@@ -196,11 +190,6 @@ function shareStatusFromApi(raw: ApiShareRunResponse): RunShareStatus {
   };
 }
 
-async function fetchResult(runId: string): Promise<ApiRunResult> {
-  const resp = await apiFetch<ApiRunResultResponse>(`/runs/${runId}/result`);
-  return resp.result;
-}
-
 export interface AgentTimelineEntry {
   round: number;
   timestamp: number;
@@ -344,17 +333,6 @@ export const simulationService = {
     };
   },
 
-  async getAgents(runId: string): Promise<AgentRow[]> {
-    if (runId === "all") {
-      const runs = await simulationService.listRuns();
-      const first = runs.find((r) => r.status === "completed");
-      if (!first) return [];
-      return simulationService.getAgents(first.id);
-    }
-    const result = await fetchResult(runId);
-    return agentRowsFromResult(result);
-  },
-
   async getEvents(
     runId: string,
     options: { limit?: number; offset?: number; round?: number } = {},
@@ -367,20 +345,6 @@ export const simulationService = {
       },
     });
     return fromApiEvents(resp.events || []);
-  },
-
-  async getMetrics(runId: string): Promise<SimMetrics> {
-    const result = await fetchResult(runId);
-    return metricsFromResult(result);
-  },
-
-  async getResultCharts(runId: string): Promise<ChartData> {
-    const result = await fetchResult(runId);
-    return chartDataFromResult(result);
-  },
-
-  async getResult(runId: string): Promise<ApiRunResult> {
-    return fetchResult(runId);
   },
 
   async getSpec(runId: string): Promise<unknown> {
@@ -421,9 +385,39 @@ export const simulationService = {
     format: ExportFormat,
     fields?: string[],
   ): Promise<Blob> {
-    const result = await fetchResult(runId);
-    const rows = (result.round_snapshots ?? []) as Array<Record<string, unknown>>;
-    const data = rows.length > 0 ? rows : [{ run_id: runId, ...result }];
+    // Round snapshots are the export's payload — pulled from the per-round
+    // table via the postgres-backed /rounds endpoint instead of the legacy
+    // mega-result. The limit is generous enough to cover a single run's
+    // snapshots in one shot; long runs would need follow-up pagination.
+    const resp = await apiFetch<{
+      run_id: string;
+      snapshots: Array<Record<string, unknown>>;
+    }>(`/runs/${runId}/rounds`, { query: { limit: 100000 } });
+    const rows = resp.snapshots ?? [];
+
+    // Fallback for snapshot-less runs: build a single denormalized row off
+    // the overview bundle so derived metrics + agent end-states still ship
+    // to the user. Mirrors the legacy ``[{ run_id, ...result }]`` shape
+    // (one row of top-level fields) without dragging the result blob back.
+    let data: Array<Record<string, unknown>>;
+    if (rows.length > 0) {
+      data = rows;
+    } else {
+      const overview = await runViewService.fetchOverview(runId);
+      data = [
+        {
+          run_id: runId,
+          status: overview.run?.status,
+          seed: overview.run?.seed,
+          market_type: overview.spec_summary?.market_type,
+          num_rounds: overview.spec_summary?.num_rounds,
+          num_rounds_executed: overview.num_rounds_executed,
+          tiles: overview.tiles,
+          price_history: overview.price_history,
+          agent_final_states: overview.agent_final_states,
+        },
+      ];
+    }
     return apiFetchBlob(`/export/${format}`, {
       method: "POST",
       body: { data, fields },
@@ -436,32 +430,6 @@ export const simulationService = {
       body: { left_run_id: leftRunId, right_run_id: rightRunId },
     });
     return fromApiCompare(raw);
-  },
-
-  async getDashPriceData(): Promise<number[][]> {
-    const runs = await simulationService.listRuns();
-    const recent = runs.filter((r) => r.status === "completed").slice(0, 4);
-    const settled = await Promise.allSettled(
-      recent.map(async (run) => ({
-        runId: run.id,
-        charts: await simulationService.getResultCharts(run.id),
-      })),
-    );
-    const series: number[][] = [];
-    for (const result of settled) {
-      if (result.status === "fulfilled") {
-        if (result.value.charts.priceData.length > 0) {
-          series.push(result.value.charts.priceData[0]);
-        }
-        continue;
-      }
-      const err = result.reason;
-      if (err instanceof ApiError && err.status === 404) {
-        continue;
-      }
-      throw err;
-    }
-    return series;
   },
 
   async getSnapshots(runId: string): Promise<Snapshot[]> {

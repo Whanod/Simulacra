@@ -4,12 +4,16 @@ import path from "node:path";
 
 import {
   agentRowsFromResult,
+  agentRowsFromOverview,
   chartDataFromResult,
+  chartDataFromOverview,
+  derivedNumericMetricsFromOverview,
   fromApiEvent,
   fromApiEvents,
   fromApiRun,
   fromApiRuns,
   metricsFromResult,
+  metricsFromOverview,
   priorityFeeMarketChartFromEvents,
   specFromApi,
   specToApi,
@@ -18,6 +22,7 @@ import {
   type ApiRunsListResponse,
   type ApiRunEventsResponse,
 } from "@/lib/api/adapters/runs";
+import type { OverviewView } from "@/lib/services/runViewService";
 import type { EvEntry } from "@/lib/types";
 
 const FIXTURES = path.resolve(__dirname, "..", "..", "..", "..", "test", "fixtures", "api");
@@ -1337,6 +1342,240 @@ describe("runs adapter", () => {
       expect(chart.accounts).toHaveLength(2);
       // The two hottest accounts (pool_5 and pool_4) have the most updates.
       expect(chart.accounts).toEqual(["pool_5", "pool_4"]);
+    });
+  });
+});
+
+// ──────────────────────────────────────────────────────────────────────
+// OverviewView adapters (Phase 4 page-rewire)
+// ──────────────────────────────────────────────────────────────────────
+
+function makeOverview(overrides: Partial<OverviewView> = {}): OverviewView {
+  return {
+    run: { run_id: "run-1" } as OverviewView["run"],
+    spec_summary: {
+      market_type: "cfamm",
+      agent_types: [],
+      num_rounds: 3,
+      seed: 1,
+    },
+    tiles: {},
+    series: {
+      volume: [],
+      num_actions: [],
+      num_failed: [],
+      gas_spent: [],
+    },
+    event_summary: [],
+    price_history: null,
+    agent_final_states: null,
+    whirlpool_snapshots: null,
+    sandwich_summary: null,
+    replay_diff: null,
+    fee_history: [],
+    num_rounds_executed: 3,
+    solana_slot_summary: null,
+    bundle_outcomes_summary: null,
+    jito_searcher_summary: null,
+    replay_metrics: null,
+    ...overrides,
+  };
+}
+
+describe("overview adapters", () => {
+  describe("derivedNumericMetricsFromOverview", () => {
+    it("keeps finite numeric tiles and Infinity, drops NaN and non-numbers", () => {
+      // Boolean is intentionally not in the input — the backend already
+      // strips booleans before serialising tiles, so this layer just needs
+      // to drop NaN and non-numbers.
+      const view = makeOverview({
+        tiles: {
+          slippage: 0.001,
+          fees_vs_il_breakeven: Number.POSITIVE_INFINITY,
+          // Modeled here as null (which JSON.parse never produces for a
+          // number key, but the type permits) — must be skipped.
+          missing: null as unknown as number,
+          unusable: Number.NaN,
+        },
+      });
+      const out = derivedNumericMetricsFromOverview(view);
+      expect(out).toEqual({
+        slippage: 0.001,
+        fees_vs_il_breakeven: Number.POSITIVE_INFINITY,
+      });
+    });
+  });
+
+  describe("agentRowsFromOverview", () => {
+    it("mirrors agentRowsFromResult for the same agent_final_states shape", () => {
+      const states = {
+        "lp-1": {
+          agent_id: "lp-1",
+          role: { name: "passive_lp" },
+          balances: { USDC: 1000, SOL: 5 },
+          cumulative_volume: 12,
+          realized_pnl: 3,
+        },
+        "noise-1": {
+          role: { name: "noise" },
+          balances: { USDC: 500 },
+          cumulative_volume: 7,
+          realized_pnl: -2,
+        },
+      };
+      const rows = agentRowsFromOverview(makeOverview({ agent_final_states: states }));
+      expect(rows).toHaveLength(2);
+      expect(rows[0].agentId).toBe("lp-1");
+      expect(rows[0].role).toBe("lp"); // passive_lp normalises to "lp"
+      expect(rows[0].balance).toBe(1005);
+      expect(rows[1].agentId).toBe("noise-1"); // dict-key fallback
+      expect(rows[1].pnl).toBe(-2);
+    });
+
+    it("returns [] when agent_final_states is null", () => {
+      expect(agentRowsFromOverview(makeOverview())).toEqual([]);
+    });
+  });
+
+  describe("metricsFromOverview", () => {
+    it("reads slippage/kl_divergence/etc. off tiles instead of metadata", () => {
+      const view = makeOverview({
+        tiles: {
+          slippage: 0.0042,
+          kl_divergence: 0.7,
+          convergence_speed: 0.1,
+          exitability: 0.9,
+          manipulation_cost: 1000,
+        },
+        price_history: [{ TKN: 100 }, { TKN: 101 }, { TKN: 102 }],
+      });
+      const metrics = metricsFromOverview(view);
+      expect(metrics.slippage).toBe(0.0042);
+      expect(metrics.klDivergence).toBe(0.7);
+      expect(metrics.convergenceSpeed).toBe(0.1);
+      expect(metrics.exitability).toBe(0.9);
+      expect(metrics.manipulationCost).toBe(1000);
+    });
+
+    it("prefers jito_searcher_summary over sandwich_summary for bundle totals", () => {
+      // When both surfaces are present, the searcher block (post-aggregation
+      // on the server) is canonical — it sums by_strategy across all
+      // searcher instances and is what the page footer renders.
+      const view = makeOverview({
+        jito_searcher_summary: {
+          bundles_submitted: 50,
+          bundles_landed: 20,
+          tips_submitted_lamports: 5000,
+          tips_paid_lamports: 2000,
+          realized_ev_lamports: 9000,
+          landing_rate: 0.4,
+          tip_roi: 4.5,
+          synthetic: false,
+          calibration: null,
+        },
+        sandwich_summary: {
+          sandwich_bundles_landed: 1,
+          sandwich_bundles_submitted: 2,
+          sandwich_realized_ev_lamports: 3,
+        },
+      });
+      const metrics = metricsFromOverview(view);
+      expect(metrics.sandwichBundlesLanded).toBe(20);
+      expect(metrics.sandwichBundlesSubmitted).toBe(50);
+      expect(metrics.sandwichRealizedEvLamports).toBe(9000);
+    });
+
+    it("falls back to sandwich_summary when no jito_searcher_summary", () => {
+      const view = makeOverview({
+        sandwich_summary: {
+          sandwich_bundles_landed: 4,
+          sandwich_bundles_submitted: 10,
+          sandwich_realized_ev_lamports: 7500,
+        },
+      });
+      const metrics = metricsFromOverview(view);
+      expect(metrics.sandwichBundlesLanded).toBe(4);
+      expect(metrics.sandwichBundlesSubmitted).toBe(10);
+      expect(metrics.sandwichRealizedEvLamports).toBe(7500);
+    });
+
+    it("returns null lpProfitability when neither fee_history nor a usable liquidity series is present", () => {
+      const view = makeOverview({
+        price_history: [{ TKN: 1 }, { TKN: 1 }, { TKN: 1 }],
+      });
+      const metrics = metricsFromOverview(view);
+      expect(metrics.lpProfitability).toBeNull();
+    });
+
+    it("computes tickCrossings from whirlpool_snapshots", () => {
+      const view = makeOverview({
+        whirlpool_snapshots: [
+          {
+            round: 0,
+            whirlpool: { "SOL-USDC": { tick_crossings: 2 } },
+          },
+          {
+            round: 1,
+            whirlpool: { "SOL-USDC": { tick_crossings: 3 } },
+          },
+        ],
+      });
+      const metrics = metricsFromOverview(view);
+      expect(metrics.tickCrossings).toBe(5);
+    });
+  });
+
+  describe("chartDataFromOverview", () => {
+    it("unpacks price_history into per-token series and pnl from agent_final_states", () => {
+      const view = makeOverview({
+        price_history: [{ A: 1, B: 2 }, { A: 1.1, B: 2.1 }],
+        agent_final_states: {
+          "lp-1": { realized_pnl: 5 },
+          "noise-1": { realized_pnl: -2 },
+        },
+      });
+      const chart = chartDataFromOverview(view);
+      expect(chart.priceLabels).toEqual(["A", "B"]);
+      expect(chart.priceData).toHaveLength(2);
+      expect(chart.pnlData).toEqual([5, -2]);
+      expect(chart.pnlColors).toEqual(["#34d399", "#f87171"]);
+    });
+
+    it("derives cumulative fees from fee_history splits", () => {
+      const view = makeOverview({
+        fee_history: [
+          { lp: { USDC: 10 }, protocol: { USDC: 5 } },
+          {},
+          { lp: { USDC: 4 }, burn: { USDC: 1 } },
+        ],
+      });
+      const chart = chartDataFromOverview(view);
+      // Round totals: 15, 0, 5 → cumulative: 15, 15, 20.
+      expect(chart.fees).toEqual([15, 15, 20]);
+      // feesByDestination is one series per destination, cumulative,
+      // sorted by total descending.
+      const destinations = chart.feesByDestination.map((s) => s.destination);
+      expect(destinations[0]).toBe("lp"); // largest cumulative
+    });
+
+    it("uses whirlpool totalLpLiquidity as the liquidity series", () => {
+      // Phase 5.2 dropped `liquidity_history` (engine never populated it);
+      // Whirlpool's `total_lp_liquidity` is now the only liquidity source.
+      const view = makeOverview({
+        whirlpool_snapshots: [
+          { round: 0, whirlpool: { p: { total_lp_liquidity: 500 } } },
+          { round: 1, whirlpool: { p: { total_lp_liquidity: 600 } } },
+          { round: 2, whirlpool: { p: { total_lp_liquidity: 700 } } },
+        ],
+      });
+      const chart = chartDataFromOverview(view);
+      expect(chart.liq).toEqual([500, 600, 700]);
+    });
+
+    it("emits an empty liquidity series when no whirlpool snapshots present", () => {
+      const view = makeOverview({});
+      const chart = chartDataFromOverview(view);
+      expect(chart.liq).toEqual([]);
     });
   });
 });

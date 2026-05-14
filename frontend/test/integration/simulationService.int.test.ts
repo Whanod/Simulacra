@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { simulationService } from "@/lib/services/simulationService";
+import { runViewService } from "@/lib/services/runViewService";
 import { apiFetch } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/errors";
 import type { RunSpec } from "@/lib/types/simulations";
@@ -86,11 +87,12 @@ describe("simulationService (integration)", () => {
       });
 
       const run = await simulationService.getRun(runId);
-      const agents = await simulationService.getAgents(runId);
+      const overview = await runViewService.fetchOverview(runId);
+      const agentCount = Object.keys(overview.agent_final_states ?? {}).length;
 
       expect(run).toBeDefined();
       expect(run!.agents).toBe(10);
-      expect(agents).toHaveLength(10);
+      expect(agentCount).toBe(10);
       expect(run!.exec).toBe("direct");
       expect(run!.ordering).toBe("priority");
       expect(run!.fee).toBe("dynamic 45bps");
@@ -115,30 +117,6 @@ describe("simulationService (integration)", () => {
       // must not have decreased.
       expect(after.length).toBeGreaterThanOrEqual(before.length + 1);
       expect(after.map((r) => r.id)).toContain(runId);
-    });
-  });
-
-  describe("getAgents", () => {
-    it("returns AgentRow[] derived from the run result", async () => {
-      const { runId } = await simulationService.buildSpec({
-        ...DEFAULT_SPEC,
-        config: { ...DEFAULT_SPEC.config, seed: 2002 },
-      });
-      const agents = await simulationService.getAgents(runId);
-      expect(agents.length).toBeGreaterThan(0);
-      const first = agents[0];
-      expect(first.role).toBeTruthy();
-      expect(typeof first.balance).toBe("number");
-      expect(typeof first.pnl).toBe("number");
-    });
-
-    it("getAgents('all') falls back to the most recent completed run", async () => {
-      await simulationService.buildSpec({
-        ...DEFAULT_SPEC,
-        config: { ...DEFAULT_SPEC.config, seed: 3003 },
-      });
-      const agents = await simulationService.getAgents("all");
-      expect(Array.isArray(agents)).toBe(true);
     });
   });
 
@@ -167,35 +145,6 @@ describe("simulationService (integration)", () => {
       expect(firstPage).toHaveLength(2);
       expect(secondPage.length).toBeGreaterThan(0);
       expect(secondPage).not.toEqual(firstPage);
-    });
-  });
-
-  describe("getMetrics", () => {
-    it("returns SimMetrics with numeric fields", async () => {
-      const { runId } = await simulationService.buildSpec({
-        ...DEFAULT_SPEC,
-        config: { ...DEFAULT_SPEC.config, seed: 5005 },
-      });
-      const metrics = await simulationService.getMetrics(runId);
-      expect(typeof metrics.twap).toBe("number");
-      expect(typeof metrics.maxDrawdown).toBe("number");
-      expect(typeof metrics.compositeScore).toBe("number");
-    });
-  });
-
-  describe("getResultCharts", () => {
-    it("returns ChartData arrays", async () => {
-      const { runId } = await simulationService.buildSpec({
-        ...DEFAULT_SPEC,
-        config: { ...DEFAULT_SPEC.config, seed: 6006 },
-      });
-      const chart = await simulationService.getResultCharts(runId);
-      expect(chart.priceData.length).toBeGreaterThan(0);
-      expect(chart.priceLabels.length).toBe(chart.priceData.length);
-      expect(chart.priceData[0].length).toBe(3); // num_rounds=3
-      expect(Array.isArray(chart.cumVol)).toBe(true);
-      expect(Array.isArray(chart.pnlData)).toBe(true);
-      expect(chart.pnlData.length).toBe(chart.pnlColors.length);
     });
   });
 
@@ -278,18 +227,13 @@ describe("simulationService (integration)", () => {
     });
   });
 
-  describe("getResult / getSpec", () => {
-    it("returns the run's full result and original spec", async () => {
+  describe("getSpec", () => {
+    it("returns the run's original spec", async () => {
       const { runId } = await simulationService.buildSpec({
         ...DEFAULT_SPEC,
         config: { ...DEFAULT_SPEC.config, seed: 11011 },
       });
-      const [result, spec] = await Promise.all([
-        simulationService.getResult(runId),
-        simulationService.getSpec(runId),
-      ]);
-      expect(result).toBeDefined();
-      expect(Array.isArray(result.price_history)).toBe(true);
+      const spec = await simulationService.getSpec(runId);
       expect(spec).toBeDefined();
       expect((spec as { num_rounds?: number }).num_rounds).toBe(3);
     });
@@ -301,11 +245,12 @@ describe("simulationService (integration)", () => {
         ...DEFAULT_SPEC,
         config: { ...DEFAULT_SPEC.config, seed: 12012 },
       });
-      const agents = await simulationService.getAgents(runId);
-      expect(agents.length).toBeGreaterThan(0);
-      const first = agents[0];
-      expect(first.agentId).toBeTruthy();
-      const timeline = await simulationService.getAgentTimeline(runId, first.agentId);
+      const overview = await runViewService.fetchOverview(runId);
+      const agentIds = Object.keys(overview.agent_final_states ?? {});
+      expect(agentIds.length).toBeGreaterThan(0);
+      const firstAgentId = agentIds[0];
+      expect(firstAgentId).toBeTruthy();
+      const timeline = await simulationService.getAgentTimeline(runId, firstAgentId);
       expect(Array.isArray(timeline)).toBe(true);
       // For a sync run with snapshot_interval=1 and num_rounds=3, we expect
       // at least one rounded entry (often num_rounds + 1 including round 0).

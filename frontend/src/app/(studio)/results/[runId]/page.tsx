@@ -33,13 +33,20 @@ import {
 } from "@/lib/services/simulationService";
 import {
   agentRowsFromResult,
+  agentRowsFromOverview,
   chartDataFromResult,
+  chartDataFromOverview,
   derivedNumericMetrics,
+  derivedNumericMetricsFromOverview,
+  fromApiRun,
   metricsFromResult,
+  metricsFromOverview,
   priorityFeeMarketChartFromEvents,
   type ApiRunResult,
   type ChartData,
 } from "@/lib/api/adapters/runs";
+import { useRunOverview } from "@/lib/hooks/useRunQueries";
+import type { OverviewView } from "@/lib/services/runViewService";
 import RecommendedMetricsGrid from "@/components/results/RecommendedMetricsGrid";
 import {
   EMPTY_CALIBRATION_BANDS,
@@ -103,6 +110,12 @@ interface ResultsBundle {
   spec: unknown;
   resultState: "ready" | "pending" | "missing";
   resultMessage?: string;
+  // Phase 4 page-rewire: present only for non-shared (view-backed) runs.
+  // Carries pre-aggregated Solana/bundle/jito/replay summaries plus the
+  // chart slices, so the page paints from a single `/views/overview` fetch
+  // instead of pulling the full `result.json` and iterating round
+  // snapshots client-side. Null in shared mode (legacy result path).
+  view: OverviewView | null;
 }
 
 const EMPTY_METRICS: SimMetrics = {
@@ -155,82 +168,155 @@ export default function ResultsPage({ params }: { params: Promise<{ runId: strin
   );
 
   // ── Bundle: load run + result + spec in parallel ──────
-  const bundle = useAsync<ResultsBundle>(
+  //
+  // Shared mode stays on the legacy `/share/runs/{id}` payload — it bundles
+  // run + spec + result in one shot for unauthenticated viewers and there's
+  // no view endpoint behind that path.
+  //
+  // Non-shared mode reads from `/runs/{id}/views/overview` (Phase 4 page
+  // rewire): one fetch carries the run row, spec, chart slices, and the
+  // four pre-aggregated `round_snapshots` summaries (Solana ticker, bundle
+  // outcomes, jito searcher, replay metrics). The downstream consumers
+  // below prefer `bundle.data?.view?.*` when the view is present and fall
+  // back to `result.round_snapshots` for shared-mode runs.
+  const overview = useRunOverview(sharedMode ? undefined : runId, {
+    refetchInterval: (query) =>
+      query.state.data?.run?.status === "running" ? 2000 : false,
+  });
+  const sharedBundle = useAsync<ResultsBundle>(
     async () => {
-      if (sharedMode) {
-        const shared = await simulationService.getSharedRunBundle(runId);
-        if (!shared.result) {
-          return {
-            run: shared.run,
+      if (!sharedMode) {
+        // Useless code path for non-shared mode, but useAsync requires a
+        // callback; the page reads `overviewBundle` below and ignores
+        // `sharedBundle.data` whenever `sharedMode === false`.
+        return {
+          run: undefined,
+          result: null,
+          metrics: EMPTY_METRICS,
+          derivedMetrics: {},
+          agents: [],
+          spec: null,
+          resultState: "missing" as const,
+          view: null,
+        };
+      }
+      const shared = await simulationService.getSharedRunBundle(runId);
+      if (!shared.result) {
+        return {
+          run: shared.run,
+          result: null,
+          metrics: EMPTY_METRICS,
+          derivedMetrics: {},
+          agents: [],
+          spec: shared.spec,
+          resultState: "missing" as const,
+          resultMessage: "The final result artifact for this shared run is not available.",
+          view: null,
+        };
+      }
+      return {
+        run: shared.run,
+        result: shared.result,
+        metrics: metricsFromResult(shared.result),
+        derivedMetrics: derivedNumericMetrics(shared.result),
+        agents: agentRowsFromResult(shared.result),
+        spec: shared.spec,
+        resultState: "ready" as const,
+        view: null,
+      };
+    },
+    [runId, sharedMode],
+  );
+
+  // Build a `ResultsBundle`-shaped value off the view query so the rest of
+  // the page can keep its `bundle.data?.*` reads unchanged. The view's
+  // status determines the resultState: a `404` from the view endpoint maps
+  // to the same "missing" / "pending" surfaces the old `getResult` path
+  // produced, keyed off `view.run.status`.
+  const overviewBundle = useMemo<{
+    data: ResultsBundle | null;
+    loading: boolean;
+    error: unknown;
+    refetch: () => Promise<unknown>;
+  }>(() => {
+    const refetch = () => overview.refetch();
+    if (sharedMode) {
+      return { data: null, loading: false, error: null, refetch };
+    }
+    if (overview.isLoading) {
+      return { data: null, loading: true, error: null, refetch };
+    }
+    if (overview.error) {
+      if (overview.error instanceof ApiError && overview.error.status === 404) {
+        return {
+          data: {
+            run: undefined,
             result: null,
             metrics: EMPTY_METRICS,
             derivedMetrics: {},
             agents: [],
-            spec: shared.spec,
+            spec: null,
             resultState: "missing" as const,
-            resultMessage: "The final result artifact for this shared run is not available.",
-          };
-        }
-        return {
-          run: shared.run,
-          result: shared.result,
-          metrics: metricsFromResult(shared.result),
-          derivedMetrics: derivedNumericMetrics(shared.result),
-          agents: agentRowsFromResult(shared.result),
-          spec: shared.spec,
-          resultState: "ready" as const,
+            resultMessage: "Run not found.",
+            view: null,
+          },
+          loading: false,
+          error: null,
+          refetch,
         };
       }
-
-      const [run, spec] = await Promise.all([
-        simulationService.getRun(runId),
-        simulationService.getSpec(runId).catch(() => null),
-      ]);
-      if (!run) {
-        return {
+      return { data: null, loading: false, error: overview.error, refetch };
+    }
+    const view = overview.data;
+    if (!view) {
+      return { data: null, loading: true, error: null, refetch };
+    }
+    const run = fromApiRun(view.run);
+    const pending = run.status !== "completed";
+    // View bundle is best-effort consistent for terminal runs; for a
+    // still-running run we treat the slice the engine has flushed so far
+    // as "pending" so the dashboard renders the same "results available
+    // after completion" message it did under the legacy path.
+    if (pending) {
+      return {
+        data: {
           run,
           result: null,
           metrics: EMPTY_METRICS,
           derivedMetrics: {},
           agents: [],
-          spec,
-          resultState: "missing" as const,
-          resultMessage: "Run not found.",
-        };
-      }
+          spec: view.run.spec ?? null,
+          resultState: "pending" as const,
+          resultMessage: `This run is ${run.status}. Final analytics are available after completion.`,
+          view,
+        },
+        loading: false,
+        error: null,
+        refetch,
+      };
+    }
+    return {
+      data: {
+        run,
+        // Phase 5 will drop `result` from `ResultsBundle` once shared mode
+        // is also migrated; for now leave it null on the view path and let
+        // the 4 sites that previously read `result.round_snapshots` read
+        // `view.{solana,bundle,jito,replay}_summary` instead.
+        result: null,
+        metrics: metricsFromOverview(view),
+        derivedMetrics: derivedNumericMetricsFromOverview(view),
+        agents: agentRowsFromOverview(view),
+        spec: view.run.spec ?? null,
+        resultState: "ready" as const,
+        view,
+      },
+      loading: false,
+      error: null,
+      refetch,
+    };
+  }, [overview, sharedMode]);
 
-      try {
-        const result = await simulationService.getResult(runId);
-        return {
-          run,
-          result,
-          metrics: metricsFromResult(result),
-          derivedMetrics: derivedNumericMetrics(result),
-          agents: agentRowsFromResult(result),
-          spec,
-          resultState: "ready" as const,
-        };
-      } catch (err) {
-        if (err instanceof ApiError && err.status === 404) {
-          const pending = run.status !== "completed";
-          return {
-            run,
-            result: null,
-            metrics: EMPTY_METRICS,
-            derivedMetrics: {},
-            agents: [],
-            spec,
-            resultState: pending ? ("pending" as const) : ("missing" as const),
-            resultMessage: pending
-              ? `This run is ${run.status}. Final analytics are available after completion.`
-              : "The final result artifact for this run is not available.",
-          };
-        }
-        throw err;
-      }
-    },
-    [runId, sharedMode],
-  );
+  const bundle = sharedMode ? sharedBundle : overviewBundle;
 
   // ── Available runs fallback (when current runId is missing) ──
   const runsList = useAsync<SimRun[]>(
@@ -244,11 +330,21 @@ export default function ResultsPage({ params }: { params: Promise<{ runId: strin
 
   // ── Live chrome (Solana slot ticker) ─────────────────────────
   // The results page is read-only — there's no /step driver to pump
-  // applyStep() — so seed liveSlot/liveLeader directly from the latest
-  // round_snapshot that carries Solana slot metadata. Snapshots from
-  // non-Solana runs leave current_slot null and the ticker stays hidden.
+  // applyStep() — so seed liveSlot/liveLeader from the view bundle's
+  // pre-aggregated Solana summary (last snapshot with non-null slot /
+  // leader). Shared mode falls back to iterating `result.round_snapshots`
+  // because the share endpoint doesn't carry the view aggregations.
+  // Snapshots from non-Solana runs leave both fields null and the ticker
+  // stays hidden.
   const { setLiveSlot, setLiveLeader } = useStudioStore();
   useEffect(() => {
+    const view = bundle.data?.view;
+    if (view?.solana_slot_summary) {
+      const { current_slot, current_leader } = view.solana_slot_summary;
+      if (typeof current_slot === "number") setLiveSlot(current_slot);
+      setLiveLeader(typeof current_leader === "string" ? current_leader : null);
+      return;
+    }
     const snapshots = bundle.data?.result?.round_snapshots;
     if (!snapshots || snapshots.length === 0) return;
     let lastSlot: number | null = null;
@@ -349,7 +445,15 @@ export default function ResultsPage({ params }: { params: Promise<{ runId: strin
     bundle.data?.run?.spec.execution.model === "solana_like";
 
   const market = bundle.data?.run?.spec.market;
-  const bundleResult = bundle.data?.result ?? null;
+  // `resolvePnlDenom` / `formatPnl` only consult `result.agent_final_states`
+  // for the denom-token heuristic, so view-backed runs supply a shim
+  // carrying just that field. Old shared-mode runs continue to pass the
+  // full `ApiRunResult` through.
+  const bundleResult =
+    bundle.data?.result
+    ?? (bundle.data?.view?.agent_final_states
+      ? ({ agent_final_states: bundle.data.view.agent_final_states } as ApiRunResult)
+      : null);
   const { symbol: denomLabel } = resolvePnlDenom(market, bundleResult);
   // Find the actual token id used for the denom — needed to look up
   // per-token balances in the agent row breakdown.
@@ -453,34 +557,54 @@ export default function ResultsPage({ params }: { params: Promise<{ runId: strin
     [events],
   );
 
+  // View-backed runs use the overview adapter (one fetch per page paint;
+  // no per-market filter — world templates fall through to the legacy
+  // path until that data lands on the view). Shared mode keeps the legacy
+  // path because there's no view endpoint behind `/share/runs/{id}`.
   const charts: ChartData = useMemo(
-    () =>
-      bundle.data?.resultState === "ready" && bundle.data.result
-        ? chartDataFromResult(bundle.data.result, {
-            market: isWorldRun && marketParam !== "all" ? marketParam : undefined,
-          })
-        : {
-            priceData: [],
-            priceLabels: [],
-            cumVol: [],
-            liq: [],
-            fees: [],
-            feesByDestination: [],
-            pnlData: [],
-            pnlColors: [],
-            tickCrossings: [],
-            activeLiquidity: [],
-            totalLpLiquidity: [],
-            baselineLpLiquidity: [],
-            agentLpLiquidity: [],
-            feesA: [],
-            feesB: [],
-          },
+    () => {
+      const emptyChart: ChartData = {
+        priceData: [],
+        priceLabels: [],
+        cumVol: [],
+        liq: [],
+        fees: [],
+        feesByDestination: [],
+        pnlData: [],
+        pnlColors: [],
+        tickCrossings: [],
+        activeLiquidity: [],
+        totalLpLiquidity: [],
+        baselineLpLiquidity: [],
+        agentLpLiquidity: [],
+        feesA: [],
+        feesB: [],
+      };
+      if (bundle.data?.resultState !== "ready") return emptyChart;
+      // World-template multi-market filtering still needs
+      // `result.all_market_states` per round, which isn't on the view
+      // bundle today. For world runs we fall back to the legacy path; for
+      // every other run (non-world non-shared) the view adapter paints
+      // from one fetch.
+      const needsLegacyChart = isWorldRun && marketParam !== "all";
+      if (bundle.data.view && !needsLegacyChart) {
+        return chartDataFromOverview(bundle.data.view);
+      }
+      if (!bundle.data.result) return emptyChart;
+      return chartDataFromResult(bundle.data.result, {
+        market: isWorldRun && marketParam !== "all" ? marketParam : undefined,
+      });
+    },
     [bundle.data, isWorldRun, marketParam],
   );
 
   const replayMetrics = useMemo(() => {
-    if (bundle.data?.resultState !== "ready" || !bundle.data.result) return null;
+    if (bundle.data?.resultState !== "ready") return null;
+    // View-backed runs: aggregated server-side in `latest_replay_metrics`.
+    if (bundle.data.view) return bundle.data.view.replay_metrics ?? null;
+    // Shared mode: scan `result.round_snapshots` for the last non-null
+    // metrics.replay payload (same heuristic the server now applies).
+    if (!bundle.data.result) return null;
     const snapshots = bundle.data.result.round_snapshots ?? [];
     for (let i = snapshots.length - 1; i >= 0; i--) {
       const replay = (snapshots[i] as { metrics?: { replay?: unknown } }).metrics?.replay;
@@ -495,13 +619,16 @@ export default function ResultsPage({ params }: { params: Promise<{ runId: strin
   // from `solana-plans/calibration/thresholds.yaml` (mirrored in TS).
   const isCalibratedReplay =
     bundle.data?.run?.calibration?.isCalibratedReplay === true;
-  const calibrationBands = useMemo(
-    () =>
-      bundle.data?.resultState === "ready" && bundle.data.result
-        ? extractCalibrationBands(bundle.data.result)
-        : EMPTY_CALIBRATION_BANDS,
-    [bundle.data],
-  );
+  const calibrationBands = useMemo(() => {
+    if (bundle.data?.resultState !== "ready") return EMPTY_CALIBRATION_BANDS;
+    // `extractCalibrationBands` reads `replay_diff` off a generic
+    // ``{ replay_diff?: unknown }`` — both `result` and the view bundle
+    // carry that field at the top level, so we pass whichever is
+    // available.
+    if (bundle.data.view) return extractCalibrationBands(bundle.data.view);
+    if (bundle.data.result) return extractCalibrationBands(bundle.data.result);
+    return EMPTY_CALIBRATION_BANDS;
+  }, [bundle.data]);
   const bandInputForFamily = useCallback(
     (family: string) => {
       const band = calibrationBands.family[family];
@@ -596,7 +723,12 @@ export default function ResultsPage({ params }: { params: Promise<{ runId: strin
     );
   }
 
-  if (bundle.data.resultState !== "ready" || !bundle.data.result) {
+  if (
+    bundle.data.resultState !== "ready" ||
+    // The "ready" branch needs at least one usable data source — either the
+    // legacy `result` payload (shared mode) or the new view bundle.
+    (!bundle.data.result && !bundle.data.view)
+  ) {
     const { run } = bundle.data;
     const isRunnable = run?.status === "running" || run?.status === "paused";
     const showPicker = !run;
@@ -685,10 +817,11 @@ export default function ResultsPage({ params }: { params: Promise<{ runId: strin
     );
   }
 
-  const { run, result, metrics, derivedMetrics } = bundle.data;
+  const { run, result, metrics, derivedMetrics, view } = bundle.data;
   const numRoundsExecuted =
-    (typeof result.num_rounds_executed === "number" && result.num_rounds_executed) ||
-    (typeof result.num_rounds === "number" && result.num_rounds) ||
+    (typeof view?.num_rounds_executed === "number" && view.num_rounds_executed) ||
+    (result && typeof result.num_rounds_executed === "number" && result.num_rounds_executed) ||
+    (result && typeof result.num_rounds === "number" && result.num_rounds) ||
     run?.totalRounds ||
     0;
   const compositeScore = metrics.compositeScore;
@@ -697,8 +830,10 @@ export default function ResultsPage({ params }: { params: Promise<{ runId: strin
   // (status: landed | reverted | dropped). The engine emits BUNDLE_TIP_PAID
   // on land but does not emit "bundle_landed"/"bundle_reverted" event types,
   // so derive the studio-tab counts directly from the snapshot ledger.
-  // Also tally validator + stake-pool revenue per outcome so the
-  // run page can show a real tips-paid total alongside the counts.
+  // View-backed runs read the pre-aggregated `bundle_outcomes_summary` (the
+  // backend ran the same iteration server-side); shared mode keeps the
+  // client-side scan because the share endpoint doesn't carry the
+  // aggregation.
   const {
     bundleOutcomeCounts,
     tipsPaidTotalLamports,
@@ -706,6 +841,31 @@ export default function ResultsPage({ params }: { params: Promise<{ runId: strin
     bundleLandingRateStats,
     dropReasonCounts,
   } = (() => {
+    if (view?.bundle_outcomes_summary) {
+      const summary = view.bundle_outcomes_summary;
+      return {
+        bundleOutcomeCounts: summary.counts,
+        tipsPaidTotalLamports: summary.tips_paid_lamports,
+        bundleOutcomeTimeline: summary.timeline,
+        bundleLandingRateStats: {
+          avg: summary.landing_rate_stats.avg,
+          stdev: summary.landing_rate_stats.stdev,
+          roundsWithBundles: summary.landing_rate_stats.rounds_with_bundles,
+        },
+        dropReasonCounts: summary.drop_reasons,
+      };
+    }
+    const emptyTimeline = { landed: [] as number[], reverted: [] as number[], dropped: [] as number[] };
+    const emptyStats = { avg: 0, stdev: 0, roundsWithBundles: 0 };
+    if (!result) {
+      return {
+        bundleOutcomeCounts: { landed: 0, reverted: 0, dropped: 0 },
+        tipsPaidTotalLamports: 0,
+        bundleOutcomeTimeline: emptyTimeline,
+        bundleLandingRateStats: emptyStats,
+        dropReasonCounts: {} as Record<string, number>,
+      };
+    }
     let landed = 0;
     let reverted = 0;
     let dropped = 0;
@@ -802,7 +962,25 @@ export default function ResultsPage({ params }: { params: Promise<{ runId: strin
     n_in_cohort?: unknown;
     landing_rate?: unknown;
   };
+  // View-backed runs read the pre-aggregated searcher summary; shared mode
+  // still walks the final snapshot's `metrics.jito_searcher` payload. Both
+  // paths produce the same shape so downstream renderers don't branch.
   const jitoSearcherSummary = (() => {
+    if (view?.jito_searcher_summary) {
+      const s = view.jito_searcher_summary;
+      return {
+        bundlesSubmitted: s.bundles_submitted,
+        bundlesLanded: s.bundles_landed,
+        tipsSubmitted: s.tips_submitted_lamports,
+        tipsPaid: s.tips_paid_lamports,
+        realizedEv: s.realized_ev_lamports,
+        landingRate: s.landing_rate,
+        tipRoi: s.tip_roi,
+        synthetic: s.synthetic,
+        calibration: (s.calibration as CalibrationMeta | null) ?? null,
+      };
+    }
+    if (!result) return null;
     const snapshots = result.round_snapshots ?? [];
     const last = snapshots[snapshots.length - 1] as
       | { metrics?: { jito_searcher?: Record<string, unknown> } }

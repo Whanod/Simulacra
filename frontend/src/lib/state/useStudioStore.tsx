@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import type { SimRun, AgentRow, EvEntry, EventFilter, Report } from "@/lib/types";
+import type { SimRun, EvEntry, EventFilter, Report } from "@/lib/types";
 import { simulationService } from "@/lib/services/simulationService";
 import type { RoundDelta } from "@/lib/api/adapters/runner";
 import type { SimulationDraft } from "@/lib/types/drafts";
@@ -71,7 +71,6 @@ interface StudioStore {
   selectedRunId: string | null;
   selectRun: (id: string) => void;
   refreshRuns: () => Promise<void>;
-  agents: AgentRow[];
 
   // Runner
   runner: RunnerState;
@@ -197,10 +196,9 @@ export default function StudioStoreProvider({ children }: { children: React.Reac
   // ── Runs (loaded via services) ───────────────────────
   const [runs, setRuns] = useState<SimRun[]>([]);
   const [selectedRunId, setSelectedRunId] = useState<string | null>(persistedUi.selectedRunId);
-  const [agents, setAgents] = useState<AgentRow[]>([]);
   const [agentRoleFilter, setAgentRoleFilter] = useState(persistedUi.agentRoleFilter);
 
-  // Load runs and agents through service layer on mount
+  // Bootstrap runs list once per page load.
   const initialized = useRef(false);
   useEffect(() => {
     if (sharedMode !== false) return;
@@ -211,12 +209,6 @@ export default function StudioStoreProvider({ children }: { children: React.Reac
       .then(setRuns)
       .catch((err: unknown) => {
         console.error("Failed to load runs", err);
-      });
-    void simulationService
-      .getAgents("all")
-      .then(setAgents)
-      .catch((err: unknown) => {
-        console.error("Failed to load agents", err);
       });
   }, [sharedMode]);
 
@@ -433,7 +425,6 @@ export default function StudioStoreProvider({ children }: { children: React.Reac
       selectedRunId,
       selectRun: setSelectedRunId,
       refreshRuns,
-      agents,
       runner,
       setIsPlaying,
       setSpeed,
@@ -469,7 +460,6 @@ export default function StudioStoreProvider({ children }: { children: React.Reac
       runs,
       selectedRunId,
       refreshRuns,
-      agents,
       runner,
       setIsPlaying,
       setSpeed,

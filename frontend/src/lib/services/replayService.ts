@@ -1,5 +1,5 @@
 import { apiFetch } from "@/lib/api/client";
-import type { ApiRunResult } from "@/lib/api/adapters/runs";
+import { runViewService } from "@/lib/services/runViewService";
 
 export type ReplayCounterfactualKind =
   | "TipReplaceCounterfactual"
@@ -58,7 +58,6 @@ export interface ReplayResult {
   tipPnlSweep: TipPnlSweepPoint[];
   replayMetrics: unknown | null;
   replayDiff: ReplayDiffPayload | null;
-  resultArtifact: ApiRunResult | null;
 }
 
 interface ApiReplayRequest {
@@ -85,11 +84,6 @@ interface ApiTipPnlSweepPoint {
   pnl_lamports?: unknown;
   mainnet_pnl_lamports?: unknown;
   landing_probability?: unknown;
-}
-
-interface ApiRunResultResponse {
-  run_id: string;
-  result: ApiRunResult;
 }
 
 export interface ReplayBundleTarget {
@@ -149,19 +143,7 @@ function normalizeTipPnlSweep(
   });
 }
 
-function latestReplayMetrics(result: ApiRunResult | null): unknown | null {
-  const snapshots = result?.round_snapshots ?? [];
-  for (let i = snapshots.length - 1; i >= 0; i--) {
-    const metrics = snapshots[i]?.metrics;
-    if (!metrics || typeof metrics !== "object") continue;
-    const replay = (metrics as { replay?: unknown }).replay;
-    if (replay && typeof replay === "object") return replay;
-  }
-  return null;
-}
-
-function normalizeReplayDiff(result: ApiRunResult | null): ReplayDiffPayload | null {
-  const diff = result?.replay_diff;
+function normalizeReplayDiff(diff: unknown): ReplayDiffPayload | null {
   if (!diff || typeof diff !== "object" || Array.isArray(diff)) return null;
   return diff as ReplayDiffPayload;
 }
@@ -195,10 +177,7 @@ export const replayService = {
       method: "POST",
       body,
     });
-    const artifact = await apiFetch<ApiRunResultResponse>(
-      `/runs/${encodeURIComponent(raw.run_id)}/result`,
-    );
-    const resultArtifact = artifact.result ?? null;
+    const overview = await runViewService.fetchOverview(raw.run_id);
     return {
       runId: raw.run_id,
       slotRange: raw.slot_range,
@@ -210,9 +189,8 @@ export const replayService = {
       replayKind: raw.replay_kind ?? "synthetic_or_partial_replay",
       mainnetAccuracyClaim: raw.mainnet_accuracy_claim ?? false,
       tipPnlSweep: normalizeTipPnlSweep(raw.tip_pnl_sweep),
-      replayMetrics: latestReplayMetrics(resultArtifact),
-      replayDiff: normalizeReplayDiff(resultArtifact),
-      resultArtifact,
+      replayMetrics: overview.replay_metrics ?? null,
+      replayDiff: normalizeReplayDiff(overview.replay_diff),
     };
   },
 };

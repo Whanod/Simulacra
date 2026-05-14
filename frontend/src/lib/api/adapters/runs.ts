@@ -8,6 +8,7 @@ import type {
   SimRun,
   SimStatus,
 } from "@/lib/types/simulations";
+import type { OverviewView } from "@/lib/services/runViewService";
 import { hashEventClass } from "@/lib/utils/hashColor";
 
 // ── Backend shapes ─────────────────────────────────────────────────────────
@@ -2275,6 +2276,319 @@ export function fromApiEvent(raw: ApiEventRaw): EvEntry {
 
 export function fromApiEvents(raws: ApiEventRaw[]): EvEntry[] {
   return raws.map(fromApiEvent);
+}
+
+// ── OverviewView adapters ───────────────────────────────────────────────────
+//
+// Phase 4 page-rewire: parallel adapters that consume the page-shaped view
+// bundle (`OverviewView`) instead of the legacy `ApiRunResult`. The legacy
+// adapters stay alive for shared-mode and the not-yet-rewired pages
+// (`/compare`, `/reports`, `/replay`); Phase 5 cleanup deletes them.
+//
+// World-template multi-market filtering (`options.market`) is intentionally
+// not supported here — those runs still need `result.all_market_states` per
+// round, which is not on the view bundle. The page branches: non-world runs
+// use these adapters and paint from one fetch; world runs stay on the
+// legacy path until a follow-up extends the view.
+
+/** Numeric `tiles` map → finite-only `Record<string, number>` for tiles UI. */
+export function derivedNumericMetricsFromOverview(
+  view: OverviewView,
+): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const [key, value] of Object.entries(view.tiles)) {
+    if (typeof value !== "number") continue;
+    if (Number.isNaN(value)) continue;
+    out[key] = value;
+  }
+  return out;
+}
+
+/** Per-agent rows from the view's `agent_final_states`. Mirrors
+ *  `agentRowsFromResult` exactly but typed against the view bundle. */
+export function agentRowsFromOverview(view: OverviewView): AgentRow[] {
+  const states = view.agent_final_states || {};
+  const rows: AgentRow[] = [];
+  let idx = 0;
+  for (const [key, state] of Object.entries(states)) {
+    const balances = state.balances || {};
+    const balance = Object.values(balances).reduce(
+      (s: number, v) => s + (typeof v === "number" ? v : 0),
+      0,
+    );
+    const cleanBalances: Record<string, number> = {};
+    for (const [k, v] of Object.entries(balances)) {
+      if (typeof v === "number") cleanBalances[k] = v;
+    }
+    const agentId = state.agent_id != null ? String(state.agent_id) : String(key);
+    rows.push({
+      id: idx++,
+      agentId,
+      role: normalizeRole(state.role?.name),
+      balance,
+      volume: state.cumulative_volume ?? 0,
+      volumeQuote:
+        typeof state.cumulative_volume_quote === "number"
+          ? state.cumulative_volume_quote
+          : undefined,
+      pnl: state.realized_pnl ?? 0,
+      trades: 0,
+      balances: cleanBalances,
+    });
+  }
+  return rows;
+}
+
+/** Total tick crossings across the run's whirlpool snapshots. Sources from
+ *  `view.whirlpool_snapshots` (a pre-filtered list of `{round, whirlpool}`)
+ *  instead of iterating full snapshots. */
+function totalTickCrossingsFromWhirlpoolSnapshots(
+  snapshots: OverviewView["whirlpool_snapshots"],
+): number {
+  if (!Array.isArray(snapshots) || snapshots.length === 0) return 0;
+  let total = 0;
+  for (const entry of snapshots) {
+    const whirlpool = entry?.whirlpool;
+    if (!isPlainObject(whirlpool)) continue;
+    for (const pool of Object.values(whirlpool)) {
+      if (!isPlainObject(pool)) continue;
+      total += toChartNumber(pool["tick_crossings"]);
+    }
+  }
+  return total;
+}
+
+/** Whirlpool series from `view.whirlpool_snapshots`. Sums across pools when
+ *  the entry has more than one (matches `whirlpoolSeriesFromRounds` for the
+ *  no-market case). */
+function whirlpoolSeriesFromWhirlpoolSnapshots(
+  snapshots: OverviewView["whirlpool_snapshots"],
+): {
+  tickCrossings: number[];
+  activeLiquidity: number[];
+  totalLpLiquidity: number[];
+  baselineLpLiquidity: number[];
+  agentLpLiquidity: number[];
+  feesA: number[];
+  feesB: number[];
+} {
+  const empty = {
+    tickCrossings: [] as number[],
+    activeLiquidity: [] as number[],
+    totalLpLiquidity: [] as number[],
+    baselineLpLiquidity: [] as number[],
+    agentLpLiquidity: [] as number[],
+    feesA: [] as number[],
+    feesB: [] as number[],
+  };
+  if (!Array.isArray(snapshots) || snapshots.length === 0) return empty;
+
+  const tickCrossings: number[] = [];
+  const activeLiquidity: number[] = [];
+  const totalLpLiquidity: number[] = [];
+  const baselineLpLiquidity: number[] = [];
+  const agentLpLiquidity: number[] = [];
+  let runningFeesA = 0;
+  let runningFeesB = 0;
+  const feesA: number[] = [];
+  const feesB: number[] = [];
+
+  for (const entry of snapshots) {
+    const whirlpool = entry?.whirlpool;
+    if (!isPlainObject(whirlpool)) {
+      tickCrossings.push(0);
+      activeLiquidity.push(0);
+      totalLpLiquidity.push(0);
+      baselineLpLiquidity.push(0);
+      agentLpLiquidity.push(0);
+      feesA.push(runningFeesA);
+      feesB.push(runningFeesB);
+      continue;
+    }
+    let crossings = 0;
+    let activeL = 0;
+    let totalLpL = 0;
+    let baselineLpL = 0;
+    let agentLpL = 0;
+    let stepFeesA = 0;
+    let stepFeesB = 0;
+    for (const pool of Object.values(whirlpool)) {
+      if (!isPlainObject(pool)) continue;
+      crossings += toChartNumber(pool["tick_crossings"]);
+      activeL = toChartNumber(pool["active_liquidity"]);
+      totalLpL += toChartNumber(pool["total_lp_liquidity"]);
+      baselineLpL += toChartNumber(pool["baseline_lp_liquidity"]);
+      agentLpL += toChartNumber(pool["agent_lp_liquidity"]);
+      stepFeesA += toChartNumber(pool["lp_fees_a"]);
+      stepFeesB += toChartNumber(pool["lp_fees_b"]);
+    }
+    runningFeesA += stepFeesA;
+    runningFeesB += stepFeesB;
+    tickCrossings.push(crossings);
+    activeLiquidity.push(activeL);
+    totalLpLiquidity.push(totalLpL);
+    baselineLpLiquidity.push(baselineLpL);
+    agentLpLiquidity.push(agentLpL);
+    feesA.push(runningFeesA);
+    feesB.push(runningFeesB);
+  }
+  return {
+    tickCrossings,
+    activeLiquidity,
+    totalLpLiquidity,
+    baselineLpLiquidity,
+    agentLpLiquidity,
+    feesA,
+    feesB,
+  };
+}
+
+/** Sum LP fees in the run's quote token, sourced from `view.fee_history` and
+ *  the quote-token heuristic on `view.price_history`. Mirrors
+ *  `lpFeeYieldRatio` for the legacy path. */
+function lpFeeYieldRatioFromOverview(view: OverviewView): number | null {
+  const collateralToken = detectQuoteToken(view.price_history ?? undefined);
+  if (!collateralToken) return null;
+  const lpFees = sumLpFeesForToken(view.fee_history, collateralToken);
+  const lpBalance = passiveLpBalanceForToken(
+    view.agent_final_states ?? undefined,
+    collateralToken,
+  );
+  if (lpBalance <= 0) return null;
+  return 1 + lpFees / lpBalance;
+}
+
+/** Engine-derived metrics from the overview bundle. */
+export function metricsFromOverview(view: OverviewView): SimMetrics {
+  const prices = pricesFromHistory(view.price_history ?? undefined);
+
+  // `tiles` carries what the legacy path read from `metadata.derived_metrics`;
+  // each lookup mirrors the legacy adapter.
+  const tiles = view.tiles ?? {};
+  const klDivergence = readDerivedNumber(tiles.kl_divergence);
+  const convergenceSpeed = readDerivedNumber(tiles.convergence_speed);
+  const manipulationCost = readDerivedNumber(tiles.manipulation_cost);
+  const slippage = readDerivedNumber(tiles.slippage);
+  const exitability = readDerivedNumber(tiles.exitability);
+
+  // Sandwich totals: when the backend supplied a `jito_searcher_summary` we
+  // prefer those (single source of truth for landing-rate / tip-ROI on the
+  // page). Fall back to the flat metadata totals on `sandwich_summary`
+  // (template-emitted) for non-Solana templates that still expose totals.
+  const searcherTotals = view.jito_searcher_summary;
+  const sandwichFromMetadata = view.sandwich_summary;
+  const bundlesLanded =
+    searcherTotals?.bundles_landed
+    ?? sandwichFromMetadata?.sandwich_bundles_landed
+    ?? 0;
+  const bundlesSubmitted =
+    searcherTotals?.bundles_submitted
+    ?? sandwichFromMetadata?.sandwich_bundles_submitted
+    ?? 0;
+  const realizedEvLamports =
+    searcherTotals?.realized_ev_lamports
+    ?? sandwichFromMetadata?.sandwich_realized_ev_lamports
+    ?? 0;
+
+  const numRoundsForStress =
+    view.num_rounds_executed
+    ?? view.spec_summary.num_rounds
+    ?? prices.length
+    ?? 0;
+  const stressScore = scoreStress(realizedEvLamports, numRoundsForStress);
+
+  const feeYieldRatio = lpFeeYieldRatioFromOverview(view);
+  const lpProfitability: number | null = feeYieldRatio;
+
+  const maxDrawdown = prices.length > 0 ? computeMaxDrawdown(prices) : 0;
+  const rollingVol = prices.length > 0 ? computeRollingVol(prices) : 0;
+  const twap = prices.length > 0 ? prices.reduce((s, p) => s + p, 0) / prices.length : 0;
+  const compositeScore =
+    prices.length > 0 || feeYieldRatio !== null
+      ? computeCompositeScore({
+          maxDrawdown,
+          lpProfitability: lpProfitability ?? 1,
+          rollingVol,
+        })
+      : 0;
+
+  const tickCrossings = totalTickCrossingsFromWhirlpoolSnapshots(
+    view.whirlpool_snapshots,
+  );
+
+  return {
+    klDivergence,
+    convergenceSpeed,
+    lpProfitability,
+    manipulationCost,
+    maxDrawdown,
+    rollingVol,
+    twap,
+    slippage,
+    exitability,
+    compositeScore,
+    stressScore,
+    sandwichBundlesLanded: bundlesLanded,
+    sandwichBundlesSubmitted: bundlesSubmitted,
+    sandwichRealizedEvLamports: realizedEvLamports,
+    tickCrossings,
+  };
+}
+
+/** Chart-friendly bundle from the overview view. Mirrors
+ *  `chartDataFromResult` for the non-world case. World runs (multi-market
+ *  filtering via `options.market`) still need the legacy path. */
+export function chartDataFromOverview(view: OverviewView): ChartData {
+  const { labels: priceLabels, series: priceData } = priceSeriesFromHistory(
+    view.price_history ?? undefined,
+    undefined,
+  );
+  // Cumulative volume + liquidity sourced from typed surfaces (Phase 5.2).
+  // The legacy `volume_history` / `liquidity_history` view-bundle fields
+  // were removed because the engine never populated them; consumers fall
+  // through to whirlpool / round-snapshot derivations, which already
+  // covered every populated case.
+  const fees = cumulative(totalFeesPerRound(view.fee_history));
+  const feesByDestination = cumulativeFeesByDestination(view.fee_history);
+  const pnlData: number[] = [];
+  const pnlColors: string[] = [];
+  const states = view.agent_final_states || {};
+  for (const state of Object.values(states)) {
+    const pnl = state.realized_pnl ?? 0;
+    pnlData.push(pnl);
+    pnlColors.push(pnl >= 0 ? "#34d399" : "#f87171");
+  }
+  const {
+    tickCrossings,
+    activeLiquidity,
+    totalLpLiquidity,
+    baselineLpLiquidity,
+    agentLpLiquidity,
+    feesA,
+    feesB,
+  } = whirlpoolSeriesFromWhirlpoolSnapshots(view.whirlpool_snapshots);
+  // Whirlpool LP total is the only surface that produced a meaningful
+  // liquidity series; templates without a Whirlpool market render empty
+  // (matches the prior code path, which fell back to `[]`).
+  const cumVol: number[] = [];
+  const liqForChart = totalLpLiquidity;
+  return {
+    priceData,
+    priceLabels,
+    cumVol,
+    liq: liqForChart,
+    fees,
+    feesByDestination,
+    pnlData,
+    pnlColors,
+    tickCrossings,
+    activeLiquidity,
+    totalLpLiquidity,
+    baselineLpLiquidity,
+    agentLpLiquidity,
+    feesA,
+    feesB,
+  };
 }
 
 // ── Priority fee market chart (PRD US-010 line 748) ───────────────────────

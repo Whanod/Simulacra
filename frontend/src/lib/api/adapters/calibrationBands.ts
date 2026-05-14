@@ -107,7 +107,11 @@ function isErrorBandLike(value: unknown): value is RawErrorBand {
  *   3. anything else / null — returns empty bands.
  */
 export function extractCalibrationBands(
-  result: ApiRunResult | null | undefined,
+  // Accepts any payload with a top-level `replay_diff` field — both
+  // `ApiRunResult` and the Phase 4 `OverviewView` carry it at that path,
+  // so the signature stays permissive (`unknown`) and the existing
+  // runtime cast at line 113 narrows it.
+  result: unknown,
 ): CalibrationBands {
   if (!result) return EMPTY_CALIBRATION_BANDS;
   const diff = (result as { replay_diff?: unknown }).replay_diff;

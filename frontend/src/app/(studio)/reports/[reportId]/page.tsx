@@ -9,9 +9,13 @@ import Skeleton from "@/components/feedback/Skeleton";
 import { ChartCanvas } from "@/components/charts";
 import { reportService } from "@/lib/services/reportService";
 import { simulationService } from "@/lib/services/simulationService";
+import { useRunOverview } from "@/lib/hooks/useRunQueries";
 import { ApiError } from "@/lib/api/errors";
-import type { ChartData } from "@/lib/api/adapters/runs";
-import type { Report, ReportSection, SimMetrics } from "@/lib/types";
+import {
+  chartDataFromOverview,
+  metricsFromOverview,
+} from "@/lib/api/adapters/runs";
+import type { Report, ReportSection } from "@/lib/types";
 
 type SectionType = ReportSection["type"];
 
@@ -50,34 +54,19 @@ function ChartSection({
   availableRunIds: string[];
   onRunChange: (runId: string) => void;
 }) {
-  const [data, setData] = useState<ChartData | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!runId) {
-      setData(null);
-      return;
-    }
-    let cancelled = false;
-    setLoading(true);
-    setError(null);
-    simulationService
-      .getResultCharts(runId)
-      .then((d) => {
-        if (!cancelled) setData(d);
-      })
-      .catch((err) => {
-        if (cancelled) return;
-        setError(err instanceof Error ? err.message : "Failed to load");
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [runId]);
+  // Shared react-query cache: revisits or sibling sections (Metrics on the
+  // same runId, /results/{id}, /compare) reuse this fetch.
+  const overview = useRunOverview(runId);
+  const loading = Boolean(runId) && overview.isLoading;
+  const error = overview.error
+    ? overview.error instanceof Error
+      ? overview.error.message
+      : "Failed to load"
+    : null;
+  const data = useMemo(
+    () => (overview.data ? chartDataFromOverview(overview.data) : null),
+    [overview.data],
+  );
 
   return (
     <div>
@@ -133,34 +122,17 @@ function MetricsSection({
   availableRunIds: string[];
   onRunChange: (runId: string) => void;
 }) {
-  const [metrics, setMetrics] = useState<SimMetrics | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!runId) {
-      setMetrics(null);
-      return;
-    }
-    let cancelled = false;
-    setLoading(true);
-    setError(null);
-    simulationService
-      .getMetrics(runId)
-      .then((m) => {
-        if (!cancelled) setMetrics(m);
-      })
-      .catch((err) => {
-        if (cancelled) return;
-        setError(err instanceof Error ? err.message : "Failed to load");
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [runId]);
+  const overview = useRunOverview(runId);
+  const loading = Boolean(runId) && overview.isLoading;
+  const error = overview.error
+    ? overview.error instanceof Error
+      ? overview.error.message
+      : "Failed to load"
+    : null;
+  const metrics = useMemo(
+    () => (overview.data ? metricsFromOverview(overview.data) : null),
+    [overview.data],
+  );
 
   return (
     <div>
