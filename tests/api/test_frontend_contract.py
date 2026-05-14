@@ -55,12 +55,11 @@ class TestFrontendContract:
         assert "spec" in spec_resp
         assert _keys(spec_resp["spec"]).issuperset({"market", "agents", "num_rounds", "seed"})
 
-        # GET /runs/{id}/result
-        result_resp = client.get(f"/runs/{run_a_id}/result").json()
-        assert result_resp["run_id"] == run_a_id
-        result = result_resp["result"]
-        for field in ("num_rounds", "num_rounds_executed", "price_history", "agent_final_states", "round_snapshots"):
-            assert field in result, f"result.{field} missing"
+        # Phase 5.3: ``GET /runs/{id}/result`` retired in favour of typed
+        # surfaces — the overview view bundles the chart-driving slices,
+        # ``GET /runs/{id}/rounds`` carries the per-round snapshots, and
+        # the composer (``store.get_run_result``) keeps the legacy shape
+        # alive for in-process callers (share / reports / embed).
 
         # GET /runs/{id}/events
         events_resp = client.get(f"/runs/{run_a_id}/events", params={"limit": 100}).json()
@@ -82,7 +81,6 @@ class TestFrontendContract:
             "equal",
             "spec_diff",
             "metric_diff",
-            "metadata_diff",
             "price_summary_delta",
             "agent_summary_delta",
         ):
