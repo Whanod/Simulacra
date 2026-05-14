@@ -58,8 +58,8 @@ def persist_replay_run(
 ) -> dict[str, Any]:
     """Persist a replay run as a first-class artifact (PRD line 331).
 
-    Lives in the same artifact-store path as regular runs (keyed off
-    ``ARTIFACT_ROOT_ENV``); the metadata flag ``kind == "replay"`` and the
+    Lives in the same artifact store as regular runs (Postgres-backed); the
+    metadata flag ``kind == "replay"`` and the
     ``counterfactuals: list[CounterfactualSpec]`` field on the run summary
     distinguish it from sync/live runs. ``decoded_transaction_share`` and
     ``unsupported_program_ids`` are persisted on the summary per PRD line 361
@@ -96,6 +96,13 @@ def persist_replay_run(
     }
     if replay_diff is not None:
         summary["replay_diff"] = replay_diff
+    if predicted is not None:
+        # Stash on summary so the Phase 5 composer (`pg_store.get_run_result`)
+        # and the legacy `/runs/{id}/result` endpoint can surface the same
+        # `predicted` payload the replay tests assert against. ``runs.result``
+        # used to be the only home for this; once Phase 5.3 retires the
+        # endpoint, the field becomes summary-only.
+        summary["predicted"] = predicted
     if decoded_transaction_share is not None:
         summary["decoded_transaction_share"] = decoded_transaction_share
     if unsupported_program_ids is not None:
@@ -182,13 +189,15 @@ def ensure_completion_event(entry: EngineEntry) -> None:
         return
     if not entry.engine.is_complete:
         return
-    result = entry.engine._build_result()  # noqa: SLF001 - used for API persistence
+    # Phase 5 (postgres-migration plan, line 252): SIMULATION_END no longer
+    # carries the full result. The engine writes the typed columns + peer
+    # tables directly via ``persist_live_entry`` → ``save_run_artifacts``;
+    # the event row is now just a "done" marker.
     entry.event_bus.emit(
         Event(
             type=EventType.SIMULATION_END,
             round=entry.engine.current_round,
             timestamp=entry.engine._clock.timestamp(entry.engine.current_round),  # noqa: SLF001
-            data={"result": result},
         )
     )
     entry.completion_event_emitted = True

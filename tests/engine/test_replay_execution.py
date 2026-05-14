@@ -533,15 +533,15 @@ def test_agent_inject_counterfactual_to_spec_uses_repr_for_agent() -> None:
 # ----- Replay run artifact persistence (PRD line 331) ------------------------
 
 
-def test_replay_run_artifact_kind_is_replay(tmp_path, monkeypatch) -> None:
+def test_replay_run_artifact_kind_is_replay(pg_pool, monkeypatch) -> None:
     from defi_sim_api.backend.store import (
-        ARTIFACT_ROOT_ENV,
+        STORE_BACKEND_ENV,
         get_artifact_store,
         reset_artifact_store,
     )
     from defi_sim_api.backend.runtime import persist_replay_run
 
-    monkeypatch.setenv(ARTIFACT_ROOT_ENV, str(tmp_path))
+    monkeypatch.setenv(STORE_BACKEND_ENV, "postgres")
     reset_artifact_store()
     try:
         cfs = [
@@ -579,11 +579,11 @@ def test_replay_run_artifact_kind_is_replay(tmp_path, monkeypatch) -> None:
         reset_artifact_store()
 
 
-def test_persist_replay_run_with_no_counterfactuals(tmp_path, monkeypatch) -> None:
-    from defi_sim_api.backend.store import ARTIFACT_ROOT_ENV, reset_artifact_store
+def test_persist_replay_run_with_no_counterfactuals(pg_pool, monkeypatch) -> None:
+    from defi_sim_api.backend.store import STORE_BACKEND_ENV, reset_artifact_store
     from defi_sim_api.backend.runtime import persist_replay_run
 
-    monkeypatch.setenv(ARTIFACT_ROOT_ENV, str(tmp_path))
+    monkeypatch.setenv(STORE_BACKEND_ENV, "postgres")
     reset_artifact_store()
     try:
         record = persist_replay_run("run-replay-2", slot_range=(7, 7))

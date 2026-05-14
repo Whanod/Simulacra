@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-
 from tests.api.conftest import CFAMM_SPEC
 
 
@@ -150,25 +148,29 @@ class TestDeleteReport:
     def test_delete_unknown_id_returns_404(self, client):
         assert client.delete("/reports/does-not-exist").status_code == 404
 
-    def test_delete_removes_bundle_file_if_present(self, client):
+    def test_bundle_is_regenerated_on_every_request(self, client):
+        """Phase 3 dropped bundle caching — every /bundle hit rebuilds from
+        current SQL state. Two consecutive requests must both succeed and
+        produce identical ZIP bytes (the underlying data hasn't changed)."""
         run_id = client.post("/simulations/run", json=CFAMM_SPEC).json()["run_id"]
         rid = client.post(
             "/reports",
             json={"title": "Bundled", "run_ids": [run_id]},
         ).json()["report_id"]
 
-        # Materialize bundle
-        bundle_resp = client.get(f"/reports/{rid}/bundle")
-        assert bundle_resp.status_code == 200
+        first = client.get(f"/reports/{rid}/bundle")
+        assert first.status_code == 200
+        assert first.headers["content-type"] == "application/zip"
 
-        from defi_sim_api.backend.store import get_artifact_store
-
-        bundle_path_str = get_artifact_store().get_report_bundle_path(rid)
-        assert bundle_path_str is not None
-        bundle_path = Path(bundle_path_str)
-        assert bundle_path.exists()
+        second = client.get(f"/reports/{rid}/bundle")
+        assert second.status_code == 200
+        # Same input → same ZIP. Catches a regression where regeneration
+        # picks up non-deterministic content (e.g. timestamps in manifest).
+        assert first.content == second.content
 
         resp = client.delete(f"/reports/{rid}")
         assert resp.status_code == 204
-        assert not bundle_path.exists()
         assert client.get(f"/reports/{rid}").status_code == 404
+        # Bundle download after delete must 404, not silently rebuild from
+        # nothing.
+        assert client.get(f"/reports/{rid}/bundle").status_code == 404

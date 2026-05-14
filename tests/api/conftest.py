@@ -1,31 +1,42 @@
-"""Shared fixtures for API tests."""
+"""Shared fixtures for API tests.
+
+All API tests run against a session-scoped Postgres container (see
+``tests/conftest.py``'s ``pg_pool``); the ``client`` fixture wires
+``DEFI_SIM_STORE_BACKEND=postgres`` and resets the cached artifact store so
+each test gets a clean slate.
+"""
 
 from __future__ import annotations
-
-import shutil
-import tempfile
 
 import pytest
 from fastapi.testclient import TestClient
 
 from defi_sim_api.main import app
 from defi_sim_api import state as sim_state
-from defi_sim_api.backend.store import ARTIFACT_ROOT_ENV, get_artifact_store, reset_artifact_store
+from defi_sim_api.backend.store import (
+    STORE_BACKEND_ENV,
+    get_artifact_store,
+    reset_artifact_store,
+)
 
 
 @pytest.fixture()
-def client(monkeypatch):
-    """Synchronous test client — resets engine store between tests."""
+def client(pg_pool, monkeypatch):
+    """Synchronous test client backed by the session-scoped Postgres pool.
+
+    ``pg_pool`` (from ``tests/conftest.py``) provisions the container and
+    truncates artifact tables between tests; we flip the store backend and
+    reset the cached store so the FastAPI app sees a fresh
+    ``PostgresArtifactStore`` per test.
+    """
+    monkeypatch.setenv(STORE_BACKEND_ENV, "postgres")
     sim_state._engines.clear()
-    artifact_root = tempfile.mkdtemp(prefix="defi-sim-artifacts-", dir="/tmp")
-    monkeypatch.setenv(ARTIFACT_ROOT_ENV, artifact_root)
     reset_artifact_store()
     get_artifact_store()
     with TestClient(app) as c:
         yield c
     sim_state._engines.clear()
     reset_artifact_store()
-    shutil.rmtree(artifact_root, ignore_errors=True)
 
 
 CFAMM_SPEC: dict = {

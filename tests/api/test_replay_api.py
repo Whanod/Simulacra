@@ -7,6 +7,7 @@ from hashlib import sha256
 import time
 
 from defi_sim.engine.bundle_auction import DEFAULT_JITO_TIP_ACCOUNTS
+from defi_sim_api.backend.store import get_artifact_store
 from defi_sim_api.routers import replay as replay_router
 from defi_sim_solana.program_ids import (
     METEORA_DLMM_PROGRAM,
@@ -16,6 +17,20 @@ from defi_sim_solana.program_ids import (
     WHIRLPOOL_PROGRAM,
 )
 from defi_sim_solana.replay.slot_client import SlotSnapshot, clear_slot_cache
+
+
+def _composed_result(run_id: str) -> dict:
+    """Read the composed legacy ``result`` shape directly off the store.
+
+    Phase 5.3 dropped the ``GET /runs/{id}/result`` endpoint along with the
+    ``runs.result`` JSONB column. Replay tests still need to assert on
+    fields the engine emits (``predicted``, ``replay_diff``, …); they now
+    read via the composer, which stitches the legacy shape back from
+    typed columns + ``round_snapshots`` + ``fees``.
+    """
+    result = get_artifact_store().get_run_result(run_id)
+    assert result is not None, f"composed result missing for run {run_id}"
+    return result
 
 CORPUS_SLOT = 160_000_001  # the lone committed entry-gate fixture
 
@@ -195,9 +210,7 @@ def test_replay_with_counterfactual_persists_diff(client, monkeypatch) -> None:
     assert len(summary.get("counterfactuals", [])) == 2
     assert "per_metric_error" in summary.get("replay_diff", {})
 
-    result_resp = client.get(f"/runs/{body['run_id']}/result")
-    assert result_resp.status_code == 200, result_resp.text
-    result = result_resp.json()["result"]
+    result = _composed_result(body["run_id"])
     diff = result["replay_diff"]
     assert diff["per_metric_error"]["tips_paid"]["predicted"] == 0.0
     assert diff["per_metric_error"]["tips_paid"]["actual"] == 5_000.0
@@ -299,9 +312,7 @@ def test_replay_ordering_counterfactual_executes_priority_order(
         replay_router.clear_replay_cache()
 
     assert response.status_code == 200, response.text
-    result_resp = client.get(f"/runs/{response.json()['run_id']}/result")
-    assert result_resp.status_code == 200, result_resp.text
-    actions = result_resp.json()["result"]["predicted"]["actions"]
+    actions = _composed_result(response.json()["run_id"])["predicted"]["actions"]
     assert [action["signature"] for action in actions] == [
         "high-priority",
         "low-priority",
@@ -346,9 +357,7 @@ def test_replay_agent_inject_counterfactual_executes_synthetic_tip(
         replay_router.clear_replay_cache()
 
     assert response.status_code == 200, response.text
-    result_resp = client.get(f"/runs/{response.json()['run_id']}/result")
-    assert result_resp.status_code == 200, result_resp.text
-    result = result_resp.json()["result"]
+    result = _composed_result(response.json()["run_id"])
     actions = result["predicted"]["actions"]
     assert actions[-1]["agent_id"] == "jito-searcher-cf"
     assert actions[-1]["type"] == "TipAction"
@@ -1044,9 +1053,7 @@ def test_replay_without_counterfactuals_persists_actions_in_slot_order(
         replay_router.clear_replay_cache()
 
     assert response.status_code == 200, response.text
-    result_resp = client.get(f"/runs/{response.json()['run_id']}/result")
-    assert result_resp.status_code == 200, result_resp.text
-    actions = result_resp.json()["result"]["predicted"]["actions"]
+    actions = _composed_result(response.json()["run_id"])["predicted"]["actions"]
     assert [action["signature"] for action in actions] == ["bundle-1", "bundle-2"]
     assert [action["tip_lamports"] for action in actions] == [5_000, 7_000]
 
@@ -1076,9 +1083,7 @@ def test_replay_artifact_contains_round_snapshots_for_loaded_decoded_slot(
 
     assert response.status_code == 200, response.text
     run_id = response.json()["run_id"]
-    result_resp = client.get(f"/runs/{run_id}/result")
-    assert result_resp.status_code == 200, result_resp.text
-    result = result_resp.json()["result"]
+    result = _composed_result(run_id)
     assert result["round_snapshots"]
     replay_metrics = result["round_snapshots"][0]["metrics"]["replay"]
     assert replay_metrics["bundle_landing_rate"]["sample_size"] == 1
@@ -1117,9 +1122,7 @@ def test_replay_multislot_actual_diff_preserves_slot_identity(
         replay_router.clear_replay_cache()
 
     assert response.status_code == 200, response.text
-    result_resp = client.get(f"/runs/{response.json()['run_id']}/result")
-    assert result_resp.status_code == 200, result_resp.text
-    diff = result_resp.json()["result"]["replay_diff"]["per_metric_error"]
+    diff = _composed_result(response.json()["run_id"])["replay_diff"]["per_metric_error"]
     assert diff["write_lock_heatmap"]["predicted"] == 1.0
     assert diff["write_lock_heatmap"]["actual"] == 1.0
 
@@ -1191,9 +1194,7 @@ def test_replay_decoded_swap_executes_through_market_execute(
     assert markets
     assert markets[0].executed == [swap]
 
-    result_resp = client.get(f"/runs/{response.json()['run_id']}/result")
-    assert result_resp.status_code == 200, result_resp.text
-    predicted = result_resp.json()["result"]["predicted"]
+    predicted = _composed_result(response.json()["run_id"])["predicted"]
     assert predicted["pool_prices"]["pool-1"] == 1.25
     assert predicted["total_volume"] == 321.0
 
@@ -1255,9 +1256,7 @@ def test_replay_fee_counterfactual_updates_predicted_pool_state(
         replay_router.clear_replay_cache()
 
     assert response.status_code == 200, response.text
-    result_resp = client.get(f"/runs/{response.json()['run_id']}/result")
-    assert result_resp.status_code == 200, result_resp.text
-    result = result_resp.json()["result"]
+    result = _composed_result(response.json()["run_id"])
     assert result["predicted"]["pool_prices"]["pool-1"] == 0.9
     band = result["replay_diff"]["per_metric_error"]["pool_price:pool-1"]
     assert band["predicted"] == 0.9

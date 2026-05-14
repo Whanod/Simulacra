@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 
 from defi_sim_api.backend.patches import PatchPathError, apply_spec_patch
-from defi_sim_api.backend.store import ARTIFACT_ROOT_ENV, LocalArtifactStore, reset_artifact_store
+from defi_sim_api.backend.pg_store import PostgresArtifactStore
 from tests.api.conftest import CFAMM_SPEC, WORLD_SPEC
 
 
@@ -29,10 +29,8 @@ def test_us_002_api_packaging_and_backend_bootstrap_documented():
     assert "uvicorn defi_sim_api.main:app --reload" in backend_docs
 
 
-def test_us_003_local_artifact_store_roundtrip(tmp_path, monkeypatch):
-    monkeypatch.setenv(ARTIFACT_ROOT_ENV, str(tmp_path / "artifacts"))
-    reset_artifact_store()
-    store = LocalArtifactStore()
+def test_us_003_artifact_store_roundtrip(pg_pool):
+    store = PostgresArtifactStore(pool=pg_pool)
 
     store.create_run(
         "run-1",
@@ -46,7 +44,7 @@ def test_us_003_local_artifact_store_roundtrip(tmp_path, monkeypatch):
     store.save_run_artifacts(
         "run-1",
         result={"result": "ok"},
-        events=[{"event_id": 1, "type": "SIMULATION_END"}],
+        events=[{"event_id": 1, "type": "SIMULATION_END", "round": 1, "timestamp": 0.0}],
         round_snapshots=[{"round": 1, "agent_states": {}, "market_state": {}}],
         summary={"status": "completed", "available_rounds": [1]},
     )
@@ -56,7 +54,16 @@ def test_us_003_local_artifact_store_roundtrip(tmp_path, monkeypatch):
     store.create_named_snapshot("snap-1", run_id="run-1", round_number=1, label="checkpoint", blob=b"abc")
 
     assert store.get_run("run-1")["status"] == "completed"
-    assert store.get_run_result("run-1") == {"result": "ok"}
+    # Phase 5.2 ``get_run_result`` composes from typed columns rather than
+    # echoing the literal ``result`` dict back. The save here doesn't
+    # populate any engine-recognised slice, so the composed result is
+    # the default skeleton (empty price_history / agent_final_states +
+    # the round_snapshot row + the empty-summary metadata keys).
+    composed = store.get_run_result("run-1")
+    assert composed is not None
+    assert composed["price_history"] == []
+    assert composed["agent_final_states"] == {}
+    assert composed["num_rounds_executed"] == 0
     assert store.get_run_events("run-1")[0]["event_id"] == 1
     assert store.get_run_round("run-1", 1)["round"] == 1
     assert store.get_sweep("sweep-1")["summary"]["row_count"] == 1
@@ -72,11 +79,12 @@ def test_us_004_sync_runs_persist_artifacts_and_return_run_id(client):
     assert run_id
 
     metadata = client.get(f"/runs/{run_id}").json()
-    result = client.get(f"/runs/{run_id}/result").json()["result"]
     events = client.get(f"/runs/{run_id}/events").json()["events"]
 
     assert metadata["status"] == "completed"
-    assert result["num_rounds_executed"] == CFAMM_SPEC["num_rounds"]
+    # Phase 5.3 dropped ``GET /runs/{id}/result``; ``num_rounds_executed`` now
+    # rides on the run's metadata row (mirroring ``runs.current_round``).
+    assert metadata["current_round"] == CFAMM_SPEC["num_rounds"]
     assert events[-1]["type"] == "SIMULATION_END"
     assert all("round" in event and "timestamp" in event for event in events)
 

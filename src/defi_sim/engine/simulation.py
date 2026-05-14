@@ -367,11 +367,14 @@ class SimulationEngine:
                 break
 
         result = self._build_result()
+        # Phase 5 (postgres-migration plan, line 252): no result embed on
+        # SIMULATION_END. The full result lives in typed columns on
+        # ``runs`` + ``round_snapshots`` + ``fees``; duplicating it inside
+        # the event row tripled the payload at zero reader value.
         self._bus.emit(Event(
             type=EventType.SIMULATION_END,
             round=self._current_round,
             timestamp=self._clock.timestamp(self._current_round),
-            data={"result": result},
         ))
         return result
 
@@ -3163,8 +3166,11 @@ class SimulationEngine:
         # ``get_price(token, round)`` consumers; project per-token views
         # through the ``OracleSource`` interface.
         prices: dict[TokenId, Numeric] = {}
+        # Sort so the resulting dict's insertion order is stable across
+        # processes — leaks downstream into event payloads / snapshots.
+        sorted_token_ids = sorted(token_ids)
         for feed in self._config.feeds:
-            for token_id in token_ids:
+            for token_id in sorted_token_ids:
                 try:
                     price, _ = feed.oracle_for(token_id).price_at(round_num)
                 except Exception:

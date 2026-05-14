@@ -5,7 +5,6 @@ from __future__ import annotations
 import io
 import json
 import zipfile
-from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, status
@@ -183,6 +182,10 @@ def delete_report(report_id: str) -> Response:
     response_class=Response,
 )
 def export_report_bundle(report_id: str) -> Response:
+    # Phase 3: bundles are built fresh on every request from current SQL
+    # state. No caching, no envelope, no filesystem. If a future caller
+    # needs reproducible point-in-time bundles, the manifest is the place
+    # to record query parameters — open question in the migration plan.
     store = get_artifact_store()
     report = store.get_report(report_id)
     if report is None:
@@ -191,14 +194,7 @@ def export_report_bundle(report_id: str) -> Response:
     if manifest is None:
         raise HTTPException(status_code=404, detail="Report manifest not found")
 
-    bundle_path = store.get_report_bundle_path(report_id)
-    bundle_bytes: bytes
-    if bundle_path is None:
-        bundle_bytes = _build_bundle(report_id, manifest)
-        store.save_report_bundle(report_id, bundle_bytes)
-    else:
-        bundle_bytes = Path(bundle_path).read_bytes()
-
+    bundle_bytes = _build_bundle(report_id, manifest)
     return Response(
         content=bundle_bytes,
         media_type="application/zip",

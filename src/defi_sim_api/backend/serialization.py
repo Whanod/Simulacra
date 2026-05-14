@@ -80,6 +80,10 @@ def filter_events(
     event_type: str | None = None,
     agent_id: str | None = None,
     round_number: int | None = None,
+    from_round: int | None = None,
+    to_round: int | None = None,
+    correlation_id: str | None = None,
+    cursor: int | None = None,
     limit: int = 500,
     offset: int = 0,
 ) -> list[dict[str, Any]]:
@@ -90,6 +94,20 @@ def filter_events(
         filtered = [event for event in filtered if str(event.get("data", {}).get("agent_id")) == str(agent_id)]
     if round_number is not None:
         filtered = [event for event in filtered if int(event.get("round", -1)) == round_number]
+    if from_round is not None:
+        filtered = [event for event in filtered if int(event.get("round", -1)) >= from_round]
+    if to_round is not None:
+        filtered = [event for event in filtered if int(event.get("round", -1)) <= to_round]
+    if correlation_id is not None:
+        filtered = [
+            event for event in filtered
+            if str(event.get("data", {}).get("correlation_id")) == str(correlation_id)
+        ]
+    if cursor is not None:
+        # Cursor pagination: skip everything up to and including the event_id
+        # the caller last consumed. Stable across concurrent inserts in a way
+        # offset isn't — the events table grows append-only by event_id.
+        filtered = [event for event in filtered if int(event.get("event_id", -1)) > cursor]
     return filtered[offset : offset + limit]
 
 

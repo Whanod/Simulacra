@@ -987,7 +987,10 @@ class SolanaLikeExecution(BatchExecution):
                 ))
                 continue
             overflow_account: AccountId | None = None
-            for account in locked.write_locks:
+            # Sort write_locks so the picked overflow account is stable across
+            # Python processes — frozenset iteration follows hash() order which
+            # is PYTHONHASHSEED-randomized for strings.
+            for account in sorted(locked.write_locks):
                 if self._account_cu_tally.get(account, 0) + cu_limit > per_account_cap:
                     overflow_account = account
                     break
@@ -1040,7 +1043,8 @@ class SolanaLikeExecution(BatchExecution):
             for account in locked.write_locks:
                 self._priority_fee_market.observe(account, ctx.slot, cu_price)
         threshold = self._priority_fee_market.update_event_threshold
-        for account in touched_accounts:
+        # Sort so event emission order is stable across Python processes.
+        for account in sorted(touched_accounts):
             new_percentiles = self._priority_fee_market.percentiles(account)
             prior = prior_percentiles[account]
             if not _percentiles_shifted_more_than(prior, new_percentiles, threshold):
