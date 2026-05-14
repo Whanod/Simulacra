@@ -3,6 +3,7 @@
 # Allowlist only what the backend build needs
 !pyproject.toml
 !src
+!solana-plans
 !README.md
 
 # And prune noise inside the allowed directories

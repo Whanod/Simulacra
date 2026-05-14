@@ -1,19 +1,20 @@
 # syntax=docker/dockerfile:1.10
 #
-# All-in-one image: FastAPI backend (Python) + Next.js frontend (Node) + SQLite.
-# Designed to drop straight into Coolify:
+# All-in-one image: FastAPI backend (Python) + Next.js frontend (Node).
+# Persistent state lives in a sibling Postgres container — see
+# docker-compose.coolify.yml. The image itself is stateless.
 #   - Single exposed port: 3000
-#   - Persistent data path:  /data   (SQLite + artifact blobs)
-#   - Health endpoint:       /api/health  (Next.js proxies to backend /health)
+#   - Health endpoint:     /api/health  (Next.js proxies to backend /health)
+#   - Requires:            DATABASE_URL pointing at a reachable Postgres
 #
 # Build:
 #   docker build -f Dockerfile.allinone -t defi-sim:allinone .
-# Run:
-#   docker run --rm -p 3000:3000 -v defi_sim_data:/data defi-sim:allinone
+# Run (standalone — needs DATABASE_URL):
+#   docker run --rm -p 3000:3000 -e DATABASE_URL=... defi-sim:allinone
 #
-# In Coolify: select "Dockerfile" build, set the Dockerfile path to
-# Dockerfile.allinone, bind a persistent volume at /data, and publish port
-# 3000.
+# In Coolify: select "Docker Compose" build pointed at
+# docker-compose.coolify.yml. That file provisions the sibling Postgres and
+# wires DATABASE_URL automatically.
 
 ARG PYTHON_VERSION=3.11
 ARG NODE_VERSION=20
@@ -86,14 +87,10 @@ COPY --from=frontend-build /build/public/           ./frontend/public/
 COPY docker/entrypoint.sh /usr/local/bin/defi-sim-entrypoint
 RUN chmod +x /usr/local/bin/defi-sim-entrypoint
 
-# Persistent data (SQLite + JSON blobs). Coolify will mount a volume here.
-RUN mkdir -p /data/artifacts
-VOLUME ["/data"]
-
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     DEFI_SIM_REPO_ROOT=/app \
-    DEFI_SIM_ARTIFACT_ROOT=/data/artifacts \
+    DEFI_SIM_STORE_BACKEND=postgres \
     BACKEND_HOST=127.0.0.1 \
     BACKEND_PORT=8000 \
     BACKEND_INTERNAL_URL=http://127.0.0.1:8000 \

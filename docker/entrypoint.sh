@@ -8,9 +8,6 @@ set -euo pipefail
 : "${BACKEND_PORT:=8000}"
 : "${PORT:=3000}"
 : "${HOSTNAME:=0.0.0.0}"
-: "${DEFI_SIM_ARTIFACT_ROOT:=/data/artifacts}"
-
-mkdir -p "$DEFI_SIM_ARTIFACT_ROOT"
 
 log() { printf '[entrypoint] %s\n' "$*"; }
 

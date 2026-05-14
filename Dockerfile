@@ -17,9 +17,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     DEFI_SIM_REPO_ROOT=/app \
-    DEFI_SIM_ARTIFACT_ROOT=/data/artifacts
-
-RUN mkdir -p /data/artifacts
+    DEFI_SIM_STORE_BACKEND=postgres
 
 EXPOSE 8000
 

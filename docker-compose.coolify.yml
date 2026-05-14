@@ -3,13 +3,30 @@
 # Point Coolify at this compose file (Build Pack: "Docker Compose") and it
 # will:
 #   - build the all-in-one image from Dockerfile.allinone
-#   - mount the `defi_sim_data` named volume at /data (SQLite + artifacts)
+#   - start a sibling Postgres container with the `postgres-data` named volume
 #   - publish port 3000 (frontend + /api proxy to backend)
 #
 # For local spot-checks:
 #   docker compose -f docker-compose.coolify.yml up --build
 
 services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: defi-sim-postgres
+    environment:
+      POSTGRES_USER: defisim
+      POSTGRES_PASSWORD: defisim
+      POSTGRES_DB: defisim
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U defisim -d defisim"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+    restart: unless-stopped
+
   app:
     build:
       context: .
@@ -24,9 +41,11 @@ services:
       # browser talks to the Next.js server at / and /api so CORS is not
       # needed.
       CORS_ALLOWED_ORIGINS: "*"
-      DEFI_SIM_ARTIFACT_ROOT: /data/artifacts
-    volumes:
-      - defi_sim_data:/data
+      DEFI_SIM_STORE_BACKEND: "postgres"
+      DATABASE_URL: "postgresql://defisim:defisim@postgres:5432/defisim"
+    depends_on:
+      postgres:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://127.0.0.1:3000/api/health"]
       interval: 10s
@@ -35,4 +54,4 @@ services:
       start_period: 45s
 
 volumes:
-  defi_sim_data:
+  postgres-data:
