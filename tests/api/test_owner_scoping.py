@@ -137,12 +137,15 @@ def test_enforced_mode_scopes_list_and_404s_cross_owner(
         market_type="cfamm", source="sync",
     )
 
-    # Alice sees only her run + anon-owned legacy rows.
+    # Alice sees only her own runs in /runs. The list filter is strict
+    # — anon-owned legacy rows do NOT bleed into per-user lists, even
+    # though they remain readable by id (asserted below).
     r = client.get("/runs", headers={"Authorization": f"Bearer {alice_token}"})
     assert r.status_code == 200
     alice_visible = {row["run_id"] for row in r.json()["runs"]}
     assert alice_run in alice_visible
     assert bob_run not in alice_visible
+    assert "run-anon-enforced" not in alice_visible
 
     # Alice gets a 404 (not 403) when reading Bob's run by id.
     r = client.get(f"/runs/{bob_run}", headers={"Authorization": f"Bearer {alice_token}"})
@@ -152,8 +155,9 @@ def test_enforced_mode_scopes_list_and_404s_cross_owner(
     r = client.get(f"/runs/{alice_run}", headers={"Authorization": f"Bearer {alice_token}"})
     assert r.status_code == 200
 
-    # Anon-owned legacy rows stay readable to any signed-in caller — that's
-    # the contract that keeps share-link / API-key-write data accessible.
+    # Anon-owned legacy rows stay readable by id to any signed-in caller
+    # — the contract that keeps share-link / API-key-write data accessible
+    # even though they're filtered out of per-user lists.
     r = client.get("/runs/run-anon-enforced",
                    headers={"Authorization": f"Bearer {alice_token}"})
     assert r.status_code == 200

@@ -22,7 +22,8 @@ import { expect, test } from "@playwright/test";
  */
 
 const PRIVY_CONFIGURED =
-  Boolean(process.env.PRIVY_APP_ID) && Boolean(process.env.NEXT_PUBLIC_PRIVY_APP_ID);
+  Boolean(process.env.PRIVY_APP_ID || process.env.PRIVY_ID) &&
+  Boolean(process.env.NEXT_PUBLIC_PRIVY_APP_ID || process.env.PRIVY_APP_ID || process.env.PRIVY_ID);
 
 test.describe("flow 01 — gate at entry", () => {
   test.beforeEach(({}, testInfo) => {
@@ -45,9 +46,12 @@ test.describe("flow 01 — gate at entry", () => {
     await expect(emailInput).toBeFocused();
 
     // The route shell underneath is rendered inert; pointer events on
-    // the body should not reach behind-modal links.
-    const inertShell = page.locator("[inert]");
-    await expect(inertShell).toBeVisible();
+    // the body should not reach behind-modal links. Use the testid
+    // anchor — React serialisation of bare HTML boolean attrs varies
+    // between versions, but the data-testid is stable.
+    const inertShell = page.getByTestId("auth-gate-shell");
+    await expect(inertShell).toBeAttached();
+    await expect(inertShell).toHaveAttribute("inert", /.*/);
 
     // Escape is a no-op while gated.
     await page.keyboard.press("Escape");

@@ -54,8 +54,14 @@ To enable enforced auth, set both of these env vars:
 
 | Var | Where | Purpose |
 |---|---|---|
-| `PRIVY_APP_ID` | backend (uvicorn / docker) | JWT verification against the app's JWKS |
-| `NEXT_PUBLIC_PRIVY_APP_ID` | frontend (build-time) | Loads the Privy SDK + mounts the gate modal |
+| `PRIVY_APP_ID` (or `PRIVY_ID` alias) | backend (uvicorn / docker) — repo-root `.env` | JWT verification against the app's JWKS |
+| `NEXT_PUBLIC_PRIVY_APP_ID` | frontend (build-time) — `frontend/.env.local` | Loads the Privy SDK + mounts the gate modal |
+
+Both names refer to the same Privy app id (the value at the top of
+your Privy dashboard). `scripts/dev.sh` sources the repo-root `.env`
+on startup so the backend picks it up; Next.js auto-loads
+`frontend/.env.local` so the frontend gets `NEXT_PUBLIC_PRIVY_APP_ID`
+without any extra step.
 
 When set:
 - Studio routes are blocked by a non-dismissable email-OTP modal

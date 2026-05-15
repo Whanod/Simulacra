@@ -5,6 +5,13 @@ const API_PORT = Number(process.env.PLAYWRIGHT_API_PORT || 8100);
 const API_BASE = `http://127.0.0.1:${API_PORT}`;
 const FRONTEND_BASE = `http://127.0.0.1:${FRONTEND_PORT}`;
 
+// Privy id can be set under either name. Resolve once so both webServers
+// get a consistent value.
+const PRIVY_APP_ID =
+  process.env.PRIVY_APP_ID || process.env.PRIVY_ID || "";
+const NEXT_PUBLIC_PRIVY_APP_ID =
+  process.env.NEXT_PUBLIC_PRIVY_APP_ID || PRIVY_APP_ID || "";
+
 export default defineConfig({
   testDir: "./e2e",
   timeout: 60_000,
@@ -36,7 +43,7 @@ export default defineConfig({
         CORS_ALLOWED_ORIGINS: FRONTEND_BASE,
         // Privy (Flow 01 spec) — forwarded only when set so existing
         // specs keep running in open mode.
-        ...(process.env.PRIVY_APP_ID ? { PRIVY_APP_ID: process.env.PRIVY_APP_ID } : {}),
+        ...(PRIVY_APP_ID ? { PRIVY_APP_ID, PRIVY_ID: PRIVY_APP_ID } : {}),
       },
     },
     {
@@ -46,8 +53,8 @@ export default defineConfig({
       timeout: 180_000,
       env: {
         NEXT_PUBLIC_API_URL: API_BASE,
-        ...(process.env.NEXT_PUBLIC_PRIVY_APP_ID
-          ? { NEXT_PUBLIC_PRIVY_APP_ID: process.env.NEXT_PUBLIC_PRIVY_APP_ID }
+        ...(NEXT_PUBLIC_PRIVY_APP_ID
+          ? { NEXT_PUBLIC_PRIVY_APP_ID }
           : {}),
       },
     },

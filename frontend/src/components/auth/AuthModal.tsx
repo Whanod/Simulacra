@@ -39,16 +39,18 @@ export default function AuthModal({ initialPath }: AuthModalProps) {
     return () => window.clearInterval(id);
   }, [state]);
 
-  // Auto-submit the OTP once 6 digits are entered.
+  // Auto-submit the OTP once 6 digits are entered. Depending on the
+  // joined digits + submitting flag (rather than the whole `state`)
+  // keeps this effect from re-running every time RESEND_TICK fires.
+  const otpJoined = state.kind === "awaitingOtp" ? state.digits.join("") : "";
+  const otpSubmitting = state.kind === "awaitingOtp" ? state.submitting : false;
   useEffect(() => {
     if (state.kind !== "awaitingOtp") return;
-    if (state.digits.join("").length !== 6) return;
-    if (state.submitting) return;
-    void verifyCode(state.digits.join(""));
-    // verifyCode is stable enough — closing over loginWithCode would
-    // re-trigger this effect on every Privy hook re-render.
+    if (otpJoined.length !== 6) return;
+    if (otpSubmitting) return;
+    void verifyCode(otpJoined);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state]);
+  }, [state.kind, otpJoined, otpSubmitting]);
 
   // Success beat → embedded wallet wait → close / redirect.
   useEffect(() => {
@@ -147,6 +149,7 @@ export default function AuthModal({ initialPath }: AuthModalProps) {
           onDigitsChange={(digits) => dispatch({ type: "OTP_CHANGE", digits })}
           onBack={() => dispatch({ type: "EDIT_EMAIL" })}
           onResend={() => handleSendCode(state.email)}
+          onVerify={() => verifyCode(state.digits.join(""))}
         />
       )}
       {state.kind === "success" && <SuccessScreen />}
@@ -157,11 +160,28 @@ export default function AuthModal({ initialPath }: AuthModalProps) {
 // ── presentational pieces (no SDK) ──────────────────────────────────────
 
 function ModalShell({ children }: { children: React.ReactNode }) {
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  // Backdrop pointerdown — privy.md §5.11 mandates a no-op. We swallow
+  // the event before focus moves and snap focus back into the card so
+  // the active OTP / email input keeps caret + selection state.
+  const handleBackdropPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.target !== e.currentTarget) return;
+    e.preventDefault();
+    const card = cardRef.current;
+    if (!card) return;
+    const active = document.activeElement as HTMLElement | null;
+    if (active && card.contains(active)) return;
+    const target = card.querySelector<HTMLElement>(
+      'input:not([disabled]), button:not([disabled])',
+    );
+    target?.focus();
+  };
   return (
     <div
       role="dialog"
       aria-modal="true"
       aria-labelledby="auth-modal-title"
+      onPointerDown={handleBackdropPointerDown}
       style={{
         position: "fixed",
         inset: 0,
@@ -177,6 +197,7 @@ function ModalShell({ children }: { children: React.ReactNode }) {
       }}
     >
       <div
+        ref={cardRef}
         style={{
           background: "#fff",
           width: 360,
@@ -292,6 +313,7 @@ function OtpScreen({
   onDigitsChange,
   onBack,
   onResend,
+  onVerify,
 }: {
   email: string;
   digits: string[];
@@ -301,6 +323,7 @@ function OtpScreen({
   onDigitsChange: (digits: string[]) => void;
   onBack: () => void;
   onResend: () => void;
+  onVerify: () => void;
 }) {
   const cellRefs = useRef<Array<HTMLInputElement | null>>([]);
   useEffect(() => {
@@ -389,7 +412,7 @@ function OtpScreen({
           activation. */}
       <button
         type="button"
-        aria-hidden="false"
+        onClick={onVerify}
         style={{
           position: "absolute",
           width: 1,
@@ -401,7 +424,7 @@ function OtpScreen({
           whiteSpace: "nowrap",
           border: 0,
         }}
-        disabled={digits.join("").length !== 6}
+        disabled={digits.join("").length !== 6 || submitting}
       >
         Verify
       </button>

@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import hashlib
 import os
+import re
 import threading
 import time
 import urllib.request
@@ -43,6 +44,15 @@ PRIVY_APP_ID_ENV = "PRIVY_APP_ID"
 _BEARER_PREFIX = "bearer "
 _JWKS_TTL_SECONDS = 600  # 10 minutes — matches Privy's documented JWKS rotation cadence.
 _JWKS_FETCH_TIMEOUT = 5.0
+# Privy issues RS256 today; ES256 is the only other asymmetric alg they
+# document. Pinning explicitly defends against `alg=none` and HS256-via-
+# RSA-JWK confusion attacks where the verifier honours an attacker-chosen
+# alg from the unverified header.
+_ALLOWED_JWT_ALGS = frozenset({"RS256", "ES256"})
+# JWT pre-check: base64url body for each segment. A bare `count(".") == 2`
+# would route any API key containing two dots into the JWT branch and 401
+# instead of falling through to the API-key allowlist.
+_JWT_SHAPE_RE = re.compile(r"^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$")
 
 
 def hash_api_key(plaintext: str) -> str:
@@ -96,7 +106,9 @@ _ANON_USER = User(id=None, email=None, is_anonymous=True)
 
 
 def _privy_app_id() -> str | None:
-    raw = os.environ.get(PRIVY_APP_ID_ENV)
+    # Accept both the canonical Privy-documented name and the shorter
+    # ``PRIVY_ID`` alias some operators put in their .env.
+    raw = os.environ.get(PRIVY_APP_ID_ENV) or os.environ.get("PRIVY_ID")
     return raw.strip() if raw else None
 
 
@@ -110,31 +122,63 @@ def auth_enforced() -> bool:
     return bool(_privy_app_id()) or bool(_parse_api_key_store(os.environ.get(API_KEYS_ENV)))
 
 
-# JWKS cache: app_id → (fetched_at_monotonic, keys-by-kid).
+# JWKS cache: app_id → (fetched_at_monotonic, keys-by-kid). The state
+# lock guards the cache and the in-flight map; the per-app-id Event lets
+# concurrent callers wait for an in-flight refresh without blocking each
+# other across unrelated app ids and without holding the state lock
+# across the network call.
 _JWKS_CACHE: dict[str, tuple[float, dict[str, Any]]] = {}
-_JWKS_LOCK = threading.Lock()
+_JWKS_INFLIGHT: dict[str, threading.Event] = {}
+_JWKS_STATE_LOCK = threading.Lock()
 
 
 def _fetch_jwks(app_id: str) -> dict[str, Any]:
     """Fetch + cache Privy JWKS for one app id. Process-wide cache, TTL'd."""
-    now = time.monotonic()
     cached = _JWKS_CACHE.get(app_id)
-    if cached is not None and (now - cached[0]) < _JWKS_TTL_SECONDS:
+    if cached is not None and (time.monotonic() - cached[0]) < _JWKS_TTL_SECONDS:
         return cached[1]
-    # Single in-flight refresh per app id; concurrent callers wait then
-    # re-read the cache rather than all hammering Privy.
-    with _JWKS_LOCK:
+
+    # Single-flight: at most one HTTP fetch per app id at a time. Other
+    # callers wait on the Event and then re-read the cache rather than
+    # holding a global lock across the network call.
+    with _JWKS_STATE_LOCK:
         cached = _JWKS_CACHE.get(app_id)
         if cached is not None and (time.monotonic() - cached[0]) < _JWKS_TTL_SECONDS:
             return cached[1]
+        existing = _JWKS_INFLIGHT.get(app_id)
+        if existing is not None:
+            event_to_wait = existing
+            should_fetch = False
+        else:
+            event_to_wait = threading.Event()
+            _JWKS_INFLIGHT[app_id] = event_to_wait
+            should_fetch = True
+
+    if not should_fetch:
+        # Another thread is fetching; wait, then read whatever it wrote.
+        event_to_wait.wait(timeout=_JWKS_FETCH_TIMEOUT + 1.0)
+        cached = _JWKS_CACHE.get(app_id)
+        if cached is not None:
+            return cached[1]
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="could not fetch Privy JWKS",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    try:
         url = f"https://auth.privy.io/api/v1/apps/{app_id}/jwks.json"
         try:
             with urllib.request.urlopen(url, timeout=_JWKS_FETCH_TIMEOUT) as resp:  # noqa: S310 — fixed Privy host
                 payload = resp.read()
-        except Exception as exc:  # noqa: BLE001 — surface as 503 to the caller below
+        except Exception as exc:  # noqa: BLE001
+            # Surface as 401 per privy.md §4.1 — every token-path failure
+            # returns 401 so we don't leak Privy reachability or split the
+            # caller's error handling between two status codes.
             raise HTTPException(
-                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                status_code=status.HTTP_401_UNAUTHORIZED,
                 detail=f"could not fetch Privy JWKS: {exc}",
+                headers={"WWW-Authenticate": "Bearer"},
             ) from exc
         import json as _json
 
@@ -144,22 +188,27 @@ def _fetch_jwks(app_id: str) -> dict[str, Any]:
             kid = jwk.get("kid")
             if kid:
                 keys_by_kid[kid] = jwk
-        _JWKS_CACHE[app_id] = (time.monotonic(), keys_by_kid)
+        with _JWKS_STATE_LOCK:
+            _JWKS_CACHE[app_id] = (time.monotonic(), keys_by_kid)
         return keys_by_kid
+    finally:
+        with _JWKS_STATE_LOCK:
+            _JWKS_INFLIGHT.pop(app_id, None)
+        event_to_wait.set()
 
 
 def _looks_like_jwt(token: str) -> bool:
-    """Cheap pre-check: a JWT has exactly two ``.`` separators."""
-    return token.count(".") == 2
+    """Cheap pre-check: three base64url segments separated by dots."""
+    return bool(_JWT_SHAPE_RE.match(token))
 
 
 def verify_privy_jwt(token: str) -> dict[str, Any]:
     """Verify a Privy access token and return its claims.
 
-    Raises ``HTTPException(401)`` on any failure (bad signature, wrong
-    issuer/audience, expired). Raises 503 if the JWKS fetch itself fails
-    so the caller can distinguish a misconfigured Privy app from a bad
-    token.
+    Raises ``HTTPException(401)`` on any failure — bad signature, wrong
+    issuer/audience, expired, missing/disallowed alg, or unreachable
+    JWKS. Single status code per privy.md §4.1 so callers don't need to
+    branch on Privy reachability.
     """
     app_id = _privy_app_id()
     if not app_id:
@@ -193,11 +242,20 @@ def verify_privy_jwt(token: str) -> dict[str, Any]:
             detail="token header missing kid/alg",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    if alg not in _ALLOWED_JWT_ALGS:
+        # Defense in depth: PyJWT's defaults already block `none` and
+        # require `kty=oct` for HMAC-from-JWK, but pinning the alg list
+        # makes the contract explicit and forecloses future drift.
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"unsupported signing alg {alg!r}",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     keys_by_kid = _fetch_jwks(app_id)
     jwk = keys_by_kid.get(kid)
     if jwk is None:
         # Possibly a key rotation — bust the cache once and retry.
-        with _JWKS_LOCK:
+        with _JWKS_STATE_LOCK:
             _JWKS_CACHE.pop(app_id, None)
         keys_by_kid = _fetch_jwks(app_id)
         jwk = keys_by_kid.get(kid)

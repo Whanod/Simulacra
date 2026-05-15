@@ -8,6 +8,17 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 LOG_DIR="$ROOT/.dev-logs"
 mkdir -p "$LOG_DIR"
 
+# Source .env if present so PRIVY_ID / PRIVY_APP_ID / DEFI_SIM_API_KEYS
+# (and any other server env vars) reach the spawned uvicorn process.
+# The frontend reads NEXT_PUBLIC_* from frontend/.env.local automatically
+# via Next.js — no sourcing needed there.
+if [[ -f "$ROOT/.env" ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source "$ROOT/.env"
+  set +a
+fi
+
 kill_port() {
   local port="$1"
   local pids

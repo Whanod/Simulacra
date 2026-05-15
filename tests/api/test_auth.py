@@ -187,3 +187,45 @@ def test_missing_bearer_when_enforced_401(monkeypatch):
     r = client.get("/whoami")
     assert r.status_code == 401
     assert r.headers.get("www-authenticate") == "Bearer"
+
+
+def test_jwt_with_disallowed_alg_rejected(monkeypatch, stub_jwks):
+    """alg=HS256 (or anything outside the RS256/ES256 allowlist) must
+    401 even if the token is otherwise well-formed. Defends against the
+    HS256-via-RSA-public-key confusion class."""
+    monkeypatch.setenv(PRIVY_APP_ID_ENV, APP_ID)
+    payload = {
+        "sub": ALICE_DID,
+        "iss": "privy.io",
+        "aud": APP_ID,
+        "exp": int(time.time()) + 300,
+    }
+    forged = pyjwt.encode(payload, "shared-secret", algorithm="HS256",
+                          headers={"kid": "test-kid-1"})
+    client = TestClient(_build_test_app())
+    r = client.get("/whoami", headers={"Authorization": f"Bearer {forged}"})
+    assert r.status_code == 401
+
+
+def test_malformed_token_rejected(monkeypatch):
+    """A token that passes the dot-count pre-check but isn't valid
+    base64url / JWT structure must surface as 401, not 500."""
+    monkeypatch.setenv(PRIVY_APP_ID_ENV, APP_ID)
+    monkeypatch.delenv(API_KEYS_ENV, raising=False)
+    client = TestClient(_build_test_app())
+    # Three garbage segments — passes the regex pre-check, fails at parse.
+    r = client.get("/whoami", headers={"Authorization": "Bearer aaaa.bbbb.cccc"})
+    assert r.status_code == 401
+
+
+def test_jwt_pre_check_rejects_dotty_api_keys(monkeypatch):
+    """An API key that happens to contain two dots must NOT be routed
+    to the JWT verifier. The base64url pre-check excludes anything with
+    non-token characters (here: a slash)."""
+    plaintext = "svc.key/with.dots"  # two dots, but slash → not JWT-shaped
+    monkeypatch.setenv(PRIVY_APP_ID_ENV, APP_ID)
+    monkeypatch.setenv(API_KEYS_ENV, f"svc-1:{hash_api_key(plaintext)}")
+    client = TestClient(_build_test_app())
+    r = client.get("/raw-auth", headers={"Authorization": f"Bearer {plaintext}"})
+    assert r.status_code == 200
+    assert r.json()["principal"] == "svc-1"
