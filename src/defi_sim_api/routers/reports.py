@@ -7,13 +7,32 @@ import json
 import zipfile
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import Response
 
 from defi_sim_api import state
+from defi_sim_api.auth import User, current_user
 from defi_sim_api.backend.store import get_artifact_store
+from defi_sim_api.routers._ownership import (
+    assert_visible,
+    list_owner_filter,
+    owner_for_create,
+)
 
 router = APIRouter(prefix="/reports", tags=["reports"])
+
+
+def _require_report(report_id: str, user: User) -> dict[str, Any]:
+    store = get_artifact_store()
+    report = store.get_report(report_id)
+    if report is None:
+        raise HTTPException(status_code=404, detail=f"Report {report_id!r} not found")
+    assert_visible(
+        store.get_report_owner(report_id),
+        user,
+        not_found_detail=f"Report {report_id!r} not found",
+    )
+    return report
 
 
 def _normalize_manifest(body: dict[str, Any]) -> dict[str, Any]:
@@ -89,13 +108,21 @@ _UPDATABLE_REPORT_STATUSES = {"draft", "published", "ready"}
     status_code=status.HTTP_201_CREATED,
     summary="Create a durable report manifest",
 )
-def create_report(body: dict[str, Any]) -> dict[str, object]:
+def create_report(
+    body: dict[str, Any],
+    user: User = Depends(current_user),
+) -> dict[str, object]:
     manifest = _normalize_manifest(body)
     if "sections" in body:
         manifest["sections"] = list(body["sections"])
     report_id = state.new_id()
     store = get_artifact_store()
-    store.create_report(report_id, manifest=manifest, status="draft")
+    store.create_report(
+        report_id,
+        manifest=manifest,
+        status="draft",
+        owner_id=owner_for_create(user),
+    )
     return {"report_id": report_id, "manifest": manifest}
 
 
@@ -104,12 +131,17 @@ def create_report(body: dict[str, Any]) -> dict[str, object]:
     response_model=dict[str, object],
     summary="List persisted reports",
 )
-def list_reports(limit: int = 100, offset: int = 0) -> dict[str, object]:
+def list_reports(
+    limit: int = 100,
+    offset: int = 0,
+    user: User = Depends(current_user),
+) -> dict[str, object]:
     store = get_artifact_store()
-    reports = store.list_reports(limit=limit, offset=offset)
+    owner_filter = list_owner_filter(user)
+    reports = store.list_reports(limit=limit, offset=offset, owner_id=owner_filter)
     return {
         "reports": reports,
-        "count": store.count_reports(),
+        "count": store.count_reports(owner_id=owner_filter),
         "limit": limit,
         "offset": offset,
     }
@@ -120,12 +152,9 @@ def list_reports(limit: int = 100, offset: int = 0) -> dict[str, object]:
     response_model=dict[str, object],
     summary="Fetch a durable report manifest",
 )
-def get_report(report_id: str) -> dict[str, object]:
-    store = get_artifact_store()
-    report = store.get_report(report_id)
-    if report is None:
-        raise HTTPException(status_code=404, detail=f"Report {report_id!r} not found")
-    manifest = store.get_report_manifest(report_id)
+def get_report(report_id: str, user: User = Depends(current_user)) -> dict[str, object]:
+    report = _require_report(report_id, user)
+    manifest = get_artifact_store().get_report_manifest(report_id)
     return {"report": report, "manifest": manifest}
 
 
@@ -134,10 +163,13 @@ def get_report(report_id: str) -> dict[str, object]:
     response_model=dict[str, object],
     summary="Update a durable report (manifest fields and/or status)",
 )
-def update_report(report_id: str, body: dict[str, Any]) -> dict[str, object]:
+def update_report(
+    report_id: str,
+    body: dict[str, Any],
+    user: User = Depends(current_user),
+) -> dict[str, object]:
+    _require_report(report_id, user)
     store = get_artifact_store()
-    if store.get_report(report_id) is None:
-        raise HTTPException(status_code=404, detail=f"Report {report_id!r} not found")
 
     manifest_patch = {
         key: body[key] for key in body.keys() if key in _UPDATABLE_MANIFEST_FIELDS
@@ -168,7 +200,11 @@ def update_report(report_id: str, body: dict[str, Any]) -> dict[str, object]:
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Delete a durable report and its bundle",
 )
-def delete_report(report_id: str) -> Response:
+def delete_report(
+    report_id: str,
+    user: User = Depends(current_user),
+) -> Response:
+    _require_report(report_id, user)
     store = get_artifact_store()
     deleted = store.delete_report(report_id)
     if not deleted:
@@ -181,15 +217,16 @@ def delete_report(report_id: str) -> Response:
     summary="Download a report bundle containing the manifest and selected artifacts",
     response_class=Response,
 )
-def export_report_bundle(report_id: str) -> Response:
+def export_report_bundle(
+    report_id: str,
+    user: User = Depends(current_user),
+) -> Response:
     # Phase 3: bundles are built fresh on every request from current SQL
     # state. No caching, no envelope, no filesystem. If a future caller
     # needs reproducible point-in-time bundles, the manifest is the place
     # to record query parameters — open question in the migration plan.
+    _require_report(report_id, user)
     store = get_artifact_store()
-    report = store.get_report(report_id)
-    if report is None:
-        raise HTTPException(status_code=404, detail=f"Report {report_id!r} not found")
     manifest = store.get_report_manifest(report_id)
     if manifest is None:
         raise HTTPException(status_code=404, detail="Report manifest not found")

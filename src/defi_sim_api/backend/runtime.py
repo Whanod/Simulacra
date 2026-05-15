@@ -19,7 +19,12 @@ from defi_sim_api.backend.store import get_artifact_store
 from defi_sim_api.state import EngineEntry
 
 
-def create_live_run_record(run_id: str, spec: dict[str, Any]) -> dict[str, Any]:
+def create_live_run_record(
+    run_id: str,
+    spec: dict[str, Any],
+    *,
+    owner_id: str | None = None,
+) -> dict[str, Any]:
     store = get_artifact_store()
     return store.create_run(
         run_id,
@@ -38,6 +43,7 @@ def create_live_run_record(run_id: str, spec: dict[str, Any]) -> dict[str, Any]:
             "available_rounds": [],
             "agent_count": len(spec.get("agents", [])),
         },
+        owner_id=owner_id,
     )
 
 
@@ -55,6 +61,7 @@ def persist_replay_run(
     unsupported_program_ids: list[str] | None = None,
     replay_kind: str | None = None,
     mainnet_accuracy_claim: bool | None = None,
+    owner_id: str | None = None,
 ) -> dict[str, Any]:
     """Persist a replay run as a first-class artifact (PRD line 331).
 
@@ -126,6 +133,7 @@ def persist_replay_run(
         simulation_id=run_id,
         current_round=0,
         summary=summary,
+        owner_id=owner_id,
     )
     result_payload: dict[str, Any] = {
         "kind": "replay",
@@ -150,6 +158,7 @@ def persist_sync_run(
     spec: dict[str, Any],
     result: Any,
     events: list[Event],
+    owner_id: str | None = None,
 ) -> dict[str, Any]:
     store = get_artifact_store()
     result_payload = result_to_dict(result)
@@ -173,6 +182,7 @@ def persist_sync_run(
         simulation_id=run_id,
         current_round=int(result_payload.get("num_rounds_executed", 0)),
         summary=summary,
+        owner_id=owner_id,
     )
     store.save_run_artifacts(
         run_id,

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from defi_sim.engine.api import build_engine
 from defi_sim.engine.config import CancellationToken
@@ -12,20 +12,27 @@ from defi_sim.engine.events import EventBus
 from defi_sim.engine.snapshots import restore, snapshot
 
 from defi_sim_api import schemas, state
+from defi_sim_api.auth import User, current_user
 from defi_sim_api.backend.runtime import persist_live_entry
 from defi_sim_api.backend.serialization import market_type_from_spec
 from defi_sim_api.backend.store import get_artifact_store
+from defi_sim_api.routers._ownership import assert_visible, owner_for_create
 
 router = APIRouter(tags=["snapshots"])
 
 
-def _get_entry(simulation_id: str) -> state.EngineEntry:
+def _get_entry(simulation_id: str, user: User) -> state.EngineEntry:
     entry = state.get(simulation_id)
     if entry is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Simulation {simulation_id!r} not found",
         )
+    assert_visible(
+        entry.owner_id,
+        user,
+        not_found_detail=f"Simulation {simulation_id!r} not found",
+    )
     return entry
 
 
@@ -35,8 +42,12 @@ def _get_entry(simulation_id: str) -> state.EngineEntry:
     status_code=status.HTTP_201_CREATED,
     summary="Create a named durable snapshot from a live engine",
 )
-def create_named_snapshot(simulation_id: str, body: dict[str, Any] | None = None) -> dict[str, Any]:
-    entry = _get_entry(simulation_id)
+def create_named_snapshot(
+    simulation_id: str,
+    body: dict[str, Any] | None = None,
+    user: User = Depends(current_user),
+) -> dict[str, Any]:
+    entry = _get_entry(simulation_id, user)
     snapshot_id = state.new_id()
     record = get_artifact_store().create_named_snapshot(
         snapshot_id,
@@ -46,6 +57,7 @@ def create_named_snapshot(simulation_id: str, body: dict[str, Any] | None = None
         blob=snapshot(entry.engine),
         simulation_id=simulation_id,
         source_run_id=entry.run_id,
+        owner_id=owner_for_create(user),
     )
     persist_live_entry(entry)
     return record
@@ -56,10 +68,19 @@ def create_named_snapshot(simulation_id: str, body: dict[str, Any] | None = None
     response_model=dict[str, Any],
     summary="Get named snapshot metadata",
 )
-def get_named_snapshot(snapshot_id: str) -> dict[str, Any]:
-    record = get_artifact_store().get_named_snapshot(snapshot_id)
+def get_named_snapshot(
+    snapshot_id: str,
+    user: User = Depends(current_user),
+) -> dict[str, Any]:
+    store = get_artifact_store()
+    record = store.get_named_snapshot(snapshot_id)
     if record is None:
         raise HTTPException(status_code=404, detail=f"Snapshot {snapshot_id!r} not found")
+    assert_visible(
+        store.get_named_snapshot_owner(snapshot_id),
+        user,
+        not_found_detail=f"Snapshot {snapshot_id!r} not found",
+    )
     return record
 
 
@@ -69,11 +90,19 @@ def get_named_snapshot(snapshot_id: str) -> dict[str, Any]:
     status_code=status.HTTP_201_CREATED,
     summary="Fork a live engine from a stored named snapshot",
 )
-def fork_from_snapshot(snapshot_id: str) -> schemas.EngineCreatedResponse:
+def fork_from_snapshot(
+    snapshot_id: str,
+    user: User = Depends(current_user),
+) -> schemas.EngineCreatedResponse:
     store = get_artifact_store()
     snapshot_record = store.get_named_snapshot(snapshot_id)
     if snapshot_record is None:
         raise HTTPException(status_code=404, detail=f"Snapshot {snapshot_id!r} not found")
+    assert_visible(
+        store.get_named_snapshot_owner(snapshot_id),
+        user,
+        not_found_detail=f"Snapshot {snapshot_id!r} not found",
+    )
 
     source_run_id = snapshot_record["run_id"]
     spec = store.get_run_spec(source_run_id)
@@ -86,12 +115,14 @@ def fork_from_snapshot(snapshot_id: str) -> schemas.EngineCreatedResponse:
     event_bus = EventBus(record_history=True, run_id=run_id)
     engine = build_engine(spec, event_bus=event_bus, cancel_token=cancel_token)
     restore(engine, blob)
+    owner = owner_for_create(user)
     entry = state.EngineEntry(
         engine=engine,
         cancel_token=cancel_token,
         event_bus=event_bus,
         run_id=run_id,
         spec=spec,
+        owner_id=owner,
     )
     state.store(run_id, entry)
     store.create_run(
@@ -113,6 +144,7 @@ def fork_from_snapshot(snapshot_id: str) -> schemas.EngineCreatedResponse:
             "available_rounds": [],
             "agent_count": len(spec.get("agents", [])),
         },
+        owner_id=owner,
     )
     persist_live_entry(entry)
     return schemas.EngineCreatedResponse(

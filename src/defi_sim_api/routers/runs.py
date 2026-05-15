@@ -4,8 +4,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 
+from defi_sim_api.auth import User, current_user
 from defi_sim_api.backend.overview_aggregations import (
     aggregate_bundle_outcomes_summary,
     aggregate_jito_searcher_summary,
@@ -18,17 +19,27 @@ from defi_sim_api.backend.serialization import (
     price_summary,
 )
 from defi_sim_api.backend.store import get_artifact_store
+from defi_sim_api.routers._ownership import (
+    assert_visible,
+    list_owner_filter,
+)
 
 router = APIRouter(prefix="/runs", tags=["runs"])
 
 
-def _require_run(run_id: str) -> dict[str, Any]:
-    run = get_artifact_store().get_run(run_id)
+def _require_run(run_id: str, user: User) -> dict[str, Any]:
+    store = get_artifact_store()
+    run = store.get_run(run_id)
     if run is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Run {run_id!r} not found",
         )
+    assert_visible(
+        store.get_run_owner(run_id),
+        user,
+        not_found_detail=f"Run {run_id!r} not found",
+    )
     return run
 
 
@@ -48,15 +59,18 @@ def _flatten_diff(prefix: str, left: Any, right: Any, out: dict[str, dict[str, A
     response_model=dict[str, Any],
     summary="Compare two durable runs",
 )
-def compare_runs(body: dict[str, str]) -> dict[str, Any]:
+def compare_runs(
+    body: dict[str, str],
+    user: User = Depends(current_user),
+) -> dict[str, Any]:
     left_run_id = body.get("left_run_id")
     right_run_id = body.get("right_run_id")
     if not left_run_id or not right_run_id:
         raise HTTPException(status_code=422, detail="left_run_id and right_run_id are required")
 
     store = get_artifact_store()
-    left_run = _require_run(left_run_id)
-    right_run = _require_run(right_run_id)
+    left_run = _require_run(left_run_id, user)
+    right_run = _require_run(right_run_id, user)
     left_spec = store.get_run_spec(left_run_id) or {}
     right_spec = store.get_run_spec(right_run_id) or {}
     # Phase 5.2: read from typed surfaces instead of the legacy
@@ -150,7 +164,10 @@ def compare_runs(body: dict[str, str]) -> dict[str, Any]:
     response_model=dict[str, Any],
     summary="Sum one metric across many runs via the round_metrics table",
 )
-def aggregate_runs(body: dict[str, Any]) -> dict[str, Any]:
+def aggregate_runs(
+    body: dict[str, Any],
+    user: User = Depends(current_user),
+) -> dict[str, Any]:
     # Sibling of /runs/compare (which is a pairwise diff the UI consumes).
     # This is the multi-run SQL aggregation the migration plan calls for —
     # exposed under a distinct path so the existing compare view keeps
@@ -163,8 +180,19 @@ def aggregate_runs(body: dict[str, Any]) -> dict[str, Any]:
         raise HTTPException(status_code=422, detail="metric is required")
     agent = body.get("agent_id")
 
+    # Visibility check up-front: any unowned/cross-owner run in the list
+    # short-circuits with a 404 to match the per-run get-by-id behaviour.
+    store = get_artifact_store()
+    for run_id in run_ids:
+        if store.get_run(run_id) is not None:
+            assert_visible(
+                store.get_run_owner(run_id),
+                user,
+                not_found_detail=f"Run {run_id!r} not found",
+            )
+
     try:
-        rows = get_artifact_store().aggregate_round_metrics(
+        rows = store.aggregate_round_metrics(
             run_ids, metric, agent_id=agent
         )
     except ValueError as exc:
@@ -182,12 +210,17 @@ def aggregate_runs(body: dict[str, Any]) -> dict[str, Any]:
     response_model=dict[str, Any],
     summary="List durable runs",
 )
-def list_runs(limit: int = 100, offset: int = 0) -> dict[str, Any]:
+def list_runs(
+    limit: int = 100,
+    offset: int = 0,
+    user: User = Depends(current_user),
+) -> dict[str, Any]:
     store = get_artifact_store()
-    runs = store.list_runs(limit=limit, offset=offset)
+    owner_filter = list_owner_filter(user)
+    runs = store.list_runs(limit=limit, offset=offset, owner_id=owner_filter)
     return {
         "runs": runs,
-        "count": store.count_runs(),
+        "count": store.count_runs(owner_id=owner_filter),
         "limit": limit,
         "offset": offset,
     }
@@ -198,8 +231,8 @@ def list_runs(limit: int = 100, offset: int = 0) -> dict[str, Any]:
     response_model=dict[str, Any],
     summary="Get durable run metadata",
 )
-def get_run(run_id: str) -> dict[str, Any]:
-    run = _require_run(run_id)
+def get_run(run_id: str, user: User = Depends(current_user)) -> dict[str, Any]:
+    run = _require_run(run_id, user)
     run["spec"] = get_artifact_store().get_run_spec(run_id)
     return run
 
@@ -209,8 +242,8 @@ def get_run(run_id: str) -> dict[str, Any]:
     response_model=dict[str, Any],
     summary="Get submitted run spec",
 )
-def get_run_spec(run_id: str) -> dict[str, Any]:
-    _require_run(run_id)
+def get_run_spec(run_id: str, user: User = Depends(current_user)) -> dict[str, Any]:
+    _require_run(run_id, user)
     spec = get_artifact_store().get_run_spec(run_id)
     if spec is None:
         raise HTTPException(status_code=404, detail="Run spec not found")
@@ -228,8 +261,9 @@ def list_run_rounds(
     end: int | None = None,
     limit: int = 100,
     offset: int = 0,
+    user: User = Depends(current_user),
 ) -> dict[str, Any]:
-    _require_run(run_id)
+    _require_run(run_id, user)
     snapshots = get_artifact_store().list_run_rounds(
         run_id,
         start=start,
@@ -250,8 +284,12 @@ def list_run_rounds(
     response_model=dict[str, Any],
     summary="Get one recorded round snapshot",
 )
-def get_run_round(run_id: str, round_number: int) -> dict[str, Any]:
-    _require_run(run_id)
+def get_run_round(
+    run_id: str,
+    round_number: int,
+    user: User = Depends(current_user),
+) -> dict[str, Any]:
+    _require_run(run_id, user)
     snapshot = get_artifact_store().get_run_round(run_id, round_number)
     if snapshot is None:
         raise HTTPException(status_code=404, detail=f"Round {round_number} not found")
@@ -273,8 +311,9 @@ def get_run_events(
     cursor: int | None = None,
     limit: int = 500,
     offset: int = 0,
+    user: User = Depends(current_user),
 ) -> dict[str, Any]:
-    _require_run(run_id)
+    _require_run(run_id, user)
     events = get_artifact_store().query_run_events(
         run_id,
         event_type=event_type,
@@ -299,8 +338,12 @@ def get_run_events(
     response_model=dict[str, Any],
     summary="All events sharing one correlation_id, in event_id order",
 )
-def get_run_correlation(run_id: str, correlation_id: str) -> dict[str, Any]:
-    _require_run(run_id)
+def get_run_correlation(
+    run_id: str,
+    correlation_id: str,
+    user: User = Depends(current_user),
+) -> dict[str, Any]:
+    _require_run(run_id, user)
     # Correlation chains are bounded (a swap or sandwich is at most a handful
     # of events); skip cursor pagination here and return the full set. The
     # underlying SQL uses the events_run_correlation partial index.
@@ -327,8 +370,9 @@ def get_run_metric(
     agent: str | None = None,
     from_round: int | None = Query(None, alias="from"),
     to_round: int | None = Query(None, alias="to"),
+    user: User = Depends(current_user),
 ) -> dict[str, Any]:
-    _require_run(run_id)
+    _require_run(run_id, user)
     try:
         series = get_artifact_store().query_round_metrics(
             run_id,
@@ -355,7 +399,10 @@ def get_run_metric(
     response_model=dict[str, Any],
     summary="Page-shaped bundle for the run results dashboard",
 )
-def get_run_overview(run_id: str) -> dict[str, Any]:
+def get_run_overview(
+    run_id: str,
+    user: User = Depends(current_user),
+) -> dict[str, Any]:
     """Compose the one round-trip the results page needs.
 
     Tiles come from the ``runs.derived_metrics`` typed column (populated by
@@ -378,7 +425,7 @@ def get_run_overview(run_id: str) -> dict[str, Any]:
     because the view targets terminal runs (results page); live runs use
     the simulations event stream instead.
     """
-    run = _require_run(run_id)
+    run = _require_run(run_id, user)
     store = get_artifact_store()
     spec = store.get_run_spec(run_id) or {}
     # Inline spec on the run so the frontend gets the full SimRun.spec
@@ -464,8 +511,9 @@ def get_agent_timeline(
     end: int | None = None,
     limit: int = 100,
     offset: int = 0,
+    user: User = Depends(current_user),
 ) -> dict[str, Any]:
-    _require_run(run_id)
+    _require_run(run_id, user)
     rounds = get_artifact_store().list_run_rounds(run_id, start=start, end=end, limit=limit, offset=offset)
     return {
         "run_id": run_id,
@@ -479,7 +527,10 @@ def get_agent_timeline(
     response_model=dict[str, Any],
     summary="List named snapshots stored for a run",
 )
-def list_named_snapshots(run_id: str) -> dict[str, Any]:
-    _require_run(run_id)
+def list_named_snapshots(
+    run_id: str,
+    user: User = Depends(current_user),
+) -> dict[str, Any]:
+    _require_run(run_id, user)
     snapshots = get_artifact_store().list_named_snapshots(run_id=run_id)
     return {"run_id": run_id, "snapshots": snapshots}

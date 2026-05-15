@@ -17,7 +17,10 @@ from threading import Lock
 from typing import Any
 
 import yaml
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
+
+from defi_sim_api.auth import User, current_user
+from defi_sim_api.routers._ownership import owner_for_create
 from pydantic import BaseModel, Field
 
 from defi_sim.calibration.thresholds import Threshold, load_thresholds
@@ -1128,7 +1131,10 @@ def _action_payload(action: Action, *, slot: int, index: int) -> dict[str, Any]:
     status_code=status.HTTP_200_OK,
     summary="Replay a slot range with optional counterfactual injection",
 )
-def post_replay(body: ReplayRequest) -> ReplayResponse:
+def post_replay(
+    body: ReplayRequest,
+    user: User = Depends(current_user),
+) -> ReplayResponse:
     start, end = body.slot_range
     if end < start:
         raise HTTPException(
@@ -1184,6 +1190,7 @@ def post_replay(body: ReplayRequest) -> ReplayResponse:
         unsupported_program_ids=unsupported_ids,
         replay_kind=replay_kind,
         mainnet_accuracy_claim=mainnet_accuracy_claim,
+        owner_id=owner_for_create(user),
     )
     cf_summary = list(record.get("summary", {}).get("counterfactuals", []))
 

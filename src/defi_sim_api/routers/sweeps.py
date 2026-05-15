@@ -3,13 +3,19 @@
 from __future__ import annotations
 
 import pandas as pd
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
 from defi_sim.engine.sweeps import gate, rank, sensitivity
 
 from defi_sim_api import state
+from defi_sim_api.auth import User, current_user
 from defi_sim_api.backend.store import get_artifact_store
 from defi_sim_api.backend.sweeps import aggregate_rows, execute_sweep, gate_rows, recommend_rows
+from defi_sim_api.routers._ownership import (
+    assert_visible,
+    list_owner_filter,
+    owner_for_create,
+)
 from defi_sim_api.schemas import (
     SweepAnalysisResponse,
     SweepGateRequest,
@@ -56,7 +62,10 @@ def compute_sensitivity(body: SweepSensitivityRequest) -> SweepAnalysisResponse:
     response_model=dict[str, object],
     summary="Run a durable parameter sweep across seed and patch combinations",
 )
-def run_sweep(body: SweepRunRequest) -> dict[str, object]:
+def run_sweep(
+    body: SweepRunRequest,
+    user: User = Depends(current_user),
+) -> dict[str, object]:
     sweep_id = state.new_id()
     request_payload = body.model_dump(exclude_none=True)
     rows, summary = execute_sweep(
@@ -68,7 +77,13 @@ def run_sweep(body: SweepRunRequest) -> dict[str, object]:
         metrics=body.metrics,
     )
     store = get_artifact_store()
-    store.create_sweep(sweep_id, spec=request_payload, status="completed", summary=summary)
+    store.create_sweep(
+        sweep_id,
+        spec=request_payload,
+        status="completed",
+        summary=summary,
+        owner_id=owner_for_create(user),
+    )
     store.save_sweep_artifacts(sweep_id, rows=rows, summary=summary)
     return {"sweep_id": sweep_id, "data": rows, "summary": summary}
 
@@ -88,15 +103,33 @@ def gate_check(body: SweepGateRequest) -> SweepGateResponse:
     response_model=dict[str, object],
     summary="List persisted sweeps",
 )
-def list_sweeps(limit: int = 100, offset: int = 0) -> dict[str, object]:
+def list_sweeps(
+    limit: int = 100,
+    offset: int = 0,
+    user: User = Depends(current_user),
+) -> dict[str, object]:
     store = get_artifact_store()
-    sweeps = store.list_sweeps(limit=limit, offset=offset)
+    owner_filter = list_owner_filter(user)
+    sweeps = store.list_sweeps(limit=limit, offset=offset, owner_id=owner_filter)
     return {
         "sweeps": sweeps,
-        "count": store.count_sweeps(),
+        "count": store.count_sweeps(owner_id=owner_filter),
         "limit": limit,
         "offset": offset,
     }
+
+
+def _require_sweep(sweep_id: str, user: User) -> dict[str, object]:
+    store = get_artifact_store()
+    sweep = store.get_sweep(sweep_id)
+    if sweep is None:
+        raise HTTPException(status_code=404, detail=f"Sweep {sweep_id!r} not found")
+    assert_visible(
+        store.get_sweep_owner(sweep_id),
+        user,
+        not_found_detail=f"Sweep {sweep_id!r} not found",
+    )
+    return sweep
 
 
 @router.get(
@@ -104,12 +137,9 @@ def list_sweeps(limit: int = 100, offset: int = 0) -> dict[str, object]:
     response_model=dict[str, object],
     summary="Get persisted sweep metadata",
 )
-def get_sweep(sweep_id: str) -> dict[str, object]:
-    store = get_artifact_store()
-    sweep = store.get_sweep(sweep_id)
-    if sweep is None:
-        raise HTTPException(status_code=404, detail=f"Sweep {sweep_id!r} not found")
-    sweep["spec"] = store.get_sweep_spec(sweep_id)
+def get_sweep(sweep_id: str, user: User = Depends(current_user)) -> dict[str, object]:
+    sweep = _require_sweep(sweep_id, user)
+    sweep["spec"] = get_artifact_store().get_sweep_spec(sweep_id)
     return sweep
 
 
@@ -118,10 +148,8 @@ def get_sweep(sweep_id: str) -> dict[str, object]:
     response_model=dict[str, object],
     summary="Get persisted sweep rows",
 )
-def get_sweep_rows(sweep_id: str) -> dict[str, object]:
-    sweep = get_artifact_store().get_sweep(sweep_id)
-    if sweep is None:
-        raise HTTPException(status_code=404, detail=f"Sweep {sweep_id!r} not found")
+def get_sweep_rows(sweep_id: str, user: User = Depends(current_user)) -> dict[str, object]:
+    _require_sweep(sweep_id, user)
     rows = get_artifact_store().get_sweep_rows(sweep_id)
     return {"sweep_id": sweep_id, "data": rows}
 
@@ -131,10 +159,12 @@ def get_sweep_rows(sweep_id: str) -> dict[str, object]:
     response_model=SweepAnalysisResponse,
     summary="Aggregate durable sweep results by parameter combination",
 )
-def get_sweep_aggregates(sweep_id: str, body: dict[str, object]) -> SweepAnalysisResponse:
-    sweep = get_artifact_store().get_sweep(sweep_id)
-    if sweep is None:
-        raise HTTPException(status_code=404, detail=f"Sweep {sweep_id!r} not found")
+def get_sweep_aggregates(
+    sweep_id: str,
+    body: dict[str, object],
+    user: User = Depends(current_user),
+) -> SweepAnalysisResponse:
+    _require_sweep(sweep_id, user)
     metric_columns = [str(item) for item in body.get("metric_columns", [])]
     group_by = body.get("group_by")
     rows = aggregate_rows(
@@ -150,10 +180,12 @@ def get_sweep_aggregates(sweep_id: str, body: dict[str, object]) -> SweepAnalysi
     response_model=dict[str, object],
     summary="Rank and recommend sweep configurations against objectives and gates",
 )
-def get_sweep_recommendations(sweep_id: str, body: dict[str, object]) -> dict[str, object]:
-    sweep = get_artifact_store().get_sweep(sweep_id)
-    if sweep is None:
-        raise HTTPException(status_code=404, detail=f"Sweep {sweep_id!r} not found")
+def get_sweep_recommendations(
+    sweep_id: str,
+    body: dict[str, object],
+    user: User = Depends(current_user),
+) -> dict[str, object]:
+    _require_sweep(sweep_id, user)
     rows = get_artifact_store().get_sweep_rows(sweep_id)
     return recommend_rows(
         rows,

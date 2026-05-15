@@ -22,6 +22,10 @@ class EngineEntry:
     run_id: str
     spec: dict[str, object] = field(default_factory=dict)
     completion_event_emitted: bool = False
+    # Privy DID of the user who built this engine (None for open-mode /
+    # API-key writes). Used by the simulations router to gate
+    # step/cancel/snapshot against cross-owner access.
+    owner_id: str | None = None
 
 
 _engines: dict[str, EngineEntry] = {}
