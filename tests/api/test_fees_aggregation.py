@@ -238,16 +238,3 @@ def test_read_overview_typed_slices_returns_replay_diff(pg_store):
     )
     slices = pg_store.read_overview_typed_slices("replay-1")
     assert slices["replay_diff"] == band
-
-
-def test_purge_runs_cascades_fees(pg_store):
-    """The schema's ``ON DELETE CASCADE`` on ``fees.run_id`` must clear the
-    materialised rows alongside the run."""
-    _create_completed_run(
-        pg_store,
-        "fees-purge",
-        result={"fee_history": _TWO_DESTINATIONS_FEE_HISTORY},
-    )
-    assert pg_store.query_fee_history("fees-purge") != []
-    pg_store.purge_runs()
-    assert pg_store.query_fee_history("fees-purge") == []

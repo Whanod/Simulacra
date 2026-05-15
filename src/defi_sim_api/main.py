@@ -8,7 +8,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from defi_sim_api.routers import (
-    admin,
     calibration,
     charts,
     embed,
@@ -85,7 +84,6 @@ def create_app() -> FastAPI:
     new_app.include_router(wallet_persistence.router)
     new_app.include_router(jsonrpc_solana.router)
     new_app.include_router(calibration.router)
-    new_app.include_router(admin.router)
 
     @new_app.get("/health", response_model=HealthResponse, tags=["health"])
     def health() -> HealthResponse:

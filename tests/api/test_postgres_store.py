@@ -347,15 +347,6 @@ def test_update_run_summary(pg_store):
     assert pg_store.get_run("run-1")["summary"]["agent_count"] == 99
 
 
-def test_purge_runs_clears_events_and_snapshots(pg_store):
-    _populate_run(pg_store)
-    counts = pg_store.purge_runs()
-    assert counts == {"runs": 1, "round_snapshots": 2, "named_snapshots": 0}
-    assert pg_store.count_runs() == 0
-    assert pg_store.get_run_events("run-1") == []
-    assert pg_store.list_run_rounds("run-1") == []
-
-
 def test_named_snapshot_round_trip(pg_store):
     _populate_run(pg_store)
     blob = b"\x00\x01\x02 binary msgpack bytes \xff"

@@ -58,9 +58,6 @@ class ArtifactStore(Protocol):
     def count_runs(self) -> int:
         ...
 
-    def purge_runs(self) -> dict[str, int]:
-        ...
-
     def get_run_spec(self, run_id: str) -> dict[str, Any] | None:
         ...
 

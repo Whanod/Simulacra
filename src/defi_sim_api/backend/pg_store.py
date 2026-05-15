@@ -631,31 +631,6 @@ class PostgresArtifactStore:
                 cur.execute("SELECT count(*) FROM runs")
                 return int(cur.fetchone()[0])
 
-    def purge_runs(self) -> dict[str, int]:
-        """Delete every run row + its events, snapshots, and named snapshots.
-
-        Sweeps and reports left intact, matching the legacy semantics.
-        Cascades on ``events``, ``round_metrics``, ``round_snapshots`` are
-        defined in the schema; ``named_snapshots`` does not cascade so we
-        clear it separately.
-        """
-        with self._get_pool().connection() as conn:
-            with conn.cursor() as cur:
-                cur.execute("SELECT count(*) FROM runs")
-                run_count = int(cur.fetchone()[0])
-                cur.execute("SELECT count(*) FROM round_snapshots")
-                round_count = int(cur.fetchone()[0])
-                cur.execute("SELECT count(*) FROM named_snapshots")
-                named_count = int(cur.fetchone()[0])
-                cur.execute("DELETE FROM named_snapshots")
-                cur.execute("DELETE FROM runs")
-            conn.commit()
-        return {
-            "runs": run_count,
-            "round_snapshots": round_count,
-            "named_snapshots": named_count,
-        }
-
     def get_run_spec(self, run_id: str) -> dict[str, Any] | None:
         with self._get_pool().connection() as conn:
             with conn.cursor() as cur:
