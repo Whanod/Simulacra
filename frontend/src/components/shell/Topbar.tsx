@@ -7,6 +7,7 @@ import SlotTicker from "@/components/SlotTicker";
 import SyntheticBadge, {
   type SyntheticBadgeInput,
 } from "@/components/SyntheticBadge";
+import UserChip from "@/components/shell/UserChip";
 import type { RunSpec } from "@/lib/types/simulations";
 
 type SpecLike =
@@ -93,6 +94,7 @@ export default function Topbar({ title, spec, template }: TopbarProps) {
             </div>
           ) : null}
         </div>
+        <UserChip />
       </div>
     </header>
   );
