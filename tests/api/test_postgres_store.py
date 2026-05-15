@@ -890,3 +890,101 @@ def test_pg_store_partial_failure_rolls_back(pg_store):
     # Baseline must survive — neither the events nor the rounds were touched.
     assert pg_store.get_run_events("run-tx") == baseline_events
     assert pg_store.list_run_rounds("run-tx") == baseline_rounds
+
+
+# ── owner_id (Privy v1) ─────────────────────────────────────────────────────
+
+
+def test_owner_scoping_runs(pg_store):
+    """list_runs / count_runs filter by owner_id when supplied; pass-through
+    when None. get_run_owner returns the persisted DID (or None for anon /
+    missing rows). Open-mode callers stay unaffected."""
+    pg_store.create_run(
+        "run-alice",
+        spec=SAMPLE_SPEC, status="completed", seed=1,
+        market_type="cfamm", source="sync",
+        owner_id="did:privy:alice",
+    )
+    pg_store.create_run(
+        "run-bob",
+        spec=SAMPLE_SPEC, status="completed", seed=2,
+        market_type="cfamm", source="sync",
+        owner_id="did:privy:bob",
+    )
+    pg_store.create_run(
+        "run-anon",
+        spec=SAMPLE_SPEC, status="completed", seed=3,
+        market_type="cfamm", source="sync",
+    )
+
+    # Strict per-owner filter.
+    alice_runs = {r["run_id"] for r in pg_store.list_runs(owner_id="did:privy:alice")}
+    assert alice_runs == {"run-alice"}
+    assert pg_store.count_runs(owner_id="did:privy:alice") == 1
+    assert pg_store.count_runs(owner_id="did:privy:bob") == 1
+    # Anon-owned rows never appear under a user filter.
+    assert pg_store.count_runs(owner_id="did:privy:nobody") == 0
+
+    # owner_id=None → unfiltered (open-mode / golden harness path).
+    all_runs = {r["run_id"] for r in pg_store.list_runs()}
+    assert all_runs == {"run-alice", "run-bob", "run-anon"}
+    assert pg_store.count_runs() == 3
+
+    # get_run_owner exposes the column without bleeding it into the API row.
+    assert pg_store.get_run_owner("run-alice") == "did:privy:alice"
+    assert pg_store.get_run_owner("run-anon") is None
+    assert pg_store.get_run_owner("run-missing") is None
+
+    # Wire shape is unchanged: owner_id stays out of the row dict so the
+    # golden harness keeps comparing byte-equal.
+    row = pg_store.get_run("run-alice")
+    assert "owner_id" not in row
+
+
+def test_owner_scoping_sweeps_reports_snapshots(pg_store):
+    """Same shape for sweeps, reports, named_snapshots."""
+    # sweeps
+    pg_store.create_sweep(
+        "sw-alice", spec={"k": 1}, status="completed",
+        owner_id="did:privy:alice",
+    )
+    pg_store.create_sweep("sw-anon", spec={"k": 2}, status="completed")
+    assert {s["sweep_id"] for s in pg_store.list_sweeps(owner_id="did:privy:alice")} == {"sw-alice"}
+    assert pg_store.count_sweeps(owner_id="did:privy:alice") == 1
+    assert pg_store.count_sweeps() == 2
+    assert pg_store.get_sweep_owner("sw-alice") == "did:privy:alice"
+    assert pg_store.get_sweep_owner("sw-anon") is None
+
+    # reports
+    pg_store.create_report(
+        "rep-alice", manifest={"k": 1}, status="ready",
+        owner_id="did:privy:alice",
+    )
+    pg_store.create_report("rep-anon", manifest={"k": 2}, status="ready")
+    assert {r["report_id"] for r in pg_store.list_reports(owner_id="did:privy:alice")} == {"rep-alice"}
+    assert pg_store.count_reports(owner_id="did:privy:alice") == 1
+    assert pg_store.count_reports() == 2
+    assert pg_store.get_report_owner("rep-alice") == "did:privy:alice"
+
+    # named_snapshots — needs a parent run row.
+    pg_store.create_run(
+        "run-snap", spec=SAMPLE_SPEC, status="completed", seed=1,
+        market_type="cfamm", source="sync",
+        owner_id="did:privy:alice",
+    )
+    pg_store.create_named_snapshot(
+        "snap-alice", run_id="run-snap", round_number=0,
+        label="alpha", blob=b"opaque",
+        owner_id="did:privy:alice",
+    )
+    pg_store.create_named_snapshot(
+        "snap-anon", run_id="run-snap", round_number=1,
+        label="beta", blob=b"opaque",
+    )
+    alice_snaps = {s["snapshot_id"] for s in pg_store.list_named_snapshots(owner_id="did:privy:alice")}
+    assert alice_snaps == {"snap-alice"}
+    # run_id + owner_id compose with AND.
+    scoped = pg_store.list_named_snapshots(run_id="run-snap", owner_id="did:privy:alice")
+    assert {s["snapshot_id"] for s in scoped} == {"snap-alice"}
+    assert pg_store.get_named_snapshot_owner("snap-alice") == "did:privy:alice"
+    assert pg_store.get_named_snapshot_owner("snap-anon") is None

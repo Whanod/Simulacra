@@ -31,10 +31,14 @@ class ArtifactStore(Protocol):
         source_snapshot_id: str | None = None,
         current_round: int = 0,
         summary: dict[str, Any] | None = None,
+        owner_id: str | None = None,
     ) -> dict[str, Any]:
         ...
 
     def update_run(self, run_id: str, **fields: Any) -> dict[str, Any]:
+        ...
+
+    def get_run_owner(self, run_id: str) -> str | None:
         ...
 
     def save_run_artifacts(
@@ -52,10 +56,16 @@ class ArtifactStore(Protocol):
     def get_run(self, run_id: str) -> dict[str, Any] | None:
         ...
 
-    def list_runs(self, *, limit: int = 100, offset: int = 0) -> list[dict[str, Any]]:
+    def list_runs(
+        self,
+        *,
+        limit: int = 100,
+        offset: int = 0,
+        owner_id: str | None = None,
+    ) -> list[dict[str, Any]]:
         ...
 
-    def count_runs(self) -> int:
+    def count_runs(self, *, owner_id: str | None = None) -> int:
         ...
 
     def get_run_spec(self, run_id: str) -> dict[str, Any] | None:
@@ -136,16 +146,25 @@ class ArtifactStore(Protocol):
         blob: bytes,
         simulation_id: str | None = None,
         source_run_id: str | None = None,
+        owner_id: str | None = None,
     ) -> dict[str, Any]:
         ...
 
-    def list_named_snapshots(self, *, run_id: str | None = None) -> list[dict[str, Any]]:
+    def list_named_snapshots(
+        self,
+        *,
+        run_id: str | None = None,
+        owner_id: str | None = None,
+    ) -> list[dict[str, Any]]:
         ...
 
     def get_named_snapshot(self, snapshot_id: str) -> dict[str, Any] | None:
         ...
 
     def get_named_snapshot_blob(self, snapshot_id: str) -> bytes | None:
+        ...
+
+    def get_named_snapshot_owner(self, snapshot_id: str) -> str | None:
         ...
 
     def create_sweep(
@@ -155,6 +174,7 @@ class ArtifactStore(Protocol):
         spec: dict[str, Any],
         status: str,
         summary: dict[str, Any] | None = None,
+        owner_id: str | None = None,
     ) -> dict[str, Any]:
         ...
 
@@ -177,13 +197,22 @@ class ArtifactStore(Protocol):
     def get_sweep_spec(self, sweep_id: str) -> dict[str, Any] | None:
         ...
 
-    def list_sweeps(self, *, limit: int = 100, offset: int = 0) -> list[dict[str, Any]]:
+    def list_sweeps(
+        self,
+        *,
+        limit: int = 100,
+        offset: int = 0,
+        owner_id: str | None = None,
+    ) -> list[dict[str, Any]]:
         ...
 
-    def count_sweeps(self) -> int:
+    def count_sweeps(self, *, owner_id: str | None = None) -> int:
         ...
 
     def get_sweep_rows(self, sweep_id: str) -> list[dict[str, Any]]:
+        ...
+
+    def get_sweep_owner(self, sweep_id: str) -> str | None:
         ...
 
     def create_report(
@@ -192,6 +221,7 @@ class ArtifactStore(Protocol):
         *,
         manifest: dict[str, Any],
         status: str,
+        owner_id: str | None = None,
     ) -> dict[str, Any]:
         ...
 
@@ -209,13 +239,22 @@ class ArtifactStore(Protocol):
     def get_report(self, report_id: str) -> dict[str, Any] | None:
         ...
 
-    def list_reports(self, *, limit: int = 100, offset: int = 0) -> list[dict[str, Any]]:
+    def list_reports(
+        self,
+        *,
+        limit: int = 100,
+        offset: int = 0,
+        owner_id: str | None = None,
+    ) -> list[dict[str, Any]]:
         ...
 
-    def count_reports(self) -> int:
+    def count_reports(self, *, owner_id: str | None = None) -> int:
         ...
 
     def get_report_manifest(self, report_id: str) -> dict[str, Any] | None:
+        ...
+
+    def get_report_owner(self, report_id: str) -> str | None:
         ...
 
 

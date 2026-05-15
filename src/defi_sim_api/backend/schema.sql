@@ -54,7 +54,13 @@ ALTER TABLE runs ADD COLUMN IF NOT EXISTS metadata           JSONB;
 -- that predates 5.3 cleans up cleanly.
 ALTER TABLE runs DROP COLUMN IF EXISTS result;
 
+-- Privy v1: owner-scope rows to the logged-in user (NULL = anonymous /
+-- open-mode / service-key write — see auth.py).
+ALTER TABLE runs ADD COLUMN IF NOT EXISTS owner_id TEXT;
+
 CREATE INDEX IF NOT EXISTS runs_created_at_idx ON runs (created_at DESC, run_id DESC);
+CREATE INDEX IF NOT EXISTS runs_owner_created_idx
+    ON runs (owner_id, created_at DESC, run_id DESC) WHERE owner_id IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS events (
     run_id          TEXT NOT NULL REFERENCES runs(run_id) ON DELETE CASCADE,
@@ -143,7 +149,11 @@ CREATE TABLE IF NOT EXISTS named_snapshots (
     state           JSONB NOT NULL
 );
 
+ALTER TABLE named_snapshots ADD COLUMN IF NOT EXISTS owner_id TEXT;
+
 CREATE INDEX IF NOT EXISTS named_snapshots_run_idx ON named_snapshots (run_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS named_snapshots_owner_idx
+    ON named_snapshots (owner_id, created_at DESC) WHERE owner_id IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS sweeps (
     sweep_id     TEXT PRIMARY KEY,
@@ -155,7 +165,11 @@ CREATE TABLE IF NOT EXISTS sweeps (
     summary      JSONB NOT NULL DEFAULT '{}'::jsonb
 );
 
+ALTER TABLE sweeps ADD COLUMN IF NOT EXISTS owner_id TEXT;
+
 CREATE INDEX IF NOT EXISTS sweeps_created_at_idx ON sweeps (created_at DESC, sweep_id DESC);
+CREATE INDEX IF NOT EXISTS sweeps_owner_created_idx
+    ON sweeps (owner_id, created_at DESC, sweep_id DESC) WHERE owner_id IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS reports (
     report_id   TEXT PRIMARY KEY,
@@ -165,4 +179,8 @@ CREATE TABLE IF NOT EXISTS reports (
     manifest    JSONB NOT NULL
 );
 
+ALTER TABLE reports ADD COLUMN IF NOT EXISTS owner_id TEXT;
+
 CREATE INDEX IF NOT EXISTS reports_created_at_idx ON reports (created_at DESC, report_id DESC);
+CREATE INDEX IF NOT EXISTS reports_owner_created_idx
+    ON reports (owner_id, created_at DESC, report_id DESC) WHERE owner_id IS NOT NULL;

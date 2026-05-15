@@ -216,15 +216,20 @@ class PostgresArtifactStore:
         source_snapshot_id: str | None = None,
         current_round: int = 0,
         summary: dict[str, Any] | None = None,
+        owner_id: str | None = None,
     ) -> dict[str, Any]:
+        # ``owner_id`` is server-internal: it scopes list/count reads to a
+        # signed-in user but is *not* surfaced on the API row dict (see
+        # ``_run_row_to_dict``). Open mode + API-key callers pass ``None``;
+        # routers that resolved a Privy JWT pass the DID.
         with self._get_pool().connection() as conn:
             with conn.cursor() as cur:
                 cur.execute(
                     """
                     INSERT INTO runs (
                         run_id, simulation_id, source, source_run_id, source_snapshot_id,
-                        status, seed, market_type, current_round, spec, summary
-                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        status, seed, market_type, current_round, spec, summary, owner_id
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                     ON CONFLICT (run_id) DO UPDATE SET
                         simulation_id      = EXCLUDED.simulation_id,
                         source             = EXCLUDED.source,
@@ -250,6 +255,7 @@ class PostgresArtifactStore:
                         current_round,
                         _safe_json(spec),
                         _safe_json(summary or {}),
+                        owner_id,
                     ),
                 )
             conn.commit()
@@ -609,27 +615,64 @@ class PostgresArtifactStore:
                 row = cur.fetchone()
         return self._run_row_to_dict(row) if row else None
 
-    def list_runs(self, *, limit: int = 100, offset: int = 0) -> list[dict[str, Any]]:
+    def list_runs(
+        self,
+        *,
+        limit: int = 100,
+        offset: int = 0,
+        owner_id: str | None = None,
+    ) -> list[dict[str, Any]]:
         # Single SELECT — the legacy SQLite store could afford N+1 because
         # every "connection" was a process-local pointer; pooled Postgres
         # over a network can't.
+        #
+        # ``owner_id=None`` keeps the unfiltered behaviour the existing
+        # callers (open mode, golden harness) rely on. Auth-enforced
+        # routers pass the DID to scope the list. Filter is strict
+        # equality; anon-owned rows (``owner_id IS NULL`` in the table)
+        # never appear under a user filter and are reachable only via
+        # share-link / admin / open-mode read paths.
+        clause = ""
+        params: list[Any] = []
+        if owner_id is not None:
+            clause = "WHERE owner_id = %s"
+            params.append(owner_id)
+        params.extend([limit, offset])
         with self._get_pool().connection() as conn:
             with conn.cursor() as cur:
                 cur.execute(
                     f"""
                     SELECT {self._RUN_COLUMNS} FROM runs
+                    {clause}
                     ORDER BY created_at DESC, run_id DESC
                     LIMIT %s OFFSET %s
                     """,
-                    (limit, offset),
+                    params,
                 )
                 return [self._run_row_to_dict(row) for row in cur.fetchall()]
 
-    def count_runs(self) -> int:
+    def count_runs(self, *, owner_id: str | None = None) -> int:
         with self._get_pool().connection() as conn:
             with conn.cursor() as cur:
-                cur.execute("SELECT count(*) FROM runs")
+                if owner_id is None:
+                    cur.execute("SELECT count(*) FROM runs")
+                else:
+                    cur.execute("SELECT count(*) FROM runs WHERE owner_id = %s", (owner_id,))
                 return int(cur.fetchone()[0])
+
+    def get_run_owner(self, run_id: str) -> str | None:
+        """Return the persisted ``owner_id`` for a run, or ``None``.
+
+        ``None`` covers two cases — row missing, or row present with no
+        owner (anon / API-key / open-mode write). Callers should already
+        have run :meth:`get_run` to distinguish the two before deciding
+        whether to 404 or 403.
+        """
+        with self._get_pool().connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT owner_id FROM runs WHERE run_id = %s", (run_id,))
+                row = cur.fetchone()
+        return row[0] if row else None
 
     def get_run_spec(self, run_id: str) -> dict[str, Any] | None:
         with self._get_pool().connection() as conn:
@@ -1157,6 +1200,7 @@ class PostgresArtifactStore:
         blob: bytes,
         simulation_id: str | None = None,
         source_run_id: str | None = None,
+        owner_id: str | None = None,
     ) -> dict[str, Any]:
         envelope = {"_b64": base64.b64encode(blob).decode("ascii")}
         with self._get_pool().connection() as conn:
@@ -1165,8 +1209,8 @@ class PostgresArtifactStore:
                     """
                     INSERT INTO named_snapshots (
                         snapshot_id, run_id, source_run_id, simulation_id,
-                        round_number, label, state
-                    ) VALUES (%s, %s, %s, %s, %s, %s, %s)
+                        round_number, label, state, owner_id
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                     ON CONFLICT (snapshot_id) DO UPDATE SET
                         run_id        = EXCLUDED.run_id,
                         source_run_id = EXCLUDED.source_run_id,
@@ -1183,6 +1227,7 @@ class PostgresArtifactStore:
                         round_number,
                         label,
                         _safe_json(envelope),
+                        owner_id,
                     ),
                 )
             conn.commit()
@@ -1205,17 +1250,38 @@ class PostgresArtifactStore:
             "created_at": _iso(row[6]),
         }
 
-    def list_named_snapshots(self, *, run_id: str | None = None) -> list[dict[str, Any]]:
+    def list_named_snapshots(
+        self,
+        *,
+        run_id: str | None = None,
+        owner_id: str | None = None,
+    ) -> list[dict[str, Any]]:
         query = f"SELECT {self._NAMED_SNAPSHOT_COLUMNS} FROM named_snapshots"
+        clauses: list[str] = []
         params: list[Any] = []
         if run_id is not None:
-            query += " WHERE run_id = %s"
+            clauses.append("run_id = %s")
             params.append(run_id)
+        if owner_id is not None:
+            clauses.append("owner_id = %s")
+            params.append(owner_id)
+        if clauses:
+            query += " WHERE " + " AND ".join(clauses)
         query += " ORDER BY created_at DESC, snapshot_id DESC"
         with self._get_pool().connection() as conn:
             with conn.cursor() as cur:
                 cur.execute(query, params)
                 return [self._named_snapshot_row_to_dict(row) for row in cur.fetchall()]
+
+    def get_named_snapshot_owner(self, snapshot_id: str) -> str | None:
+        with self._get_pool().connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT owner_id FROM named_snapshots WHERE snapshot_id = %s",
+                    (snapshot_id,),
+                )
+                row = cur.fetchone()
+        return row[0] if row else None
 
     def get_named_snapshot(self, snapshot_id: str) -> dict[str, Any] | None:
         with self._get_pool().connection() as conn:
@@ -1253,20 +1319,21 @@ class PostgresArtifactStore:
         spec: dict[str, Any],
         status: str,
         summary: dict[str, Any] | None = None,
+        owner_id: str | None = None,
     ) -> dict[str, Any]:
         with self._get_pool().connection() as conn:
             with conn.cursor() as cur:
                 cur.execute(
                     """
-                    INSERT INTO sweeps (sweep_id, status, spec, summary)
-                    VALUES (%s, %s, %s, %s)
+                    INSERT INTO sweeps (sweep_id, status, spec, summary, owner_id)
+                    VALUES (%s, %s, %s, %s, %s)
                     ON CONFLICT (sweep_id) DO UPDATE SET
                         status     = EXCLUDED.status,
                         spec       = EXCLUDED.spec,
                         summary    = EXCLUDED.summary,
                         updated_at = now()
                     """,
-                    (sweep_id, status, _safe_json(spec), _safe_json(summary or {})),
+                    (sweep_id, status, _safe_json(spec), _safe_json(summary or {}), owner_id),
                 )
             conn.commit()
         return self.get_sweep(sweep_id) or {}
@@ -1352,17 +1419,30 @@ class PostgresArtifactStore:
                 row = cur.fetchone()
         return row[0] if row else None
 
-    def list_sweeps(self, *, limit: int = 100, offset: int = 0) -> list[dict[str, Any]]:
+    def list_sweeps(
+        self,
+        *,
+        limit: int = 100,
+        offset: int = 0,
+        owner_id: str | None = None,
+    ) -> list[dict[str, Any]]:
+        clause = ""
+        params: list[Any] = []
+        if owner_id is not None:
+            clause = "WHERE owner_id = %s"
+            params.append(owner_id)
+        params.extend([limit, offset])
         with self._get_pool().connection() as conn:
             with conn.cursor() as cur:
                 cur.execute(
-                    """
+                    f"""
                     SELECT sweep_id, status, created_at, updated_at, summary, spec
                     FROM sweeps
+                    {clause}
                     ORDER BY created_at DESC, sweep_id DESC
                     LIMIT %s OFFSET %s
                     """,
-                    (limit, offset),
+                    params,
                 )
                 rows = cur.fetchall()
         return [
@@ -1377,11 +1457,21 @@ class PostgresArtifactStore:
             for row in rows
         ]
 
-    def count_sweeps(self) -> int:
+    def count_sweeps(self, *, owner_id: str | None = None) -> int:
         with self._get_pool().connection() as conn:
             with conn.cursor() as cur:
-                cur.execute("SELECT count(*) FROM sweeps")
+                if owner_id is None:
+                    cur.execute("SELECT count(*) FROM sweeps")
+                else:
+                    cur.execute("SELECT count(*) FROM sweeps WHERE owner_id = %s", (owner_id,))
                 return int(cur.fetchone()[0])
+
+    def get_sweep_owner(self, sweep_id: str) -> str | None:
+        with self._get_pool().connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT owner_id FROM sweeps WHERE sweep_id = %s", (sweep_id,))
+                row = cur.fetchone()
+        return row[0] if row else None
 
     def get_sweep_rows(self, sweep_id: str) -> list[dict[str, Any]]:
         with self._get_pool().connection() as conn:
@@ -1403,19 +1493,20 @@ class PostgresArtifactStore:
         *,
         manifest: dict[str, Any],
         status: str,
+        owner_id: str | None = None,
     ) -> dict[str, Any]:
         with self._get_pool().connection() as conn:
             with conn.cursor() as cur:
                 cur.execute(
                     """
-                    INSERT INTO reports (report_id, status, manifest)
-                    VALUES (%s, %s, %s)
+                    INSERT INTO reports (report_id, status, manifest, owner_id)
+                    VALUES (%s, %s, %s, %s)
                     ON CONFLICT (report_id) DO UPDATE SET
                         status     = EXCLUDED.status,
                         manifest   = EXCLUDED.manifest,
                         updated_at = now()
                     """,
-                    (report_id, status, _safe_json(manifest)),
+                    (report_id, status, _safe_json(manifest), owner_id),
                 )
             conn.commit()
         return self.get_report(report_id) or {}
@@ -1491,17 +1582,30 @@ class PostgresArtifactStore:
             "updated_at": _iso(row[3]),
         }
 
-    def list_reports(self, *, limit: int = 100, offset: int = 0) -> list[dict[str, Any]]:
+    def list_reports(
+        self,
+        *,
+        limit: int = 100,
+        offset: int = 0,
+        owner_id: str | None = None,
+    ) -> list[dict[str, Any]]:
+        clause = ""
+        params: list[Any] = []
+        if owner_id is not None:
+            clause = "WHERE owner_id = %s"
+            params.append(owner_id)
+        params.extend([limit, offset])
         with self._get_pool().connection() as conn:
             with conn.cursor() as cur:
                 cur.execute(
-                    """
+                    f"""
                     SELECT report_id, status, created_at, updated_at, manifest
                     FROM reports
+                    {clause}
                     ORDER BY created_at DESC, report_id DESC
                     LIMIT %s OFFSET %s
                     """,
-                    (limit, offset),
+                    params,
                 )
                 rows = cur.fetchall()
         return [
@@ -1515,11 +1619,21 @@ class PostgresArtifactStore:
             for row in rows
         ]
 
-    def count_reports(self) -> int:
+    def count_reports(self, *, owner_id: str | None = None) -> int:
         with self._get_pool().connection() as conn:
             with conn.cursor() as cur:
-                cur.execute("SELECT count(*) FROM reports")
+                if owner_id is None:
+                    cur.execute("SELECT count(*) FROM reports")
+                else:
+                    cur.execute("SELECT count(*) FROM reports WHERE owner_id = %s", (owner_id,))
                 return int(cur.fetchone()[0])
+
+    def get_report_owner(self, report_id: str) -> str | None:
+        with self._get_pool().connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT owner_id FROM reports WHERE report_id = %s", (report_id,))
+                row = cur.fetchone()
+        return row[0] if row else None
 
     def get_report_manifest(self, report_id: str) -> dict[str, Any] | None:
         with self._get_pool().connection() as conn:
