@@ -1232,3 +1232,150 @@ td .mono{font-family:var(--font-mono);font-size:.8rem}
 .bsec-dot.ok{background:var(--green);box-shadow:0 0 0 4px var(--green-dim)}
 .bsec-dot.warn{background:var(--yellow);box-shadow:0 0 0 4px var(--yellow-dim)}
 .bsec-dot.err{background:var(--red);box-shadow:0 0 0 4px var(--red-dim)}
+
+/* ── Auth gate (Privy email-OTP sign-in) ──────────────── */
+.auth-page{
+  position:fixed;inset:0;background:var(--bg-0);color:var(--text-0);
+  display:flex;flex-direction:column;overflow:auto;z-index:9999;
+  font-family:var(--font-sans);
+}
+.auth-page__head{
+  height:52px;min-height:52px;border-bottom:1px solid var(--border);
+  background:var(--bg-1);display:flex;align-items:center;
+  justify-content:space-between;padding:0 24px;
+}
+/* Mirrors `#sidebar .logo` so the gate header reads as the studio. */
+.auth-page__logo{display:flex;align-items:center;gap:10px}
+.auth-page__logo img,.auth-page__logo svg{width:28px;height:28px;border-radius:6px}
+.auth-page__logo h1{font-size:1.1rem;font-weight:700;letter-spacing:-.02em;
+  color:var(--text-0);margin:0}
+.auth-page__head-right{font-size:.75rem;color:var(--text-2);
+  text-transform:uppercase;letter-spacing:.08em}
+.auth-page__body{flex:1;display:flex;align-items:center;justify-content:center;
+  padding:32px 24px}
+.auth-page__card{
+  width:100%;max-width:400px;background:var(--bg-1);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:32px;
+  box-shadow:0 8px 24px rgba(0,0,0,.4);
+}
+.auth-page__title{font-size:1.25rem;font-weight:700;letter-spacing:-.01em;
+  margin-bottom:6px;color:var(--text-0)}
+.auth-page__sub{font-size:.85rem;color:var(--text-1);margin-bottom:20px;line-height:1.5}
+.auth-page__sub strong{color:var(--text-0);font-weight:600}
+.auth-page__back{background:none;border:0;color:var(--text-2);
+  font-size:.78rem;cursor:pointer;padding:0;margin-bottom:14px;
+  display:inline-flex;align-items:center;gap:4px;transition:color var(--transition)}
+.auth-page__back:hover{color:var(--text-0)}
+.auth-page__error{font-size:.78rem;color:var(--red);margin-top:8px;
+  background:var(--red-dim);padding:8px 10px;border-radius:var(--radius);
+  border:1px solid rgba(248,113,113,.3)}
+.auth-page__resend{margin-top:14px;font-size:.78rem;color:var(--text-2);
+  text-align:center}
+.auth-page__resend button{background:none;border:0;padding:0;color:var(--accent);
+  text-decoration:underline;font-size:inherit;cursor:pointer}
+.auth-page__resend button:hover{color:var(--accent-hover)}
+.auth-page__legal{margin-top:14px;font-size:.7rem;color:var(--text-2);
+  text-align:center;letter-spacing:.02em}
+.auth-page__foot{padding:18px 24px 24px;font-size:.72rem;color:var(--text-2);
+  text-align:center;letter-spacing:.02em}
+
+.auth-otp{display:flex;gap:8px;margin-bottom:8px}
+.auth-otp input{
+  flex:1;min-width:0;height:48px;text-align:center;font-size:1.25rem;
+  font-family:var(--font-mono);background:var(--bg-2);border:1px solid var(--border);
+  color:var(--text-0);border-radius:var(--radius);padding:0;
+  transition:border var(--transition),background var(--transition);
+}
+.auth-otp input:focus{border-color:var(--accent);background:var(--bg-3)}
+.auth-otp input:disabled{opacity:.6}
+
+.auth-success{text-align:center;padding:12px 0}
+.auth-success__check{
+  width:48px;height:48px;border-radius:50%;
+  background:var(--green-dim);color:var(--green);
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:1.4rem;margin-bottom:14px;
+  box-shadow:0 0 0 6px rgba(52,211,153,.06);
+}
+
+.auth-btn-block{width:100%;margin-top:14px;justify-content:center}
+.auth-btn-block:disabled{opacity:.5;cursor:not-allowed}
+
+.auth-sr-only{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0,0,0,0);white-space:nowrap;border:0;
+}
+
+/* ── User chip + popover (Privy auth) ─────────────────── */
+.user-chip{position:relative;display:inline-flex}
+.user-chip__btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:4px 12px 4px 4px;height:32px;
+  background:var(--bg-2);border:1px solid var(--border);color:var(--text-0);
+  border-radius:999px;font-size:.78rem;cursor:pointer;
+  transition:all var(--transition);
+}
+.user-chip__btn:hover{border-color:var(--border-active);background:var(--bg-3)}
+.user-chip__btn[aria-expanded="true"]{border-color:var(--accent);color:var(--accent)}
+.user-chip__avatar{
+  width:22px;height:22px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent) 0%,var(--accent-secondary) 100%);
+  color:#fff;display:inline-flex;align-items:center;justify-content:center;
+  font-size:.7rem;font-weight:700;font-family:var(--font-sans);
+  flex-shrink:0;
+}
+.user-chip__email{
+  max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-family:var(--font-mono);font-size:.72rem;color:var(--text-1);
+}
+.user-chip__menu{
+  position:absolute;right:0;top:calc(100% + 6px);z-index:60;
+  min-width:200px;background:var(--bg-1);border:1px solid var(--border);
+  border-radius:var(--radius);box-shadow:0 8px 24px rgba(0,0,0,.4);
+  padding:6px;display:flex;flex-direction:column;gap:2px;
+  animation:fadeIn .18s ease;
+}
+.user-chip__menu-header{
+  padding:6px 10px 8px;border-bottom:1px solid var(--border);margin-bottom:4px;
+  font-size:.7rem;color:var(--text-2);
+  text-transform:uppercase;letter-spacing:.06em;
+}
+.user-chip__menu-header strong{
+  display:block;color:var(--text-0);font-family:var(--font-mono);
+  font-size:.78rem;text-transform:none;letter-spacing:0;
+  margin-top:2px;font-weight:500;overflow:hidden;text-overflow:ellipsis;
+}
+.user-chip__menu a,
+.user-chip__menu button{
+  display:flex;align-items:center;width:100%;padding:8px 10px;
+  border-radius:var(--radius);background:transparent;border:1px solid transparent;
+  color:var(--text-1);font-size:.82rem;text-align:left;font-family:inherit;
+  text-decoration:none;cursor:pointer;transition:all var(--transition);
+}
+.user-chip__menu a:hover,
+.user-chip__menu button:hover{
+  background:var(--accent-dim);color:var(--accent);border-color:transparent;
+}
+.user-chip__menu .user-chip__menu-danger{color:var(--text-1)}
+.user-chip__menu .user-chip__menu-danger:hover{
+  background:var(--red-dim);color:var(--red);
+}
+
+/* ── Wallets settings page ────────────────────────────── */
+.wallets-page{padding:24px;max-width:760px;display:flex;flex-direction:column;gap:24px}
+.wallets-page__section h2{
+  font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--text-2);margin:0 0 12px;
+}
+.wallets-page__panel{
+  background:var(--bg-1);border:1px solid var(--border);border-radius:var(--radius);
+  padding:16px;display:flex;align-items:center;gap:12px;
+}
+.wallets-page__addr{
+  flex:1;min-width:0;font-family:var(--font-mono);font-size:.78rem;
+  color:var(--text-0);word-break:break-all;
+}
+.wallets-page__placeholder{
+  color:var(--text-2);font-size:.85rem;line-height:1.5;
+}
+.wallets-page__hint{color:var(--text-2);font-size:.85rem;margin:0 0 12px;line-height:1.5}

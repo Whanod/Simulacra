@@ -16,9 +16,12 @@ interface AuthModalProps {
 }
 
 /**
- * Stateful UI wired to Privy's email-OTP hooks. The state machine lives
- * in `./authReducer.ts` so the unit tests can drive it directly without
- * mocking the SDK; this component is the SDK + DOM surface.
+ * Stateful sign-in surface wired to Privy's email-OTP hooks. The state
+ * machine lives in `./authReducer.ts` so the unit tests can drive it
+ * directly without mocking the SDK; this component is the SDK + DOM
+ * surface, and styles are pulled from `globals.css` (`.auth-page*`,
+ * `.btn-primary`, `.form-group`) so the gate matches the rest of the
+ * dark studio aesthetic.
  */
 export default function AuthModal({ initialPath }: AuthModalProps) {
   const router = useRouter();
@@ -129,7 +132,7 @@ export default function AuthModal({ initialPath }: AuthModalProps) {
   }, [authenticated, state.kind]);
 
   return (
-    <ModalShell>
+    <PageShell>
       {state.kind === "email" && (
         <EmailScreen
           email={state.email}
@@ -153,64 +156,48 @@ export default function AuthModal({ initialPath }: AuthModalProps) {
         />
       )}
       {state.kind === "success" && <SuccessScreen />}
-    </ModalShell>
+    </PageShell>
   );
 }
 
 // ── presentational pieces (no SDK) ──────────────────────────────────────
 
-function ModalShell({ children }: { children: React.ReactNode }) {
-  const cardRef = useRef<HTMLDivElement | null>(null);
-  // Backdrop pointerdown — privy.md §5.11 mandates a no-op. We swallow
-  // the event before focus moves and snap focus back into the card so
-  // the active OTP / email input keeps caret + selection state.
-  const handleBackdropPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (e.target !== e.currentTarget) return;
-    e.preventDefault();
-    const card = cardRef.current;
-    if (!card) return;
-    const active = document.activeElement as HTMLElement | null;
-    if (active && card.contains(active)) return;
-    const target = card.querySelector<HTMLElement>(
-      'input:not([disabled]), button:not([disabled])',
-    );
-    target?.focus();
-  };
+/**
+ * Full-viewport sign-in surface. Replaces the earlier modal-over-blur
+ * pattern: when the user is anonymous on a gated route the studio
+ * doesn't mount at all — the page IS the sign-in screen, so there's
+ * nothing broken behind it.
+ */
+function PageShell({ children }: { children: React.ReactNode }) {
   return (
     <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="auth-modal-title"
-      onPointerDown={handleBackdropPointerDown}
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(28, 25, 22, 0.45)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 9999,
-      }}
+      className="auth-page"
+      data-testid="auth-signin-screen"
       onKeyDown={(e) => {
         // Escape is a no-op while the gate is up — see privy.md §5.11.
         if (e.key === "Escape") e.preventDefault();
       }}
     >
-      <div
-        ref={cardRef}
-        style={{
-          background: "#fff",
-          width: 360,
-          maxWidth: "calc(100% - 32px)",
-          padding: 24,
-          borderRadius: 6,
-          border: "1px solid #1c1916",
-          boxShadow: "0 18px 40px -18px rgba(0,0,0,0.6)",
-          fontFamily: "system-ui, sans-serif",
-        }}
-      >
-        {children}
+      <header className="auth-page__head">
+        <div className="auth-page__logo">
+          {/* Match the sidebar's logo treatment exactly so the gate
+              feels like a continuation of the studio, not a separate
+              product. */}
+          <img src="/logo.png" alt="Simulacra" />
+          <h1>Simulacra</h1>
+        </div>
+        <span className="auth-page__head-right">Sign in</span>
+      </header>
+
+      <div className="auth-page__body">
+        <div className="auth-page__card" role="region" aria-labelledby="auth-modal-title">
+          {children}
+        </div>
       </div>
+
+      <footer className="auth-page__foot">
+        Sign in to save scenarios, compare runs, and share results.
+      </footer>
     </div>
   );
 }
@@ -240,64 +227,37 @@ function EmailScreen({
         if (valid && !submitting) onSubmit();
       }}
     >
-      <h2 id="auth-modal-title" style={{ margin: "0 0 4px", fontSize: 20 }}>
+      <h1 id="auth-modal-title" className="auth-page__title">
         Sign in to Simulacra
-      </h2>
-      <p style={{ margin: "0 0 16px", color: "#6b655c", fontSize: 13 }}>
-        Save scenarios, compare runs, share results.
-      </p>
-      <label
-        htmlFor="auth-email"
-        style={{
-          display: "block",
-          fontSize: 11,
-          letterSpacing: "0.1em",
-          textTransform: "uppercase",
-          color: "#6b655c",
-          marginBottom: 6,
-        }}
-      >
-        Email
-      </label>
-      <input
-        ref={inputRef}
-        id="auth-email"
-        name="email"
-        type="email"
-        autoComplete="email"
-        value={email}
-        onChange={(e) => onChange(e.target.value)}
-        style={{
-          width: "100%",
-          padding: "8px 10px",
-          fontSize: 14,
-          border: "1px solid #d6cfc0",
-          borderRadius: 3,
-        }}
-      />
-      {error && (
-        <p style={{ color: "#7a1610", fontSize: 12, marginTop: 6 }}>{error}</p>
-      )}
+      </h1>
+      <p className="auth-page__sub">Save scenarios, compare runs, share results.</p>
+
+      <div className="form-group">
+        <label htmlFor="auth-email">Email</label>
+        <input
+          ref={inputRef}
+          id="auth-email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          placeholder="you@example.com"
+          value={email}
+          onChange={(e) => onChange(e.target.value)}
+          disabled={submitting}
+        />
+      </div>
+
+      {error && <p className="auth-page__error">{error}</p>}
+
       <button
         type="submit"
+        className="btn btn-primary cta-primary auth-btn-block"
         disabled={!valid || submitting}
-        style={{
-          width: "100%",
-          marginTop: 14,
-          padding: "10px 12px",
-          background: valid && !submitting ? "#1c1916" : "#a6a097",
-          color: "#fff",
-          border: 0,
-          borderRadius: 3,
-          fontSize: 13,
-          textTransform: "uppercase",
-          letterSpacing: "0.08em",
-          cursor: valid && !submitting ? "pointer" : "not-allowed",
-        }}
       >
-        Continue with email
+        {submitting ? "Sending code…" : "Continue with email"}
       </button>
-      <p style={{ marginTop: 12, fontSize: 11, color: "#6b655c", textAlign: "center" }}>
+
+      <p className="auth-page__legal">
         By continuing you agree to terms · privacy
       </p>
     </form>
@@ -357,28 +317,17 @@ function OtpScreen({
 
   return (
     <div>
-      <button
-        type="button"
-        onClick={onBack}
-        style={{
-          background: "none",
-          border: 0,
-          color: "#6b655c",
-          fontSize: 12,
-          cursor: "pointer",
-          padding: 0,
-          marginBottom: 8,
-        }}
-      >
+      <button type="button" onClick={onBack} className="auth-page__back">
         ← Edit email
       </button>
-      <h2 id="auth-modal-title" style={{ margin: "0 0 4px", fontSize: 20 }}>
+      <h1 id="auth-modal-title" className="auth-page__title">
         Check your email
-      </h2>
-      <p style={{ margin: "0 0 16px", color: "#6b655c", fontSize: 13 }}>
-        Code sent to <strong style={{ color: "#1c1916" }}>{email}</strong>
+      </h1>
+      <p className="auth-page__sub">
+        Code sent to <strong>{email}</strong>
       </p>
-      <div style={{ display: "flex", gap: 6, marginBottom: 8 }}>
+
+      <div className="auth-otp">
         {digits.map((digit, idx) => (
           <input
             key={idx}
@@ -394,60 +343,30 @@ function OtpScreen({
             onChange={(e) => handleCellChange(idx, e.target.value)}
             onKeyDown={(e) => handleKeyDown(idx, e)}
             disabled={submitting}
-            style={{
-              flex: 1,
-              minWidth: 0,
-              height: 44,
-              textAlign: "center",
-              fontSize: 18,
-              border: "1px solid #d6cfc0",
-              borderRadius: 3,
-              fontFamily: "ui-monospace, monospace",
-            }}
           />
         ))}
       </div>
+
       {/* Hidden Verify button — auto-submit handles sighted users; this
           stays focusable for assistive tech that prefers an explicit
           activation. */}
       <button
         type="button"
         onClick={onVerify}
-        style={{
-          position: "absolute",
-          width: 1,
-          height: 1,
-          padding: 0,
-          margin: -1,
-          overflow: "hidden",
-          clip: "rect(0,0,0,0)",
-          whiteSpace: "nowrap",
-          border: 0,
-        }}
+        className="auth-sr-only"
         disabled={digits.join("").length !== 6 || submitting}
       >
         Verify
       </button>
-      {error && (
-        <p style={{ color: "#7a1610", fontSize: 12, margin: "4px 0 0" }}>{error}</p>
-      )}
-      <p style={{ marginTop: 12, fontSize: 11, color: "#6b655c", textAlign: "center" }}>
+
+      {error && <p className="auth-page__error">{error}</p>}
+
+      <p className="auth-page__resend">
         Didn&apos;t get it?{" "}
         {resendIn > 0 ? (
           <>Resend in 0:{resendIn.toString().padStart(2, "0")}</>
         ) : (
-          <button
-            type="button"
-            onClick={onResend}
-            style={{
-              background: "none",
-              border: 0,
-              padding: 0,
-              color: "#1c1916",
-              textDecoration: "underline",
-              cursor: "pointer",
-            }}
-          >
+          <button type="button" onClick={onResend}>
             Resend code
           </button>
         )}
@@ -458,28 +377,16 @@ function OtpScreen({
 
 function SuccessScreen() {
   return (
-    <div style={{ textAlign: "center", padding: "20px 0" }}>
-      <div
-        aria-hidden
-        style={{
-          width: 40,
-          height: 40,
-          borderRadius: "50%",
-          background: "#1e4d33",
-          color: "#fff",
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: 22,
-          marginBottom: 12,
-        }}
-      >
+    <div className="auth-success">
+      <div aria-hidden className="auth-success__check">
         ✓
       </div>
-      <h2 id="auth-modal-title" style={{ margin: "0 0 4px", fontSize: 20 }}>
+      <h1 id="auth-modal-title" className="auth-page__title">
         You&apos;re in
-      </h2>
-      <p style={{ margin: 0, color: "#6b655c", fontSize: 13 }}>Redirecting…</p>
+      </h1>
+      <p className="auth-page__sub" style={{ marginBottom: 0 }}>
+        Redirecting…
+      </p>
     </div>
   );
 }

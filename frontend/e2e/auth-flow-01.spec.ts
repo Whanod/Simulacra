@@ -34,43 +34,42 @@ test.describe("flow 01 — gate at entry", () => {
     void testInfo;
   });
 
-  test("anonymous landing → blocking modal, content underneath inert", async ({ page }) => {
+  test("anonymous landing → full-page sign-in screen, studio not mounted", async ({ page }) => {
     await page.goto("/");
-    // Modal is announced as a dialog.
-    const modal = page.getByRole("dialog");
-    await expect(modal).toBeVisible();
-    await expect(modal).toHaveAttribute("aria-modal", "true");
+    // The sign-in screen replaces the studio entirely (no overlay,
+    // no broken shell behind it).
+    const signin = page.getByTestId("auth-signin-screen");
+    await expect(signin).toBeVisible();
 
     // Email input has focus on mount.
-    const emailInput = modal.getByLabel(/email/i);
+    const emailInput = signin.getByLabel(/email/i);
     await expect(emailInput).toBeFocused();
 
-    // The route shell underneath is rendered inert; pointer events on
-    // the body should not reach behind-modal links. Use the testid
-    // anchor — React serialisation of bare HTML boolean attrs varies
-    // between versions, but the data-testid is stable.
-    const inertShell = page.getByTestId("auth-gate-shell");
-    await expect(inertShell).toBeAttached();
-    await expect(inertShell).toHaveAttribute("inert", /.*/);
+    // The studio shell is *not* in the DOM at all — the gate replaces
+    // it rather than overlaying. (The Sidebar component lives inside
+    // the (studio) layout group and only mounts post-auth.)
+    await expect(page.locator("#main")).toHaveCount(0);
 
-    // Escape is a no-op while gated.
+    // Escape inside the card is a no-op (no modal to dismiss anyway,
+    // but we still swallow the keystroke for symmetry with the prior
+    // contract).
     await page.keyboard.press("Escape");
-    await expect(modal).toBeVisible();
+    await expect(signin).toBeVisible();
   });
 
   test("share-link route /r/[runId] bypasses the gate", async ({ page }) => {
     // Even without an existing run, the page must render its own shell
-    // (likely a 404 or "no run" state), not the auth modal — that's the
-    // public-route allowlist contract.
+    // (likely a 404 or "no run" state), not the sign-in screen — that's
+    // the public-route allowlist contract.
     await page.goto("/r/does-not-exist");
-    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect(page.getByTestId("auth-signin-screen")).toHaveCount(0);
   });
 
   test("invalid email keeps Continue disabled", async ({ page }) => {
     await page.goto("/");
-    const modal = page.getByRole("dialog");
-    const emailInput = modal.getByLabel(/email/i);
-    const continueBtn = modal.getByRole("button", { name: /continue with email/i });
+    const screen = page.getByTestId("auth-signin-screen");
+    const emailInput = screen.getByLabel(/email/i);
+    const continueBtn = screen.getByRole("button", { name: /continue with email/i });
 
     await emailInput.fill("not-an-email");
     await expect(continueBtn).toBeDisabled();
