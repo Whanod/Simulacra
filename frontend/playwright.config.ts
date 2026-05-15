@@ -34,6 +34,9 @@ export default defineConfig({
       env: {
         DEFI_SIM_ARTIFACT_ROOT: "/tmp/defi-sim-e2e-artifacts",
         CORS_ALLOWED_ORIGINS: FRONTEND_BASE,
+        // Privy (Flow 01 spec) — forwarded only when set so existing
+        // specs keep running in open mode.
+        ...(process.env.PRIVY_APP_ID ? { PRIVY_APP_ID: process.env.PRIVY_APP_ID } : {}),
       },
     },
     {
@@ -43,6 +46,9 @@ export default defineConfig({
       timeout: 180_000,
       env: {
         NEXT_PUBLIC_API_URL: API_BASE,
+        ...(process.env.NEXT_PUBLIC_PRIVY_APP_ID
+          ? { NEXT_PUBLIC_PRIVY_APP_ID: process.env.NEXT_PUBLIC_PRIVY_APP_ID }
+          : {}),
       },
     },
   ],
