@@ -11,16 +11,18 @@ interface AuthTokenBridgeProps {
 }
 
 // Inside the provider so usePrivy() works. Registers the token accessor
-// once on mount; the SDK's getAccessToken handles caching + refresh.
+// exactly once on mount; the SDK's getAccessToken handles caching +
+// refresh.
 //
-// The accessor *awaits* Privy's initial hydration before deciding on a
-// token, rather than bailing to null while ready === false. Without this
-// gate, requests fired in the same paint as AuthModalGate flipping its
-// children visible can slip through with no Authorization header — React
-// fires the children's useEffects before this bridge's effect re-runs to
-// register a real-token accessor, and the backend then 401s those calls.
-// The gate resolves exactly once (the first time ready flips to true)
-// and stays resolved, so it adds zero overhead to steady-state requests.
+// All dynamic values (getAccessToken, authenticated) are read through
+// refs so the single registered accessor always sees current state
+// without re-running its effect — and crucially, without the brief
+// cleanup→setup window where the accessor would be null and any in-
+// flight apiFetch would be unblocked with no token. The accessor also
+// awaits Privy's initial hydration via a one-shot promise: requests
+// fired in the same paint that AuthModalGate flips its children visible
+// reach apiFetch BEFORE this bridge's effects fire (React commits
+// bottom-up), so they have to block on a gate rather than bail to null.
 function AuthTokenBridge({ children }: AuthTokenBridgeProps) {
   const { getAccessToken, ready, authenticated } = usePrivy();
 
@@ -36,9 +38,12 @@ function AuthTokenBridge({ children }: AuthTokenBridgeProps) {
     if (ready) readyGateRef.current!.resolve();
   }, [ready]);
 
-  // Mirror authenticated into a ref so a single registered accessor sees
-  // current state without needing the effect below to re-run on every
-  // sign-in / sign-out flip.
+  // Refs let one stable accessor read the latest values. Some Privy
+  // releases return a fresh getAccessToken on every render — closing
+  // over the mount-time reference would mean stale-fn calls returning
+  // null once the SDK swapped it out.
+  const getAccessTokenRef = useRef(getAccessToken);
+  getAccessTokenRef.current = getAccessToken;
   const authenticatedRef = useRef(authenticated);
   authenticatedRef.current = authenticated;
 
@@ -46,13 +51,18 @@ function AuthTokenBridge({ children }: AuthTokenBridgeProps) {
     setAuthTokenAccessor(async () => {
       await readyGateRef.current!.promise;
       if (!authenticatedRef.current) return null;
-      const token = await getAccessToken();
+      const token = await getAccessTokenRef.current();
       return token ?? null;
     });
     return () => {
       setAuthTokenAccessor(null);
     };
-  }, [getAccessToken]);
+    // Intentionally empty deps: the accessor is read through refs, so a
+    // single registration is correct for the bridge's lifetime. Adding
+    // getAccessToken / authenticated to deps reintroduces the cleanup
+    // window where the accessor flickers to null between renders.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return <>{children}</>;
 }
