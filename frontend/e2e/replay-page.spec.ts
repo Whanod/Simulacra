@@ -5,7 +5,7 @@ import {
   type Response,
 } from "@playwright/test";
 
-const CORPUS_REPLAY_SLOT = 250_000_000;
+const CORPUS_REPLAY_SLOT = 420_196_842;
 const REPLAY_METRIC_KEYS = [
   "bundle_landing_rate",
   "tip_efficiency",
@@ -39,10 +39,10 @@ test.describe("replay page", () => {
     await page.goto("/replay");
     await expect(page.getByTestId("replay-page")).toBeVisible();
 
-    await page.getByTestId("replay-slot-search").fill("250000000");
+    await page.getByTestId("replay-slot-search").fill("420196842");
     await page.getByTestId("replay-slot-apply").click();
-    await expect(page.getByTestId("replay-slot-start")).toHaveValue("250000000");
-    await expect(page.getByTestId("replay-slot-end")).toHaveValue("250000000");
+    await expect(page.getByTestId("replay-slot-start")).toHaveValue("420196842");
+    await expect(page.getByTestId("replay-slot-end")).toHaveValue("420196842");
 
     await page.getByTestId("replay-tip-bundle-id").fill("sig-250m");
     await setNativeInputValue(page.getByTestId("replay-tip-slider"), "100000");
@@ -93,7 +93,7 @@ test.describe("replay page", () => {
       "Decoded coverage",
     );
     await expect(page.getByTestId("replay-service-response")).toContainText(
-      "250000000",
+      "420196842",
     );
     await expect(page.getByTestId("replay-service-response")).toContainText(
       "TipReplaceCounterfactual",
@@ -185,10 +185,10 @@ test.describe("replay page", () => {
     await page.goto("/replay");
     await expect(page.getByTestId("replay-page")).toBeVisible();
 
-    await page.getByTestId("replay-slot-search").fill("250000000");
+    await page.getByTestId("replay-slot-search").fill("420196842");
     await page.getByTestId("replay-slot-apply").click();
-    await expect(page.getByTestId("replay-slot-start")).toHaveValue("250000000");
-    await expect(page.getByTestId("replay-slot-end")).toHaveValue("250000000");
+    await expect(page.getByTestId("replay-slot-start")).toHaveValue("420196842");
+    await expect(page.getByTestId("replay-slot-end")).toHaveValue("420196842");
 
     await page.getByTestId("replay-tip-bundle-id").fill("sig-share-link");
     await setNativeInputValue(page.getByTestId("replay-tip-slider"), "180000");
@@ -221,7 +221,7 @@ test.describe("replay page", () => {
     const shareInput = page.getByTestId("replay-share-url");
     await expect(shareInput).toHaveValue(/\/replay\?/);
     const sourceShareUrl = new URL(await shareInput.inputValue(), page.url());
-    expect(sourceShareUrl.searchParams.get("slot")).toBe("250000000");
+    expect(sourceShareUrl.searchParams.get("slot")).toBe("420196842");
     const encodedCounterfactuals = sourceShareUrl.searchParams.get("cf");
     expect(encodedCounterfactuals).not.toBeNull();
     const counterfactuals = JSON.parse(encodedCounterfactuals ?? "[]") as Array<{
@@ -250,13 +250,13 @@ test.describe("replay page", () => {
       );
 
       await expect(sharedPage.getByTestId("replay-slot-start")).toHaveValue(
-        "250000000",
+        "420196842",
       );
       await expect(sharedPage.getByTestId("replay-slot-end")).toHaveValue(
-        "250000000",
+        "420196842",
       );
       await expect(sharedPage.getByTestId("replay-slot-search")).toHaveValue(
-        "250000000",
+        "420196842",
       );
 
       await expect(sharedPage.getByTestId("replay-tip-toggle")).toBeChecked();

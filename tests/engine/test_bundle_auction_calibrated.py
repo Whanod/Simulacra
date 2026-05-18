@@ -24,7 +24,7 @@ from defi_sim_solana.calibration.tip_quote import (
 )
 
 
-COHORT = ("HJPjoWUrhoZzkNfRpHuieeFk9WcZWjwy6PBjZ81ngndJ",)
+COHORT = ("Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE",)
 
 
 def _curve_with_p50(p50_lamports: int, *, n_bundles: int = 1000) -> TipQuoteCurve:

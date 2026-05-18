@@ -121,9 +121,9 @@ test.describe("wallet fork", () => {
     const response = await responsePromise;
     expect(response.ok()).toBe(true);
 
-    expect(submittedRequest.value?.context_slot).toBe(250000000);
+    expect(submittedRequest.value?.context_slot).toBe(420196842);
     expect(submittedRequest.value?.fork_spec).toEqual({
-      slot: 250000000,
+      slot: 420196842,
       protocols: [],
       include_wallet_accounts: [MOCK_WALLET_OWNER],
     });

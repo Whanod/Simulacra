@@ -45,7 +45,7 @@ from .conftest import require_calibration_fixture
 
 pytestmark = pytest.mark.calibration
 
-SOL_USDC_POOL = "HJPjoWUrhoZzkNfRpHuieeFk9WcZWjwy6PBjZ81ngndJ"
+SOL_USDC_POOL = "Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE"
 
 
 def _expected_whirlpool(manifest: dict) -> dict:

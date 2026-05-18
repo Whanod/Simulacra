@@ -44,8 +44,9 @@ class SwapNoiseParams:
     cu_price_max: int = 50_000
     # Fee-elasticity of trade size — see NoiseParams for full semantics.
     # Disabled (0.0) by default; set to ~1.0 in the lighthouse template
-    # so cutting the Whirlpool fee tier from 30 bps → 15 bps drives a
-    # ~2× uplift in per-decision swap notional.
+    # so halving the Whirlpool fee tier (e.g. 4 bps → 2 bps) drives a
+    # ~2× uplift in per-decision swap notional. Template callers override
+    # ``reference_fee_bps`` to the pool's captured on-chain fee_rate.
     fee_elasticity: float = 0.0
     reference_fee_bps: float = 30.0
 

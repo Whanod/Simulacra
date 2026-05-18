@@ -23,7 +23,7 @@ Successful responses use the standard envelope:
 {
   "jsonrpc": "2.0",
   "id": 1,
-  "result": 250000000
+  "result": 420196842
 }
 ```
 

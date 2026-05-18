@@ -29,9 +29,9 @@ import {
   type TipPnlSweepPoint,
 } from "@/lib/services/replayService";
 
-// Real snapshotter-captured steady-state slot (FIX-019). Synthetic
-// hand-filled fixtures (e.g. 160_000_001) are not surfaced in the picker.
-const DEFAULT_SLOT = 417_586_660;
+// Real snapshotter-captured steady-state slot from the canonical
+// SOL/USDC Whirlpool corpus at solana-plans/calibration/corpus/420196842/.
+const DEFAULT_SLOT = 420_196_842;
 const RECENT_SLOT_STORAGE_KEY = "defi-sim:replay:recent-slots";
 const MAX_RECENT_SLOTS = 8;
 const DEFAULT_TIP_ACCOUNT = "96gYZGLnJYVFmbjzopPSU6QiEV5fGqZNyN9nmNhvrZU5";

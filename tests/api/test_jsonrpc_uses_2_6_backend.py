@@ -73,7 +73,7 @@ def test_simulate_transaction_calls_simulate_bundle_handler(client, monkeypatch)
             "params": [
                 "base58encodedtx",
                 {
-                    "contextSlot": 250_000_000,
+                    "contextSlot": 420_196_842,
                     "tipLamports": 123_000,
                     "tipRecipient": "TipRecipient111111111111111111111111111111",
                 },
@@ -85,7 +85,7 @@ def test_simulate_transaction_calls_simulate_bundle_handler(client, monkeypatch)
     body: dict[str, Any] = response.json()
     assert "error" not in body
     assert body["id"] == 1
-    assert body["result"]["context"]["slot"] == 250_000_000
+    assert body["result"]["context"]["slot"] == 420_196_842
     assert body["result"]["value"]["err"] is None
     assert body["result"]["value"]["unitsConsumed"] == 200_000
 
@@ -94,4 +94,4 @@ def test_simulate_transaction_calls_simulate_bundle_handler(client, monkeypatch)
     assert delegated.bundle.txs == ["base58encodedtx"]
     assert delegated.bundle.tip_lamports == 123_000
     assert delegated.bundle.tip_recipient == "TipRecipient111111111111111111111111111111"
-    assert delegated.context_slot == 250_000_000
+    assert delegated.context_slot == 420_196_842

@@ -116,7 +116,7 @@ def _registry(**models) -> ProtocolModelRegistry:
 
 
 def test_materialize_fork_returns_hydrated_fork() -> None:
-    initial = InitialState(slot=250_000_000)
+    initial = InitialState(slot=420_196_842)
     initial.merge(_pool("fakepool", "PoolA"))
     registry = _registry(fakepool=_FakeForkableMarket)
 
@@ -125,7 +125,7 @@ def test_materialize_fork_returns_hydrated_fork() -> None:
     )
 
     assert isinstance(hydrated, HydratedFork)
-    assert hydrated.start_slot == 250_000_000
+    assert hydrated.start_slot == 420_196_842
     assert isinstance(hydrated.world, World)
     assert isinstance(hydrated.price_feeds, PriceFeedRegistry)
 
@@ -277,7 +277,7 @@ def test_materialize_fork_skips_protocols_with_no_market_fragments() -> None:
     not a sentinel, not a crash). The empty-state degenerate case is covered
     elsewhere; this test specifically pins the "oracle-only fork" path.
     """
-    initial = InitialState(slot=250_000_000)
+    initial = InitialState(slot=420_196_842)
     initial.merge(_oracle("OraclePyth-SOL", 100.0))
     initial.merge(_oracle("OraclePyth-USDC", 1.0))
     registry = _registry()
@@ -335,8 +335,8 @@ def test_initial_state_is_cacheable_value() -> None:
         _wallet("OwnerA", "USDC", 100),
     ]
 
-    original = InitialState(slot=250_000_000, fragments=list(fragments))
-    twin = InitialState(slot=250_000_000, fragments=list(fragments))
+    original = InitialState(slot=420_196_842, fragments=list(fragments))
+    twin = InitialState(slot=420_196_842, fragments=list(fragments))
     assert twin == original
 
     restored = InitialState.from_json(original.to_json())

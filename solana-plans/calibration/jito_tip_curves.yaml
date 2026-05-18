@@ -5,7 +5,7 @@ n_slots: 1449
 landing_rate: 0.777155
 landing_rate_method: "1 - reverted_share over captured bundles (upper bound; pre-leader drops are unobserved)"
 cohorts:
-  "2JTw1fE2wz1SymWUQ7UqpVtrTuKjcd6mWwYwUJUCh2rq,3YQm7ujtXWJU2e9jhp2QGHpnn1ShXn12QjvzMvDgabpX,HJPjoWUrhoZzkNfRpHuieeFk9WcZWjwy6PBjZ81ngndJ":
+  "2WLWEuKDgkDUccTpbwYp1GToYktiSB1cXvreHUwiSUVP,Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE,EUuUbDcafPrmVTD5M6qoJAoyyNbihBhugADAxRMn5he9":
     n_bundles: 0
     percentiles:
 fallback:

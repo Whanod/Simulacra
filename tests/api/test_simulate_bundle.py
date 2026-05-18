@@ -132,7 +132,7 @@ def test_simulate_bundle_tip_optimizer_present_when_requested(client):
         client,
         {
             "bundle": VALID_BUNDLE,
-            "context_slot": 250_000_000,
+            "context_slot": 420_196_842,
             "search_tip_optimizer": {"target_percentile": 90},
         },
     )
@@ -167,7 +167,7 @@ def test_tip_optimizer_uses_decoded_bundle_lock_cohort(client):
             client,
             {
                 "bundle": {**VALID_BUNDLE, "txs": [tx]},
-                "context_slot": 250_000_000,
+                "context_slot": 420_196_842,
                 "search_tip_optimizer": {"target_percentile": 90},
             },
         )
@@ -648,7 +648,7 @@ def test_simulate_bundle_response_includes_replay_metrics_subset(client):
         client,
         {
             "bundle": VALID_BUNDLE,
-            "context_slot": 250_000_000,
+            "context_slot": 420_196_842,
         },
     )
     assert response.status_code == 200, response.text
@@ -815,7 +815,7 @@ def test_simulate_bundle_development_corpus_slot_has_no_calibration_claim(client
     """
     development = _post(
         client,
-        {"bundle": VALID_BUNDLE, "context_slot": 250_000_000},
+        {"bundle": VALID_BUNDLE, "context_slot": 420_196_842},
     )
     assert development.status_code == 200, development.text
     assert development.json()["calibration"] is None

@@ -8,7 +8,7 @@ from defi_sim_api.routers import share as share_router
 
 from tests.api.conftest import CFAMM_SPEC
 
-CORPUS_SLOT = 160_000_001
+CORPUS_SLOT = 420_196_842
 
 
 def test_run_link_resolves_to_results(client) -> None:

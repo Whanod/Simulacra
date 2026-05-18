@@ -18,9 +18,9 @@ from defi_sim_solana.replay.slot_client import (
 )
 
 
-# Slot id of the placeholder block fixture committed under
-# ``solana-plans/calibration/corpus/160000001/block.json.gz``.
-COMMITTED_SLOT = 160_000_001
+# Slot id of a real-mainnet block fixture committed under
+# ``solana-plans/calibration/corpus/420196842/block.json.gz``.
+COMMITTED_SLOT = 420_196_842
 
 
 @pytest.fixture(autouse=True)

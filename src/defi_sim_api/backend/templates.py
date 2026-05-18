@@ -269,7 +269,8 @@ def experiment_templates() -> list[dict[str, Any]]:
             "name": "Orca SOL/USDC Whirlpool simulation",
             "description": (
                 "Protocol: Orca Whirlpool CLMM on SOL/USDC — concentrated liquidity "
-                "with sqrt-price/tick math and a 0.30% swap fee. "
+                "with sqrt-price/tick math and a 0.04% swap fee (the 4 bps tier, "
+                "Orca's dominant SOL/USDC venue). "
                 "Real pool, tick-array, and vault state are hydrated from a captured "
                 "mainnet slot, so depth and price come from the live book rather than "
                 "a curve approximation. "
@@ -292,30 +293,31 @@ def experiment_templates() -> list[dict[str, Any]]:
                 "market": {
                     "type": "whirlpool",
                     "tokens": sol_usdc_tokens,
-                    # Default to 30 bps (matches the captured pool's on-chain
-                    # fee_rate). The Builder's Fee model panel writes here
+                    # Default to 4 bps (matches the captured pool's on-chain
+                    # fee_rate=400). The Builder's Fee model panel writes here
                     # too; ``_build_whirlpool_market`` honors flat overrides
                     # by overwriting ``pool.fee_rate`` post-hydration.
-                    "fee_model": {"type": "flat", "params": {"trade_fee_bps": 30}},
+                    "fee_model": {"type": "flat", "params": {"trade_fee_bps": 4}},
                     "params": {
-                        # Captured at slot 417595698 from the canonical
-                        # SOL/USDC Whirlpool. Re-snapshot via
-                        # tools/cache_corpus_slot.py + the lighthouse
-                        # capture script in tools/snapshotter/ when the
-                        # corpus is refreshed.
-                        "corpus_slot": 417595698,
-                        "pool_pubkey": "HJPjoWUrhoZzkNfRpHuieeFk9WcZWjwy6PBjZ81ngndJ",
-                        "pool_account_id": "HJPjoWUrhoZzkNfRpHuieeFk9WcZWjwy6PBjZ81ngndJ",
+                        # Captured at slot 420196842 from the canonical
+                        # high-volume Orca SOL/USDC Whirlpool — the 4 bps
+                        # fee tier (Czfq3xZZ…), which carries ~$8M USDC of
+                        # vault depth and is the venue routers actually
+                        # use. Re-snapshot via tools/snapshot_whirlpool_pool.py
+                        # + tools/fill_whirlpool_manifest.py.
+                        "corpus_slot": 420196842,
+                        "pool_pubkey": "Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE",
+                        "pool_account_id": "Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE",
                         "token_a_id": "SOL",
                         "token_b_id": "USDC",
                         "token_a_symbol": "SOL",
                         "token_b_symbol": "USDC",
                         # Captured token-B (USDC) vault depth at slot
-                        # 417595698 in human units. Pinned so a default
+                        # 420196842 in human units. Pinned so a default
                         # load is a no-op; raising the slider scales pool
                         # L, both vaults, and per-tick liquidities by
-                        # ``target / 127_514``.
-                        "initial_liquidity": 127_514,
+                        # ``target / 7_994_018``.
+                        "initial_liquidity": 7_994_018,
                     },
                 },
                 # PRD US-001 selection criterion #1 ("Slot clock + leader
@@ -336,25 +338,25 @@ def experiment_templates() -> list[dict[str, Any]]:
                     {
                         "type": "noise",
                         "agent_id": "noise-1",
-                        "params": {"collateral": "USDC", "frequency": 0.25, "bundle_probability": 0.0, "trade_min": 100_000, "trade_max": 5_000_000, "bidirectional": True, "fee_elasticity": 1.0, "reference_fee_bps": 30.0},
+                        "params": {"collateral": "USDC", "frequency": 0.25, "bundle_probability": 0.0, "trade_min": 100_000, "trade_max": 5_000_000, "bidirectional": True, "fee_elasticity": 1.0, "reference_fee_bps": 4.0},
                         "initial_balances": {"USDC": 500_000_000, "SOL": 5_000_000_000},
                     },
                     {
                         "type": "noise",
                         "agent_id": "noise-2",
-                        "params": {"collateral": "USDC", "frequency": 0.25, "bundle_probability": 0.0, "trade_min": 100_000, "trade_max": 5_000_000, "bidirectional": True, "fee_elasticity": 1.0, "reference_fee_bps": 30.0},
+                        "params": {"collateral": "USDC", "frequency": 0.25, "bundle_probability": 0.0, "trade_min": 100_000, "trade_max": 5_000_000, "bidirectional": True, "fee_elasticity": 1.0, "reference_fee_bps": 4.0},
                         "initial_balances": {"USDC": 500_000_000, "SOL": 5_000_000_000},
                     },
                     {
                         "type": "noise",
                         "agent_id": "noise-3",
-                        "params": {"collateral": "USDC", "frequency": 0.25, "bundle_probability": 0.0, "trade_min": 100_000, "trade_max": 5_000_000, "bidirectional": True, "fee_elasticity": 1.0, "reference_fee_bps": 30.0},
+                        "params": {"collateral": "USDC", "frequency": 0.25, "bundle_probability": 0.0, "trade_min": 100_000, "trade_max": 5_000_000, "bidirectional": True, "fee_elasticity": 1.0, "reference_fee_bps": 4.0},
                         "initial_balances": {"USDC": 500_000_000, "SOL": 5_000_000_000},
                     },
                     {
                         "type": "noise",
                         "agent_id": "noise-4",
-                        "params": {"collateral": "USDC", "frequency": 0.25, "bundle_probability": 0.0, "trade_min": 100_000, "trade_max": 5_000_000, "bidirectional": True, "fee_elasticity": 1.0, "reference_fee_bps": 30.0},
+                        "params": {"collateral": "USDC", "frequency": 0.25, "bundle_probability": 0.0, "trade_min": 100_000, "trade_max": 5_000_000, "bidirectional": True, "fee_elasticity": 1.0, "reference_fee_bps": 4.0},
                         "initial_balances": {"USDC": 500_000_000, "SOL": 5_000_000_000},
                     },
                     {
@@ -378,7 +380,7 @@ def experiment_templates() -> list[dict[str, Any]]:
                             # is fee-blind and ``total_volume_quote`` stays
                             # flat across fee tiers.
                             "fee_elasticity": 1.0,
-                            "reference_fee_bps": 30.0,
+                            "reference_fee_bps": 4.0,
                         },
                         "initial_balances": {
                             "USDC": 1_000_000_000,
@@ -398,7 +400,7 @@ def experiment_templates() -> list[dict[str, Any]]:
                             "cu_price_min": 100,
                             "cu_price_max": 30_000,
                             "fee_elasticity": 1.0,
-                            "reference_fee_bps": 30.0,
+                            "reference_fee_bps": 4.0,
                         },
                         "initial_balances": {
                             "USDC": 500_000_000,
@@ -508,7 +510,7 @@ def experiment_templates() -> list[dict[str, Any]]:
                             # quote it would see otherwise.
                             "pre_roll": {
                                 "slots": 200,
-                                "accounts": ["HJPjoWUrhoZzkNfRpHuieeFk9WcZWjwy6PBjZ81ngndJ"],
+                                "accounts": ["Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE"],
                                 "cu_price_min": 1_000,
                                 "cu_price_max": 50_000,
                                 "observations_per_slot": 2,
@@ -537,13 +539,13 @@ def experiment_templates() -> list[dict[str, Any]]:
                         "id": "alt-whirlpool-sol-usdc",
                         "entries": [
                             # Pool + vaults
-                            "HJPjoWUrhoZzkNfRpHuieeFk9WcZWjwy6PBjZ81ngndJ",
-                            "3YQm7ujtXWJU2e9jhp2QGHpnn1ShXn12QjvzMvDgabpX",
-                            "2JTw1fE2wz1SymWUQ7UqpVtrTuKjcd6mWwYwUJUCh2rq",
-                            # Tick arrays around the active tick (captured slot 417595698)
-                            "A2W6hiA2nf16iqtbZt9vX8FJbiXjv3DBUG3DgTja61HT",
-                            "CEstjhG1v4nUgvGDyFruYEbJ18X8XeN4sX1WFCLt4D5c",
-                            "HoDhUt77EotPNLUfJuvCCLbmpiM1JR6WLqWxeDPR1xvK",
+                            "Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE",
+                            "EUuUbDcafPrmVTD5M6qoJAoyyNbihBhugADAxRMn5he9",
+                            "2WLWEuKDgkDUccTpbwYp1GToYktiSB1cXvreHUwiSUVP",
+                            # Tick arrays around the active tick (captured slot 420196842)
+                            "65cUCgkA4THMitgKTyatqDnKHPSytxkt5GGJ1VMVNarC",
+                            "8Rs3qKaVGBndwNdeDqHcayatonVzdBrdYoq27CKyjuE7",
+                            "FhCuVGm1UYYevgc6xtMU8s96Au4zQzeS1VFqtKHB1xZe",
                             # Whirlpools config
                             "2LecshUwdy9xi7meFgHtFJQNSKk4KdTrcpvaB56dP2NQ",
                             # Token mints
@@ -573,9 +575,10 @@ def experiment_templates() -> list[dict[str, Any]]:
                 "market.params.pool_pubkey",
                 "market.params.initial_liquidity",
                 # Noise-trader sizing (agents 0..3): the macro flow knob.
-                # The captured Whirlpool only has ~$130K USDC vault depth,
-                # so without these the price chart stays inside ±0.5%
-                # regardless of victim/searcher tuning.
+                # The captured Whirlpool holds ~$8M USDC of vault depth on
+                # the 4 bps SOL/USDC tier, so visible price moves require
+                # macro-scale flow — without these the chart stays inside
+                # ±0.5% regardless of victim/searcher tuning.
                 "agents[0].params.frequency",
                 "agents[0].params.trade_max",
                 "agents[1].params.frequency",

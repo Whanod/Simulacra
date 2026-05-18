@@ -13,8 +13,8 @@ from defi_sim_solana.replay.corpus import corpus_root, load_corpus_fixture
 
 
 # Slot id of the placeholder block fixture committed under
-# ``solana-plans/calibration/corpus/160_000_001/block.json.gz``.
-COMMITTED_SLOT = 160_000_001
+# ``solana-plans/calibration/corpus/420_196_842/block.json.gz``.
+COMMITTED_SLOT = 420_196_842
 
 
 def test_corpus_root_resolves_under_solana_plans() -> None:

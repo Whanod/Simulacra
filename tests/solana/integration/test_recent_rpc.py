@@ -77,7 +77,7 @@ def test_default_client_get_slot_uses_solana_rpc_url_for_recent_slot() -> None:
 WHIRLPOOL_PROGRAM = "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc"
 # Canonical SOL/USDC Orca Whirlpool, used as a smoke-check that latest-state
 # getProgramAccounts returns the expected high-volume pool.
-SOL_USDC_WHIRLPOOL = "HJPjoWUrhoZzkNfRpHuieeFk9WcZWjwy6PBjZ81ngndJ"
+SOL_USDC_WHIRLPOOL = "Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE"
 
 
 def test_get_program_accounts_latest_returns_known_pool() -> None:

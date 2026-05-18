@@ -24,9 +24,9 @@ const LIGHTHOUSE_RAW: ApiRunSpec = {
     params: {
       initial_liquidity: 1_000_000,
       collateral_token: "USDC",
-      corpus_slot: 417595698,
-      pool_pubkey: "HJPjoWUrhoZzkNfRpHuieeFk9WcZWjwy6PBjZ81ngndJ",
-      pool_account_id: "HJPjoWUrhoZzkNfRpHuieeFk9WcZWjwy6PBjZ81ngndJ",
+      corpus_slot: 420196842,
+      pool_pubkey: "Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE",
+      pool_account_id: "Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE",
       token_a_id: "SOL",
       token_b_id: "USDC",
       token_a_symbol: "SOL",
@@ -60,7 +60,7 @@ const LIGHTHOUSE_RAW: ApiRunSpec = {
         update_event_threshold: 0.001,
         pre_roll: {
           slots: 200,
-          accounts: ["HJPjoWUrhoZzkNfRpHuieeFk9WcZWjwy6PBjZ81ngndJ"],
+          accounts: ["Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE"],
           cu_price_min: 1_000,
           cu_price_max: 50_000,
           observations_per_slot: 2,
@@ -78,7 +78,7 @@ const LIGHTHOUSE_RAW: ApiRunSpec = {
     {
       id: "alt-whirlpool-sol-usdc",
       entries: [
-        "HJPjoWUrhoZzkNfRpHuieeFk9WcZWjwy6PBjZ81ngndJ",
+        "Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE",
         "11111111111111111111111111111111",
       ],
     },
@@ -260,7 +260,7 @@ describe("lighthouse round trip — agent fidelity", () => {
 
     expect(spec.execution.priority_fee_market?.pre_roll?.slots).toBe(200);
     expect(spec.execution.priority_fee_market?.pre_roll?.accounts).toEqual([
-      "HJPjoWUrhoZzkNfRpHuieeFk9WcZWjwy6PBjZ81ngndJ",
+      "Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE",
     ]);
     expect(spec.execution.bundle_auction?.tip_quote_curve_path).toBe(
       "solana-plans/calibration/jito_tip_curves.yaml",
@@ -279,7 +279,7 @@ describe("lighthouse round trip — agent fidelity", () => {
       update_event_threshold: 0.001,
       pre_roll: {
         slots: 200,
-        accounts: ["HJPjoWUrhoZzkNfRpHuieeFk9WcZWjwy6PBjZ81ngndJ"],
+        accounts: ["Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE"],
         cu_price_min: 1_000,
         cu_price_max: 50_000,
         observations_per_slot: 2,
@@ -301,7 +301,7 @@ describe("lighthouse round trip — agent fidelity", () => {
     expect(spec.alts!.length).toBe(1);
     expect(spec.alts![0].id).toBe("alt-whirlpool-sol-usdc");
     expect(spec.alts![0].entries).toContain(
-      "HJPjoWUrhoZzkNfRpHuieeFk9WcZWjwy6PBjZ81ngndJ",
+      "Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE",
     );
 
     const out = specToApi(spec) as { alts?: Array<{ id: string; entries: string[] }> };

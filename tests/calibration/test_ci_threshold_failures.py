@@ -27,8 +27,8 @@ def test_threshold_breach_raises_pytest_failure_for_corpus_slot() -> None:
         ),
     }
 
-    with pytest.raises(AssertionError, match="slot 250000000"):
-        assert_no_threshold_breaches(bands, thresholds, slot=250_000_000)
+    with pytest.raises(AssertionError, match="slot 420196842"):
+        assert_no_threshold_breaches(bands, thresholds, slot=420_196_842)
 
 
 @pytest.mark.calibration
@@ -50,4 +50,4 @@ def test_in_band_metrics_do_not_fail_calibration_lane() -> None:
         ),
     }
 
-    assert_no_threshold_breaches(bands, thresholds, slot=250_000_000)
+    assert_no_threshold_breaches(bands, thresholds, slot=420_196_842)

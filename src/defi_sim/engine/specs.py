@@ -2719,12 +2719,12 @@ def _register_builtins() -> None:
                         "type": "integer",
                         "minimum": 1,
                         "title": "Corpus Slot",
-                        "default": 417595698,
+                        "default": 420196842,
                     },
                     "pool_pubkey": {
                         "type": "string",
                         "title": "Pool Pubkey",
-                        "default": "HJPjoWUrhoZzkNfRpHuieeFk9WcZWjwy6PBjZ81ngndJ",
+                        "default": "Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE",
                     },
                     "token_a_id": {"type": "string", "default": "SOL"},
                     "token_b_id": {"type": "string", "default": "USDC"},
@@ -2735,8 +2735,8 @@ def _register_builtins() -> None:
             # Whirlpool" affordance in the studio resolves to a working
             # market without forcing the user to know the slot number.
             defaults={
-                "corpus_slot": 417595698,
-                "pool_pubkey": "HJPjoWUrhoZzkNfRpHuieeFk9WcZWjwy6PBjZ81ngndJ",
+                "corpus_slot": 420196842,
+                "pool_pubkey": "Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE",
                 "token_a_id": "SOL",
                 "token_b_id": "USDC",
             },

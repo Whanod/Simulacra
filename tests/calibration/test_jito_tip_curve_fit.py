@@ -29,8 +29,8 @@ pytestmark = pytest.mark.calibration
 
 
 COHORT = (
-    "HJPjoWUrhoZzkNfRpHuieeFk9WcZWjwy6PBjZ81ngndJ",
-    "3YQm7ujtXWJU2e9jhp2QGHpnn1ShXn12QjvzMvDgabpX",
+    "Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE",
+    "EUuUbDcafPrmVTD5M6qoJAoyyNbihBhugADAxRMn5he9",
 )
 
 

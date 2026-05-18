@@ -429,8 +429,8 @@ export default function BuilderPage() {
   // Minimal wiring to the POST /v1/replay endpoint. Detailed UX
   // (counterfactual editor, diff viewer) lives under Phase 2.5 UX;
   // this surface only proves the API is callable from the builder.
-  const [replaySlotStart, setReplaySlotStart] = useState(160_000_001);
-  const [replaySlotEnd, setReplaySlotEnd] = useState(160_000_001);
+  const [replaySlotStart, setReplaySlotStart] = useState(420_196_842);
+  const [replaySlotEnd, setReplaySlotEnd] = useState(420_196_842);
   const [replayTipBundleId, setReplayTipBundleId] = useState("");
   const [replayTipNewLamports, setReplayTipNewLamports] = useState(0);
   const [replaySubmitting, setReplaySubmitting] = useState(false);
@@ -2901,7 +2901,7 @@ export default function BuilderPage() {
                     type="number"
                     min={0}
                     value={forkMainnetSlot === "now" ? "" : forkMainnetSlot}
-                    placeholder="e.g. 250000000"
+                    placeholder="e.g. 420196842"
                     onChange={(e) => {
                       const v = e.target.value;
                       setForkMainnetSlot(v === "" ? "now" : parseInt(v, 10) || 0);

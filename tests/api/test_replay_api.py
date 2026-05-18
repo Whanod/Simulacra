@@ -32,7 +32,7 @@ def _composed_result(run_id: str) -> dict:
     assert result is not None, f"composed result missing for run {run_id}"
     return result
 
-CORPUS_SLOT = 160_000_001  # the lone committed entry-gate fixture
+CORPUS_SLOT = 420_196_842  # the lone committed entry-gate fixture
 
 
 def _whirlpool_swap_payload(amount: int = 1_000_000) -> list[str]:
@@ -859,11 +859,11 @@ def test_replay_corpus_slot_with_full_decode_promotes_to_calibrated(
     slot whose per-metric error band passes its threshold must be promoted
     to ``mainnet_calibrated_replay`` with ``mainnet_accuracy_claim=True``.
 
-    Slot 417_586_660 has a real ``steady_state`` corpus manifest. We mock
+    Slot 420_196_842 has a real ``high_volume_dex`` corpus manifest. We mock
     ``_load_slot`` with a fully-decoded tip snapshot so the engine round-
     trips and ``tips_paid`` matches between predicted and actual.
     """
-    slot = 417_586_660  # category=steady_state in the committed manifest
+    slot = 420_196_842  # category=high_volume_dex in the committed manifest
     snapshot = _tip_snapshot(slot=slot)
     clear_slot_cache()
     replay_router.clear_replay_cache()
@@ -891,12 +891,13 @@ def test_replay_synthetic_category_corpus_slot_is_not_promoted(
     client,
     monkeypatch,
 ) -> None:
-    """A corpus slot whose manifest carries ``category: synthetic`` (e.g.
-    250_000_000) marks a placeholder/development fixture. Even with a
-    fully-decoded snapshot, the run must stay
-    ``development_or_partial_replay`` with no mainnet-accuracy claim.
+    """A corpus slot whose manifest carries ``category: synthetic`` marks a
+    placeholder/development fixture. Even with a fully-decoded snapshot, the
+    run must stay ``development_or_partial_replay`` with no mainnet-accuracy
+    claim. No synthetic-category slot is committed to the on-disk corpus, so
+    we monkey-patch the category lookup directly.
     """
-    slot = 250_000_000  # category=synthetic in the committed manifest
+    slot = 500_000_000  # any slot id; category is injected via monkeypatch
     snapshot = _tip_snapshot(slot=slot)
     clear_slot_cache()
     replay_router.clear_replay_cache()
@@ -904,6 +905,11 @@ def test_replay_synthetic_category_corpus_slot_is_not_promoted(
         replay_router,
         "_load_slot",
         lambda requested_slot: snapshot if requested_slot == slot else None,
+    )
+    monkeypatch.setattr(
+        replay_router,
+        "_corpus_slot_category",
+        lambda requested_slot: "synthetic" if requested_slot == slot else None,
     )
     try:
         response = client.post(
@@ -959,7 +965,7 @@ def test_replay_real_corpus_slot_with_partial_decode_still_promotes(
     are safe to ignore proactively. As decoders ship, more txs flip from
     opaque to decoded automatically.
     """
-    slot = 417_586_660  # category=steady_state in the committed manifest
+    slot = 420_196_842  # category=high_volume_dex in the committed manifest
     decoded_tx = _tip_snapshot(slot=slot).transactions[0]
     opaque_tx = {
         "transaction": {
@@ -1301,7 +1307,7 @@ def test_replay_endpoint_returns_under_10s_for_typical_slot(
 ) -> None:
     """US-007 performance: a primed slot summary cache avoids reloading the
     same slot for a counterfactual rerun."""
-    slot = 250_000_000
+    slot = 420_196_842
     replay_router.clear_replay_cache()
     clear_slot_cache()
     snapshot = SlotSnapshot(

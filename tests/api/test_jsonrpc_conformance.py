@@ -104,7 +104,7 @@ def test_solana_py_basic_flow_works(solana_rpc_endpoint: str) -> None:
 
     slot = client.get_slot().value
     assert isinstance(slot, int)
-    assert slot >= 250_000_000
+    assert slot >= 420_196_842
 
     account = client.get_account_info(Pubkey.from_string(SYSTEM_PROGRAM))
     assert account.value is None
@@ -156,7 +156,7 @@ const blockhash = process.env.DEFISIM_SIM_BLOCKHASH;
 const connection = new Connection(endpoint, "confirmed");
 
 const slot = await connection.getSlot();
-if (!Number.isInteger(slot) || slot < 250000000) {
+if (!Number.isInteger(slot) || slot < 420196842) {
   throw new Error(`unexpected slot ${slot}`);
 }
 

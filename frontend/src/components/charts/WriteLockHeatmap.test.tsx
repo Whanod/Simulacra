@@ -15,10 +15,10 @@ describe("WriteLockHeatmap", () => {
       unit: "locks",
       sample_size: 3,
       accounts: ["AcctA1111", "AcctB2222"],
-      slots: [250_000_000, 250_000_001],
+      slots: [420_196_842, 250_000_001],
       max_contention: 4,
       counts: [
-        { account: "AcctA1111", slot: 250_000_000, count: 4 },
+        { account: "AcctA1111", slot: 420_196_842, count: 4 },
         { account: "AcctB2222", slot: 250_000_001, count: 2 },
       ],
     });
@@ -30,10 +30,10 @@ describe("WriteLockHeatmap", () => {
     expect(html).toContain("--replay-heatmap-cols:2");
     expect(html).toContain("AcctA1111");
     expect(html).toContain("AcctB2222");
-    expect(html).toContain("250000000");
+    expect(html).toContain("420196842");
     expect(html).toContain("250000001");
     expect(html.match(/class="heatmap-cell"/g)).toHaveLength(4);
-    expect(html).toContain('title="AcctA1111 @ 250000000: 4 locks"');
+    expect(html).toContain('title="AcctA1111 @ 420196842: 4 locks"');
     expect(html).toContain('title="AcctA1111 @ 250000001: 0 locks"');
     expect(html).toContain('title="AcctB2222 @ 250000001: 2 locks"');
     expect(html).toContain(">4</div>");

@@ -38,16 +38,17 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-_KNOWN_SLOT = 250_000_000
+_KNOWN_SLOT = 420_196_842
 _EXPECTED_TX_COUNT_DEFAULT = 1100
 _EXPECTED_TX_TOLERANCE = 250
 
 # Orca Whirlpool program ID (mainnet).
 _WHIRLPOOL_PROGRAM = "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc"
-# Canonical Orca Whirlpool SOL/USDC pool (tickSpacing=4); the highest-volume
-# SOL/USDC venue across the relevant slot range and a stable assertion target
-# for "non-empty pool list including the canonical SOL/USDC pool address."
-_CANONICAL_SOL_USDC_WHIRLPOOL = "HJPjoWUrhoZzkNfRpHuieeFk9WcZWjwy6PBjZ81ngndJ"
+# Canonical Orca Whirlpool SOL/USDC pool (tickSpacing=4, 4 bps fee tier);
+# the highest-volume SOL/USDC venue across the relevant slot range and a
+# stable assertion target for "non-empty pool list including the canonical
+# SOL/USDC pool address."
+_CANONICAL_SOL_USDC_WHIRLPOOL = "Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE"
 
 
 def _expected_tx_count() -> int:

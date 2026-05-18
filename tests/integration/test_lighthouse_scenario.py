@@ -56,8 +56,9 @@ def test_lighthouse_runs_end_to_end() -> None:
     pfm = engine.priority_fee_market
     assert pfm is not None, "lighthouse template must wire a priority_fee_market"
     # Real SOL/USDC Whirlpool pubkey — matches the pool the corpus fixture
-    # is forked against (slot 417595698) and the pre-roll's `accounts` list.
-    pre_roll_account = "HJPjoWUrhoZzkNfRpHuieeFk9WcZWjwy6PBjZ81ngndJ"
+    # is forked against (slot 420196842, 4 bps tier) and the pre-roll's
+    # `accounts` list.
+    pre_roll_account = "Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE"
     percentiles = pfm.percentiles(pre_roll_account)
     assert percentiles[25] > 1, (
         f"pre-roll did not seed pool account {pre_roll_account!r} — got "

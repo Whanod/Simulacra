@@ -62,7 +62,7 @@ def test_get_program_accounts_at_slot_uses_corpus_when_present() -> None:
     """PRD line 232: corpus path returns a snapshot with NO backend configured."""
     fixture = {
         "program_id": PROGRAM_ID,
-        "slot": 160_000_001,
+        "slot": 420_196_842,
         "accounts": [
             {
                 "pubkey": "POOL_FROM_CORPUS",
@@ -71,25 +71,25 @@ def test_get_program_accounts_at_slot_uses_corpus_when_present() -> None:
                     "lamports": 12345,
                     "data": [base64.b64encode(b"hi").decode(), "base64"],
                 },
-                "slot": 160_000_001,
+                "slot": 420_196_842,
             }
         ],
     }
     snap = get_program_accounts_at_slot(
         PROGRAM_ID,
-        160_000_001,
+        420_196_842,
         corpus_loader=lambda *_a, **_kw: fixture,
     )
     assert isinstance(snap, AccountSnapshot)
     assert snap.program_id == PROGRAM_ID
-    assert snap.slot == 160_000_001
+    assert snap.slot == 420_196_842
     assert len(snap.accounts) == 1
     record = snap.accounts[0]
     assert record.pubkey == "POOL_FROM_CORPUS"
     assert record.owner == PROGRAM_ID
     assert record.lamports == 12345
     assert record.account_data == b"hi"
-    assert record.slot == 160_000_001
+    assert record.slot == 420_196_842
 
 
 def test_get_program_accounts_at_slot_rejects_past_uncommitted_slot() -> None:
@@ -202,7 +202,7 @@ def test_corpus_discriminator_no_match_returns_empty_snapshot() -> None:
     """
     fixture = {
         "program_id": PROGRAM_ID,
-        "slot": 160_000_001,
+        "slot": 420_196_842,
         "accounts": [
             {
                 "pubkey": "POOL_KIND_A",
@@ -211,14 +211,14 @@ def test_corpus_discriminator_no_match_returns_empty_snapshot() -> None:
                     "lamports": 1,
                     "data": [base64.b64encode(b"\xaa\xbbpayload").decode(), "base64"],
                 },
-                "slot": 160_000_001,
+                "slot": 420_196_842,
             }
         ],
     }
 
     snap = get_program_accounts_at_slot(
         PROGRAM_ID,
-        160_000_001,
+        420_196_842,
         corpus_loader=lambda *_a, **_kw: fixture,
         discriminator=b"\x01\x02",
     )

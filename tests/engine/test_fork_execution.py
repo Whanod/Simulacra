@@ -45,10 +45,10 @@ def test_fork_execution_carries_only_start_slot_metadata():
     by ``materialize_fork``; the execution model only carries the start
     slot for telemetry / cost-model selection.
     """
-    fe = ForkExecution(start_slot=250_000_000)
+    fe = ForkExecution(start_slot=420_196_842)
 
     assert isinstance(fe, SolanaLikeExecution)
-    assert fe.start_slot == 250_000_000
+    assert fe.start_slot == 420_196_842
 
     for forbidden in ("state", "_state", "initial_state", "world"):
         assert not hasattr(fe, forbidden), (
@@ -67,7 +67,7 @@ def test_fork_execution_inherits_solana_scheduler():
     with only ``start_slot`` so a forked engine inherits Solana fidelity
     without any extra wiring at the call site.
     """
-    fe = ForkExecution(start_slot=250_000_000)
+    fe = ForkExecution(start_slot=420_196_842)
 
     assert isinstance(fe._ordering, PriorityOrdering)
     assert isinstance(fe._cost_model, ComputeUnitCost)
@@ -190,7 +190,7 @@ def test_build_forked_engine_runs_forward_with_synthetic_agents() -> None:
     just constructible.
     """
     spec = ForkSpec(
-        slot=250_000_000,
+        slot=420_196_842,
         protocols=[ProtocolForkRequest(protocol_model="fakepool")],
     )
     backend = _FakeBackend(
@@ -220,7 +220,7 @@ def test_build_forked_engine_runs_forward_with_synthetic_agents() -> None:
     assert [f.pubkey for f in market.fragments] == ["PoolA", "PoolB"]
 
     assert isinstance(engine._execution_model, ForkExecution)
-    assert engine._execution_model.start_slot == 250_000_000
+    assert engine._execution_model.start_slot == 420_196_842
 
     result = engine.run()
 
@@ -239,14 +239,14 @@ def test_build_forked_engine_does_not_replay_historical_actions() -> None:
     replay.
 
     Setup mirrors the line-690 test: two pool accounts hydrated from a
-    fake backend at slot 250_000_000. The agent emits zero actions; the
+    fake backend at slot 420_196_842. The agent emits zero actions; the
     market records every ``execute()`` call. After running forward for
     multiple rounds, the market must have seen NO actions — every action
     that would have hit ``execute()`` would have had to come from
     somewhere other than the (silent) synthetic agent.
     """
     spec = ForkSpec(
-        slot=250_000_000,
+        slot=420_196_842,
         protocols=[ProtocolForkRequest(protocol_model="fakepool")],
     )
     backend = _FakeBackend(

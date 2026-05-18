@@ -22,7 +22,7 @@ Usage::
 
     python tools/cache_jito_bundles.py \\
         --slots 1500 \\
-        --cohort HJPjoWUrhoZzkNfRpHuieeFk9WcZWjwy6PBjZ81ngndJ,3YQm7ujtXWJU2e9jhp2QGHpnn1ShXn12QjvzMvDgabpX,2JTw1fE2wz1SymWUQ7UqpVtrTuKjcd6mWwYwUJUCh2rq \\
+        --cohort Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE,EUuUbDcafPrmVTD5M6qoJAoyyNbihBhugADAxRMn5he9,2WLWEuKDgkDUccTpbwYp1GToYktiSB1cXvreHUwiSUVP \\
         --out solana-plans/calibration/corpus/jito_bundles/2026-05-05/
 
 The default cohort is the lighthouse SOL/USDC Whirlpool (pool + both vaults).
@@ -65,11 +65,11 @@ __all__ = [
 
 # Lighthouse SOL/USDC Whirlpool cohort: pool account + both SPL token vaults.
 # Matches the corpus fixture committed under
-# solana-plans/calibration/corpus/417595698/.
+# solana-plans/calibration/corpus/420196842/ (canonical 4 bps tier).
 DEFAULT_LIGHTHOUSE_COHORT: tuple[str, ...] = (
-    "HJPjoWUrhoZzkNfRpHuieeFk9WcZWjwy6PBjZ81ngndJ",
-    "3YQm7ujtXWJU2e9jhp2QGHpnn1ShXn12QjvzMvDgabpX",
-    "2JTw1fE2wz1SymWUQ7UqpVtrTuKjcd6mWwYwUJUCh2rq",
+    "Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE",
+    "EUuUbDcafPrmVTD5M6qoJAoyyNbihBhugADAxRMn5he9",
+    "2WLWEuKDgkDUccTpbwYp1GToYktiSB1cXvreHUwiSUVP",
 )
 
 _SYSTEM_PROGRAM_ID = "11111111111111111111111111111111"

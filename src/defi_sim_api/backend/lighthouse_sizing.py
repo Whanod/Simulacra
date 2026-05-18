@@ -21,8 +21,10 @@ from __future__ import annotations
 from typing import Any, Mapping
 
 
-# Calibrated against the captured SOL/USDC Whirlpool snapshot
-# (~$130K USDC vault depth, ±1% LP range). Adjust here, not in templates.py.
+# Fractions of the captured token-B vault depth — resolved at spec-load
+# time against whatever pool is loaded, so the table tracks the snapshot
+# automatically (currently the 4 bps SOL/USDC Whirlpool, ~$8M USDC vault
+# depth). Adjust here, not in templates.py.
 ROLE_FRACTIONS: dict[str, dict[str, float]] = {
     # Bidirectional macro flow. Trade range spans 0.08% to 4% of vault per
     # tick, so the pool sees a mix of in-tick and active-tick-edge swaps.

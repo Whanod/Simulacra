@@ -63,7 +63,7 @@ paths:
                     txs: ["base58encodedtx1"]
                     tip_lamports: 50000
                     tip_recipient: "T1pestRecipientPubkey11111111111111111111111"
-                  context_slot: 250000000
+                  context_slot: 420196842
                   search_tip_optimizer:
                     target_percentile: 90
               with_fork:
@@ -73,9 +73,9 @@ paths:
                     txs: ["base58encodedtx1"]
                     tip_lamports: 80000
                     tip_recipient: "T1pestRecipientPubkey11111111111111111111111"
-                  context_slot: 250000000
+                  context_slot: 420196842
                   fork_spec:
-                    slot: 250000000
+                    slot: 420196842
                     protocols:
                       - protocol_model: "Whirlpool"
                         account_pubkey_allowlist:

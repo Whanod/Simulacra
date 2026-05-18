@@ -150,7 +150,7 @@ def _post_with_tip_optimizer(client) -> dict[str, Any]:
             "tip_lamports": 100_000,
             "tip_recipient": "T1pestRecipientPubkey11111111111111111111111",
         },
-        "context_slot": 250_000_000,
+        "context_slot": 420_196_842,
         "search_tip_optimizer": {"target_percentile": 90},
     }
     response = client.post("/v1/simulate-bundle", json=body)

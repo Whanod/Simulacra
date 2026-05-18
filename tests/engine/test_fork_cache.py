@@ -198,21 +198,21 @@ def test_fork_spec_cache_key_round_trips() -> None:
     r1 = _registry({"fakepool": _make_market(_make_hydrator(1))})
     r2 = _registry({"fakepool": _make_market(_make_hydrator(1))})
     spec_a = ForkSpec(
-        slot=250_000_000,
+        slot=420_196_842,
         protocols=[
             ProtocolForkRequest("fakepool", account_pubkey_allowlist=["A", "B"])
         ],
         include_wallet_accounts=["w1"],
     )
     spec_b = ForkSpec(
-        slot=250_000_000,
+        slot=420_196_842,
         protocols=[
             ProtocolForkRequest("fakepool", account_pubkey_allowlist=["A", "B"])
         ],
         include_wallet_accounts=["w1"],
     )
     cache = InitialStateCache()
-    state = InitialState(slot=250_000_000)
+    state = InitialState(slot=420_196_842)
     cache.put(cache_key(spec_a, r1), state)
     assert cache.get(cache_key(spec_b, r2)) is state
 

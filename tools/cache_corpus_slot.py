@@ -12,7 +12,7 @@ in ``checksums.txt``.
 Usage::
 
     python tools/cache_corpus_slot.py \\
-        --slot 160_000_001 \\
+        --slot 420_196_842 \\
         --programs whirLb...,LBUZKh... \\
         --historical-backend triton \\
         --out solana-plans/calibration/corpus/

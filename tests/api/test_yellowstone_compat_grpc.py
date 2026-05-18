@@ -33,9 +33,9 @@ def test_slot_and_account_update_messages_stream_from_corpus() -> None:
     assert accounts
     slot_fields = _fields(slots[-1])
     account_fields = _fields(accounts[-1])
-    assert slot_fields.varints[1] >= 250_000_000
+    assert slot_fields.varints[1] >= 420_196_842
     assert 2 in slot_fields.strings
-    assert account_fields.varints[1] >= 250_000_000
+    assert account_fields.varints[1] >= 420_196_842
     assert account_fields.strings[2]
     assert account_fields.strings[3]
 

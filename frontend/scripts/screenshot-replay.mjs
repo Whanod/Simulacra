@@ -22,7 +22,7 @@ console.log("captured 06-replay-empty-full");
 
 // Try to submit using a fixture-friendly slot
 const slotInput = page.getByTestId("replay-slot-search");
-await slotInput.fill("160000001");
+await slotInput.fill("420196842");
 await page.getByTestId("replay-slot-apply").click();
 await page.getByTestId("replay-tip-bundle-id").fill("b-1");
 await page.getByTestId("replay-tip-slider").evaluate((el, v) => {

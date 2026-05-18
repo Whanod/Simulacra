@@ -538,7 +538,7 @@ def _complete_evidence(*, artifact_path: str) -> dict[str, Any]:
             "replay_counterfactual_tip": {
                 "fixture_kind": "calibration",
                 "artifact_paths": [artifact_path],
-                "slot": 250_000_000,
+                "slot": 420_196_842,
                 "counterfactuals": [
                     {
                         "kind": "TipReplaceCounterfactual",
@@ -564,10 +564,10 @@ def _complete_evidence(*, artifact_path: str) -> dict[str, Any]:
             "selective_fork_target_slot": {
                 "fixture_kind": "calibration",
                 "artifact_paths": [artifact_path],
-                "target_slot": 250_000_000,
+                "target_slot": 420_196_842,
                 "protocols": ["Whirlpool"],
                 "historical_account_state": {
-                    "as_of_slot": 250_000_000,
+                    "as_of_slot": 420_196_842,
                     "provenance": "provider export reviewed in PR",
                     "raw_account_sha256": "0123456789abcdef",
                 },
@@ -578,12 +578,12 @@ def _complete_evidence(*, artifact_path: str) -> dict[str, Any]:
                 "landing_probability": 0.72,
                 "calibrated": True,
                 "mainnet_accuracy_claim": True,
-                "calibration_source": "solana-plans/calibration/corpus/250000000",
+                "calibration_source": "solana-plans/calibration/corpus/420196842",
             },
             "benchmark_run_path": {
                 "fixture_kind": "calibration",
                 "artifact_paths": [artifact_path],
-                "benchmark_path": "/benchmark/250000000",
+                "benchmark_path": "/benchmark/420196842",
                 "run_id": "run-phase-2-dod",
             },
         },

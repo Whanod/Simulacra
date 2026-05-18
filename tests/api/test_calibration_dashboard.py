@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from defi_sim_solana.replay.slot_client import clear_slot_cache
 
-CORPUS_SLOT = 160_000_001
+CORPUS_SLOT = 420_196_842
 
 
 def test_corpus_endpoint_lists_committed_slots(client) -> None:

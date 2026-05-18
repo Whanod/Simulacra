@@ -11,7 +11,7 @@ from defi_sim_api.routers import jsonrpc_solana, simulate_bundle
 from defi_sim_solana.replay.slot_client import SlotSnapshot
 
 WHIRLPOOL_PROGRAM = "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc"
-KNOWN_POOL = "PoolMemecoinSolBonk33333333333333333333333"
+KNOWN_POOL = "Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE"
 
 
 @pytest.fixture(autouse=True)
@@ -117,14 +117,14 @@ def test_get_slot_returns_int(client) -> None:
     body = _rpc(client, "getSlot")
 
     assert isinstance(body["result"], int)
-    assert body["result"] >= 250_000_000
+    assert body["result"] >= 420_196_842
 
 
 def test_get_latest_and_recent_blockhash_return_solana_shapes(client) -> None:
     latest = _rpc(client, "getLatestBlockhash")
     recent = _rpc(client, "getRecentBlockhash")
 
-    assert latest["result"]["context"]["slot"] >= 250_000_000
+    assert latest["result"]["context"]["slot"] >= 420_196_842
     assert latest["result"]["value"]["blockhash"]
     assert (
         latest["result"]["value"]["lastValidBlockHeight"]
@@ -138,7 +138,7 @@ def test_get_account_info_known_pubkey_returns_account_data(client) -> None:
 
     account = body["result"]["value"]
     assert account["owner"] == WHIRLPOOL_PROGRAM
-    assert account["lamports"] == 70_407_360
+    assert account["lamports"] == 10_754_631_597
     assert account["data"][1] == "base64"
     assert account["space"] > 0
 
@@ -206,7 +206,7 @@ def test_simulate_transaction_returns_logs_and_account_changes(
         [
             "base58encodedtx",
             {
-                "contextSlot": 250_000_000,
+                "contextSlot": 420_196_842,
                 "tipLamports": 123_000,
                 "accounts": {"addresses": [KNOWN_POOL]},
             },
@@ -232,7 +232,7 @@ def test_simulate_transaction_latest_context_uses_current_slot(
 
     body = _rpc(client, "simulateTransaction", ["base58encodedtx", {}])
 
-    assert body["result"]["context"]["slot"] >= 250_000_000
+    assert body["result"]["context"]["slot"] >= 420_196_842
 
 
 def test_simulate_transaction_inherits_bundle_cu_estimator(client) -> None:
@@ -241,7 +241,7 @@ def test_simulate_transaction_inherits_bundle_cu_estimator(client) -> None:
     body = _rpc(
         client,
         "simulateTransaction",
-        [tx, {"contextSlot": 250_000_000, "tipLamports": 0}],
+        [tx, {"contextSlot": 420_196_842, "tipLamports": 0}],
     )
 
     value = body["result"]["value"]

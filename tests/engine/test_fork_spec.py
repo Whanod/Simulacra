@@ -14,16 +14,16 @@ from defi_sim.engine.fork import ChainReorgForkSpec, ForkSpec, ProtocolForkReque
 
 
 def test_fork_spec_is_a_dataclass_with_required_slot() -> None:
-    spec = ForkSpec(slot=250_000_000)
+    spec = ForkSpec(slot=420_196_842)
     assert is_dataclass(spec)
-    assert spec.slot == 250_000_000
+    assert spec.slot == 420_196_842
     assert spec.protocols == []
     assert spec.include_wallet_accounts is None
 
 
 def test_fork_spec_accepts_protocols_and_wallet_overlay() -> None:
     spec = ForkSpec(
-        slot=250_000_000,
+        slot=420_196_842,
         protocols=[
             ProtocolForkRequest(protocol_model="whirlpool"),
             ProtocolForkRequest(
@@ -47,7 +47,7 @@ def test_protocol_fork_request_is_a_dataclass_with_optional_allowlist() -> None:
 
 
 def test_state_fork_and_chain_reorg_specs_are_distinct_types() -> None:
-    state_fork = ForkSpec(slot=250_000_000)
+    state_fork = ForkSpec(slot=420_196_842)
     chain_reorg = ChainReorgForkSpec(fork_probability_per_slot=0.0)
     assert not isinstance(state_fork, ChainReorgForkSpec)
     assert not isinstance(chain_reorg, ForkSpec)

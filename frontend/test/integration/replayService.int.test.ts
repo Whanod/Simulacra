@@ -2,8 +2,8 @@ import { describe, it, expect } from "vitest";
 import { replayService } from "@/lib/services/replayService";
 
 // PRD US-002 line 333: POST /v1/replay returns run_id + decoded share metadata.
-// The committed entry-gate fixture lives at slot 160_000_001.
-const CORPUS_SLOT = 160_000_001;
+// The committed entry-gate fixture lives at slot 420_196_842.
+const CORPUS_SLOT = 420_196_842;
 
 describe("replayService (integration)", () => {
   it("submitReplay returns a run id and metadata for a valid slot range", async () => {

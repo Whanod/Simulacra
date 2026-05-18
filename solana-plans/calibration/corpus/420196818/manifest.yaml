@@ -1,0 +1,38 @@
+# Captured by tools/fill_whirlpool_manifest.py at slot 420196818.
+# Real mainnet capture: canonical Orca SOL/USDC Whirlpool (4 bps tier)
+# with surrounding tick arrays + vault balances.
+
+slot: 420196818
+category: high_volume_dex
+block_height: 398286887
+parent_slot: 420196817
+blockhash: "8RVnEzRYuAfHU9iTK8ikjVDvQFs5ZR5SXUUJ35tw9zTT"
+programs:
+  - "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc"
+  - "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+expected:
+  whirlpool:
+    pubkey: "Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE"
+    tick_spacing: 4
+    fee_rate: 400
+    protocol_fee_rate: 1300
+    liquidity: 780743953658842
+    sqrt_price_x64: 5429955255410128973
+    tick_current_index: -24461
+    token_mint_a: "So11111111111111111111111111111111111111112"
+    token_mint_b: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+    token_vault_a: "EUuUbDcafPrmVTD5M6qoJAoyyNbihBhugADAxRMn5he9"
+    token_vault_b: "2WLWEuKDgkDUccTpbwYp1GToYktiSB1cXvreHUwiSUVP"
+    vault_a_amount: 235839260719010
+    vault_b_amount: 7994023778764
+  tick_arrays:
+    - pubkey: "65cUCgkA4THMitgKTyatqDnKHPSytxkt5GGJ1VMVNarC"
+      start_tick_index: -24992
+      initialized_count: 87
+    - pubkey: "8Rs3qKaVGBndwNdeDqHcayatonVzdBrdYoq27CKyjuE7"
+      start_tick_index: -24640
+      initialized_count: 88
+    - pubkey: "FhCuVGm1UYYevgc6xtMU8s96Au4zQzeS1VFqtKHB1xZe"
+      start_tick_index: -24288
+      initialized_count: 88
+thresholds: {}

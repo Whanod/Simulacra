@@ -32,9 +32,9 @@ pytestmark = pytest.mark.calibration
 
 CORPUS_ROOT = Path("solana-plans/calibration/corpus/jito_bundles")
 COHORT = (
-    "HJPjoWUrhoZzkNfRpHuieeFk9WcZWjwy6PBjZ81ngndJ",
-    "3YQm7ujtXWJU2e9jhp2QGHpnn1ShXn12QjvzMvDgabpX",
-    "2JTw1fE2wz1SymWUQ7UqpVtrTuKjcd6mWwYwUJUCh2rq",
+    "Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE",
+    "EUuUbDcafPrmVTD5M6qoJAoyyNbihBhugADAxRMn5he9",
+    "2WLWEuKDgkDUccTpbwYp1GToYktiSB1cXvreHUwiSUVP",
 )
 MIN_SLOTS = 1_000
 MIN_BUNDLES = 10_000

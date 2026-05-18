@@ -164,7 +164,7 @@ def _raydium_swap_payload(
 
 
 def test_empty_slot_returns_empty_list() -> None:
-    snap = SlotSnapshot(slot=160_000_001)
+    snap = SlotSnapshot(slot=420_196_842)
     assert materialize_slot(snap) == []
 
 
@@ -1679,19 +1679,3 @@ def test_materialized_swap_action_extends_engine_swap_with_pool_metadata() -> No
     assert action.protocol_program_id == "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc"
 
 
-# ---------------------------------------------------------------------------
-# Placeholder fixture round-trip
-# ---------------------------------------------------------------------------
-
-
-def test_placeholder_corpus_fixture_round_trips_to_empty_action_list() -> None:
-    """The committed placeholder block (160000001) has 0 transactions.
-
-    Materializer must accept it without error and emit zero actions —
-    keeps the offline-CI replay path green for the entry-gate slot.
-    """
-    from defi_sim_solana.replay import get_slot
-
-    snap = get_slot(160_000_001)
-    assert materialize_slot(snap) == []
-    assert decoded_coverage(materialize_slot(snap)).decoded_share == 0.0

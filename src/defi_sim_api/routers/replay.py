@@ -117,7 +117,7 @@ _REPLAY_SLOT_SUMMARY_CACHE: OrderedDict[int, _LoadedReplaySlot] = OrderedDict()
 _REPLAY_SLOT_SUMMARY_LOCK = Lock()
 
 # Manifest categories that mark a corpus slot as a placeholder/development
-# fixture (see solana-plans/calibration/corpus/250000000/manifest.yaml).
+# fixture (see solana-plans/calibration/corpus/420196842/manifest.yaml).
 # These slots are reachable for replay but never support a mainnet-accuracy
 # claim, regardless of decoded coverage.
 _CORPUS_SYNTHETIC_CATEGORIES: frozenset[str] = frozenset({"synthetic"})

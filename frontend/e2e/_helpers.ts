@@ -85,7 +85,7 @@ export async function seedReplayRun(
     counterfactuals?: Array<{ kind: string; params: Record<string, unknown> }>;
   } = {},
 ): Promise<string> {
-  const slot = overrides.slot ?? 160_000_001;
+  const slot = overrides.slot ?? 420_196_842;
   const res = await request.post(`${API_BASE}/v1/replay`, {
     data: {
       slot_range: [slot, slot],

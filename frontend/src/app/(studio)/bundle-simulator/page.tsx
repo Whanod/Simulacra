@@ -17,7 +17,7 @@ import {
 } from "@/lib/services/bundleSimulatorService";
 
 const DEFAULT_TIP_RECIPIENT = "T1pestRecipientPubkey11111111111111111111111";
-const DEFAULT_CONTEXT_SLOT = "250000000";
+const DEFAULT_CONTEXT_SLOT = "420196842";
 const MAX_SLIDER_TIP = 250_000;
 const BUNDLE_REPLAY_METRIC_KEYS: ReplayMetricKey[] = [
   "bundle_landing_rate",

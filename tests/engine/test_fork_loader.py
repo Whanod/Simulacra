@@ -770,7 +770,7 @@ def test_fork_with_only_whirlpool_excludes_other_program_accounts() -> None:
 
     initial = loader.load(
         ForkSpec(
-            slot=250_000_000,
+            slot=420_196_842,
             protocols=[ProtocolForkRequest(protocol_model="whirlpool")],
         )
     )
@@ -778,7 +778,7 @@ def test_fork_with_only_whirlpool_excludes_other_program_accounts() -> None:
     pubkeys = [f.pubkey for f in initial.fragments]
     assert pubkeys == ["WhirlPoolA", "WhirlPoolB", "WhirlPoolC"], (
         f"fork(protocols=[Whirlpool]) must yield exactly the Whirlpool pool "
-        f"accounts at slot 250_000_000 in backend order; observed {pubkeys}"
+        f"accounts at slot 420_196_842 in backend order; observed {pubkeys}"
     )
     protocol_models = {f.protocol_model for f in initial.fragments}
     assert protocol_models == {"whirlpool"}, (
@@ -794,7 +794,7 @@ def test_fork_with_only_whirlpool_excludes_other_program_accounts() -> None:
 
 
 def test_fork_compose_whirlpool_marginfi_pythpullsol_includes_oracle_no_leakage() -> None:
-    """PRD US-003 line 659: ``Fork(slot=250_000_000, protocols=[Whirlpool,
+    """PRD US-003 line 659: ``Fork(slot=420_196_842, protocols=[Whirlpool,
     MarginFi, PythPullSOL])`` composes 3 protocols, oracle account included,
     no other accounts.
 
@@ -935,7 +935,7 @@ def test_fork_compose_whirlpool_marginfi_pythpullsol_includes_oracle_no_leakage(
 
     initial = loader.load(
         ForkSpec(
-            slot=250_000_000,
+            slot=420_196_842,
             protocols=[
                 ProtocolForkRequest(protocol_model="whirlpool"),
                 ProtocolForkRequest(protocol_model="marginfi"),
@@ -1141,7 +1141,7 @@ def test_fork_marginfi_with_wallet_overlay_yields_marginfi_state_plus_user_accou
     my_wallet = "MyWaLLetXYZ1111111111111111111111111111111"
     initial = loader.load(
         ForkSpec(
-            slot=250_000_000,
+            slot=420_196_842,
             protocols=[ProtocolForkRequest(protocol_model="marginfi")],
             include_wallet_accounts=[my_wallet],
         )
@@ -1204,7 +1204,7 @@ def test_fork_marginfi_with_wallet_overlay_yields_marginfi_state_plus_user_accou
 
     # 6. Wallet-overlay dispatch contract: _load_wallet_accounts called once
     #    with the requested pubkey list and the fork slot.
-    assert loader.wallet_calls == [((my_wallet,), 250_000_000)], (
+    assert loader.wallet_calls == [((my_wallet,), 420_196_842)], (
         f"_load_wallet_accounts must be called once with the full pubkey "
         f"list and the fork slot; observed {loader.wallet_calls}"
     )
