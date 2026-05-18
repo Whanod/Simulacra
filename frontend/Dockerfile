@@ -3,6 +3,14 @@ FROM oven/bun:1.2 AS deps
 
 WORKDIR /app
 
+# node-gyp toolchain — required because @metamask/sdk-communication-layer
+# pulls utf-8-validate as a hard dep and it compiles native code on install.
+# bun's base image has no npm/node-gyp; install full Node.js + node-gyp via apt.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends python3 make g++ nodejs npm \
+ && npm install -g node-gyp \
+ && rm -rf /var/lib/apt/lists/*
+
 COPY package.json bun.lock ./
 
 RUN --mount=type=cache,target=/root/.bun/install/cache \

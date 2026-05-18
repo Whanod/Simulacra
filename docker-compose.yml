@@ -48,6 +48,11 @@ services:
       DEFI_SIM_STORE_BACKEND: "postgres"
       DATABASE_URL: "postgresql://defisim:defisim@postgres:5432/defisim"
       PYTHONUNBUFFERED: "1"
+      # Plumbed from repo-root .env via docker compose variable substitution.
+      # Unset → backend runs in open mode (no JWT verification).
+      PRIVY_APP_ID: "${PRIVY_ID:-}"
+      PRIVY_SECRET: "${PRIVY_SECRET:-}"
+      DEFI_SIM_API_KEYS: "${DEFI_SIM_API_KEYS:-}"
     depends_on:
       postgres:
         condition: service_healthy
@@ -73,6 +78,9 @@ services:
       NODE_ENV: development
       PORT: "3000"
       HOSTNAME: 0.0.0.0
+      # Same Privy app as the backend. Unset → studio runs in open mode.
+      NEXT_PUBLIC_PRIVY_APP_ID: "${PRIVY_ID:-}"
+      NEXT_PUBLIC_SOLANA_RPC_URL: "${NEXT_PUBLIC_SOLANA_RPC_URL:-https://api.devnet.solana.com}"
     depends_on:
       backend:
         condition: service_healthy
