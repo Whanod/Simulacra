@@ -37,12 +37,23 @@ RUN --mount=type=cache,target=/root/.bun/install/cache \
 
 COPY frontend/ ./
 
-# NEXT_PUBLIC_* is baked into the client bundle at build time. We point the
-# browser at "/api" so requests are same-origin. BACKEND_INTERNAL_URL is also
-# read at build time: Next.js bakes the rewrite destination into the routes
-# manifest, so it has to be set here, not just at container runtime.
+# NEXT_PUBLIC_* is baked into the client bundle at build time — runtime env
+# vars are ignored. Anything the browser-side studio needs (Privy app ID,
+# Solana RPC URL) has to be supplied as a docker build --build-arg or via
+# Coolify's "Build-time environment variables" panel. Leaving an arg empty
+# means the corresponding feature falls back to its open-mode default
+# (Privy → no SDK in the bundle / open mode, RPC → public devnet).
+ARG NEXT_PUBLIC_PRIVY_APP_ID=
+ARG NEXT_PUBLIC_SOLANA_RPC_URL=
+
+# We point the browser at "/api" so requests are same-origin.
+# BACKEND_INTERNAL_URL is also read at build time: Next.js bakes the rewrite
+# destination into the routes manifest, so it has to be set here, not just
+# at container runtime.
 ENV NEXT_TELEMETRY_DISABLED=1 \
     NEXT_PUBLIC_API_URL=/api \
+    NEXT_PUBLIC_PRIVY_APP_ID=${NEXT_PUBLIC_PRIVY_APP_ID} \
+    NEXT_PUBLIC_SOLANA_RPC_URL=${NEXT_PUBLIC_SOLANA_RPC_URL} \
     BACKEND_INTERNAL_URL=http://127.0.0.1:8000 \
     NODE_ENV=production
 
@@ -74,6 +85,11 @@ COPY src ./src
 # alongside src/ in the image. Phase docs (*.md) are stripped by the
 # .dockerignore.
 COPY solana-plans ./solana-plans
+# Alembic migrations + config. db.apply_schema() locates alembic.ini via
+# $DEFI_SIM_REPO_ROOT (set below) and runs ``alembic upgrade head`` on first
+# store access.
+COPY alembic.ini ./
+COPY alembic ./alembic
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install --no-compile ".[api]"
 

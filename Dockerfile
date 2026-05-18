@@ -10,6 +10,11 @@ RUN apt-get update \
 COPY pyproject.toml ./
 COPY src ./src
 COPY solana-plans ./solana-plans
+# Alembic migrations + config. db.apply_schema() locates alembic.ini via
+# $DEFI_SIM_REPO_ROOT (set below) and runs ``alembic upgrade head`` on first
+# store access.
+COPY alembic.ini ./
+COPY alembic ./alembic
 
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install ".[api]"

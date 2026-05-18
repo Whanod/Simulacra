@@ -817,11 +817,12 @@ class PostgresArtifactStore:
         limit: int = 500,
         offset: int = 0,
     ) -> list[dict[str, Any]]:
-        # Server-side filter + cursor pagination, driven by the indexes in
-        # schema.sql: events_run_round (round range), events_run_agent_round
-        # (agent filters), events_run_type (type filter), events_run_correlation
-        # (correlation_id partial). Cursor pagination uses the (run_id, event_id)
-        # PK so it's free.
+        # Server-side filter + cursor pagination, driven by the indexes
+        # declared in the initial Alembic revision (alembic/versions/
+        # 0001_initial_schema.py): events_run_round (round range),
+        # events_run_agent_round (agent filters), events_run_type (type
+        # filter), events_run_correlation (correlation_id partial). Cursor
+        # pagination uses the (run_id, event_id) PK so it's free.
         clauses = ["run_id = %s"]
         params: list[Any] = [run_id]
         if event_type is not None:

@@ -3,6 +3,12 @@
 Portable: any libpq-compatible DATABASE_URL works (Vercel/Neon/RDS/local).
 Pool sizing defaults are conservative so the same module runs unchanged in
 short-lived serverless functions and long-lived containers.
+
+Schema is managed by Alembic. ``apply_schema()`` runs ``alembic upgrade head``
+programmatically (idempotent — Alembic checks ``alembic_version`` and no-ops
+when already at head). The public surface (``apply_schema``, ``ensure_ready``,
+``_schema_applied``) is preserved so existing callers — pg_store, tests,
+scripts/capture_goldens — do not change.
 """
 
 from __future__ import annotations
@@ -19,8 +25,8 @@ from psycopg_pool import ConnectionPool
 DATABASE_URL_ENV: Final = "DATABASE_URL"
 POOL_MIN_SIZE_ENV: Final = "DEFI_SIM_PG_POOL_MIN"
 POOL_MAX_SIZE_ENV: Final = "DEFI_SIM_PG_POOL_MAX"
-
-_SCHEMA_PATH: Final = Path(__file__).parent / "schema.sql"
+REPO_ROOT_ENV: Final = "DEFI_SIM_REPO_ROOT"
+ALEMBIC_INI_ENV: Final = "DEFI_SIM_ALEMBIC_INI"
 
 _lock = threading.Lock()
 _pool: ConnectionPool | None = None
@@ -79,31 +85,78 @@ def reset_pool() -> None:
         _schema_applied = False
 
 
+def _locate_alembic_ini() -> Path:
+    """Resolve alembic.ini across dev (CWD == repo root), tests, and the
+    installed-wheel runtime where ``__file__`` lives in site-packages.
+
+    Precedence:
+      1. ``$DEFI_SIM_ALEMBIC_INI`` — explicit override.
+      2. ``$DEFI_SIM_REPO_ROOT/alembic.ini`` — set in both Dockerfiles.
+      3. ``$CWD/alembic.ini`` — covers ``pytest`` / ``alembic`` invocations
+         run from the repo root.
+      4. ``parents[3]/alembic.ini`` from this file — covers editable installs
+         (``pip install -e .``) where ``__file__`` is under ``src/``.
+    """
+    candidates: list[Path] = []
+    explicit = os.environ.get(ALEMBIC_INI_ENV)
+    if explicit:
+        candidates.append(Path(explicit))
+    repo_root = os.environ.get(REPO_ROOT_ENV)
+    if repo_root:
+        candidates.append(Path(repo_root) / "alembic.ini")
+    candidates.append(Path.cwd() / "alembic.ini")
+    try:
+        candidates.append(Path(__file__).resolve().parents[3] / "alembic.ini")
+    except IndexError:  # pragma: no cover - defensive
+        pass
+    for path in candidates:
+        if path.is_file():
+            return path
+    raise RuntimeError(
+        "Could not locate alembic.ini. Set $DEFI_SIM_ALEMBIC_INI or "
+        "$DEFI_SIM_REPO_ROOT, or run from a working directory that contains "
+        "alembic.ini. Searched: " + ", ".join(str(p) for p in candidates)
+    )
+
+
 def apply_schema(pool: ConnectionPool | None = None) -> None:
-    """Apply schema.sql idempotently. Safe to call repeatedly."""
+    """Run ``alembic upgrade head`` against DATABASE_URL. Idempotent.
+
+    The ``pool`` argument is retained for API compatibility with the
+    pre-Alembic implementation; Alembic owns its own connection lifecycle, so
+    the argument is intentionally ignored. Repeated calls within the same
+    process short-circuit via ``_schema_applied``.
+    """
     global _schema_applied
     if _schema_applied:
         return
-    target = pool or get_pool()
-    ddl = _SCHEMA_PATH.read_text(encoding="utf-8")
-    with target.connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute(ddl)
-        conn.commit()
+    # Validate DATABASE_URL up front so the failure mode matches the
+    # pre-Alembic implementation (RuntimeError, not an obscure Alembic error).
+    database_url()
+
+    from alembic import command
+    from alembic.config import Config
+
+    ini_path = _locate_alembic_ini()
+    cfg = Config(str(ini_path))
+    # env.py reads DATABASE_URL itself; no need to set sqlalchemy.url here.
+    command.upgrade(cfg, "head")
+
     _schema_applied = True
 
 
 def ensure_ready() -> ConnectionPool:
     """Convenience: get the pool and ensure schema is applied."""
-    pool = get_pool()
-    apply_schema(pool)
-    return pool
+    apply_schema()
+    return get_pool()
 
 
 __all__ = [
     "DATABASE_URL_ENV",
     "POOL_MIN_SIZE_ENV",
     "POOL_MAX_SIZE_ENV",
+    "REPO_ROOT_ENV",
+    "ALEMBIC_INI_ENV",
     "apply_schema",
     "database_url",
     "ensure_ready",

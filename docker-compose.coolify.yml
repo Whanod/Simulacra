@@ -31,6 +31,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.allinone
+      # Build-time args. NEXT_PUBLIC_* values are inlined into the Next.js
+      # client bundle by ``next build`` — setting them as runtime env is a
+      # no-op. Coolify forwards entries from its "Build-time environment
+      # variables" panel into these via variable substitution; locally,
+      # ``NEXT_PUBLIC_PRIVY_APP_ID=… docker compose build`` works too.
+      args:
+        NEXT_PUBLIC_PRIVY_APP_ID: "${NEXT_PUBLIC_PRIVY_APP_ID:-}"
+        NEXT_PUBLIC_SOLANA_RPC_URL: "${NEXT_PUBLIC_SOLANA_RPC_URL:-}"
     image: defi-sim:allinone
     container_name: defi-sim-allinone
     restart: unless-stopped
@@ -43,6 +51,10 @@ services:
       CORS_ALLOWED_ORIGINS: "*"
       DEFI_SIM_STORE_BACKEND: "postgres"
       DATABASE_URL: "postgresql://defisim:defisim@postgres:5432/defisim"
+      # Backend-side Privy verification. Leaving these unset puts the
+      # backend in open mode (no JWT verification on incoming requests).
+      PRIVY_APP_ID: "${PRIVY_APP_ID:-${PRIVY_ID:-}}"
+      PRIVY_SECRET: "${PRIVY_SECRET:-}"
     depends_on:
       postgres:
         condition: service_healthy

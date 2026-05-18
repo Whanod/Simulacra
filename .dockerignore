@@ -4,6 +4,8 @@
 !pyproject.toml
 !src
 !solana-plans
+!alembic.ini
+!alembic
 !README.md
 
 # And prune noise inside the allowed directories

@@ -41,9 +41,11 @@ export DEFI_SIM_STORE_BACKEND=postgres
 python -m uvicorn defi_sim_api.main:app --reload
 ```
 
-The schema in `src/defi_sim_api/backend/schema.sql` is applied idempotently
-when the connection pool opens; no migration tool is wired up yet, so if you
-change the schema mid-dev, run `scripts/purge-local.sh` to wipe and re-apply.
+Schema is managed by Alembic (`alembic/versions/`). On first store access the
+backend runs `alembic upgrade head` against `$DATABASE_URL`, which is a no-op
+once the DB is at the latest revision. To add a schema change: create a new
+revision with `alembic revision -m "<message>"`, edit the generated file, and
+commit. To wipe and re-apply locally during dev, run `scripts/purge-local.sh`.
 
 ## Smoke Check
 
