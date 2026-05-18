@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { PrivyProvider, usePrivy } from "@privy-io/react-auth";
 import { toSolanaWalletConnectors } from "@privy-io/react-auth/solana";
 
@@ -12,25 +12,47 @@ interface AuthTokenBridgeProps {
 
 // Inside the provider so usePrivy() works. Registers the token accessor
 // once on mount; the SDK's getAccessToken handles caching + refresh.
+//
+// The accessor *awaits* Privy's initial hydration before deciding on a
+// token, rather than bailing to null while ready === false. Without this
+// gate, requests fired in the same paint as AuthModalGate flipping its
+// children visible can slip through with no Authorization header — React
+// fires the children's useEffects before this bridge's effect re-runs to
+// register a real-token accessor, and the backend then 401s those calls.
+// The gate resolves exactly once (the first time ready flips to true)
+// and stays resolved, so it adds zero overhead to steady-state requests.
 function AuthTokenBridge({ children }: AuthTokenBridgeProps) {
   const { getAccessToken, ready, authenticated } = usePrivy();
 
+  const readyGateRef = useRef<{ promise: Promise<void>; resolve: () => void } | null>(null);
+  if (readyGateRef.current === null) {
+    let resolve!: () => void;
+    const promise = new Promise<void>((r) => {
+      resolve = r;
+    });
+    readyGateRef.current = { promise, resolve };
+  }
+  useEffect(() => {
+    if (ready) readyGateRef.current!.resolve();
+  }, [ready]);
+
+  // Mirror authenticated into a ref so a single registered accessor sees
+  // current state without needing the effect below to re-run on every
+  // sign-in / sign-out flip.
+  const authenticatedRef = useRef(authenticated);
+  authenticatedRef.current = authenticated;
+
   useEffect(() => {
     setAuthTokenAccessor(async () => {
-      // getAccessToken returns null when there is no session. When the
-      // SDK is mid-hydration (`ready === false`) we also bail to null so
-      // the very first request after a page load isn't blocked waiting
-      // on Privy. Subsequent requests (after the session restores) pick
-      // up the real token.
-      if (!ready) return null;
-      if (!authenticated) return null;
+      await readyGateRef.current!.promise;
+      if (!authenticatedRef.current) return null;
       const token = await getAccessToken();
       return token ?? null;
     });
     return () => {
       setAuthTokenAccessor(null);
     };
-  }, [getAccessToken, ready, authenticated]);
+  }, [getAccessToken]);
 
   return <>{children}</>;
 }

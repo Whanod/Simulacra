@@ -126,6 +126,14 @@ def apply_schema(pool: ConnectionPool | None = None) -> None:
     pre-Alembic implementation; Alembic owns its own connection lifecycle, so
     the argument is intentionally ignored. Repeated calls within the same
     process short-circuit via ``_schema_applied``.
+
+    Thread-safe: uvicorn dispatches sync endpoints onto a threadpool, so
+    multiple concurrent first-requests can otherwise race here. Alembic's
+    EnvironmentContext keeps state in module globals (script proxy etc.),
+    and two simultaneous ``command.upgrade`` calls trash each other's
+    state — observed as ``KeyError: 'script'`` from ``langhelpers.py``
+    during ``__exit__``. The double-checked lock below serialises the
+    first upgrade and lets every subsequent caller short-circuit.
     """
     global _schema_applied
     if _schema_applied:
@@ -134,15 +142,19 @@ def apply_schema(pool: ConnectionPool | None = None) -> None:
     # pre-Alembic implementation (RuntimeError, not an obscure Alembic error).
     database_url()
 
-    from alembic import command
-    from alembic.config import Config
+    with _lock:
+        if _schema_applied:
+            return
 
-    ini_path = _locate_alembic_ini()
-    cfg = Config(str(ini_path))
-    # env.py reads DATABASE_URL itself; no need to set sqlalchemy.url here.
-    command.upgrade(cfg, "head")
+        from alembic import command
+        from alembic.config import Config
 
-    _schema_applied = True
+        ini_path = _locate_alembic_ini()
+        cfg = Config(str(ini_path))
+        # env.py reads DATABASE_URL itself; no need to set sqlalchemy.url here.
+        command.upgrade(cfg, "head")
+
+        _schema_applied = True
 
 
 def ensure_ready() -> ConnectionPool:
